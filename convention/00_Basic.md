@@ -21,7 +21,7 @@ var _this = this;
 * 확장명은 js로 한다. 
 * 가급적 inline script를 사용하지 않고, js 파일로 분리한다.
 * js 파일은 utf-8(BOM 없음)으로 저장한다.
-* script 태그는 </head> 태그 이전에 추가한다. 단 성능상 문제가 있는 경우 </body> 이전에 추가한다.
+* script 태그는 &lt;/head&gt; 태그 이전에 추가한다. 단 성능상 문제가 있는 경우 &lt;/body&gt; 이전에 추가한다.
 * 라이브 배포 시 반드시 압축 한다.
 * 압축한 파일은 xxx.min.js 형태 이름을 사용한다.
 <br><br>
