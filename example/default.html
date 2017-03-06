@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="ko"><!--/* [D] 해당 국가코드 삽입 */-->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0">
+    <meta name="format-detection" content="telephone=no, address=no, email=no">
+    <title>Default</title>
+    <style>
+    *{margin:0;padding:0}
+    body{font-family:arial;font-size:14px;line-height:1.5}
+    h1{font-size:1.8em}
+    h2{font-size:1.4em}
+    ul,li{list-style:none}
+
+    #wrap{max-width:900px;margin:0 auto}
+    #header{padding:10px 0}
+    .section{padding:15px 0}
+
+    .exam_box{background:#f7f7f7;color:#000}
+    .exam_box>div.height_2000{height:2000px}
+    @media all and (max-width:768px) {
+        .exam_box{background:green;color:#fff}
+    }
+    </style>
+</head>
+<body>
+<div id="wrap">
+    <div id="header"><h1>Default Convention &amp; Default Useage</h1></div>
+    <div id="container">
+        <div class="section">
+            <h2>isSupportTransform</h2>
+            <p>이 브라우저는 반응형 브라우저 인가요? <span id="isSupportChk"></span> </p>
+        </div>
+        <div class="section">
+            <h2>isDevice</h2>
+            <p>이 브라우저는 디바이스용 인가요? <span id="isDeviceChk"></span> </p>
+        </div>
+        <div class="section">
+            <h2>winSize</h2>
+            <p>브라우저의 넓이값은 얼마인가요? <span id="winSizeChk"></span> </p>
+            <div class="exam_box">
+                <p>
+                    .exam_box{background:#f7f7f7;color:#000}<br>
+                    @media all and (max-width:768px) {<br>
+                    .exam_box{background:green;color:#fff}<br>
+                    }
+                </p>
+                <div>
+                    <button onclick="$(this).parent().toggleClass('height_2000');window.sizeFunc();">scroll 여부 : window OS Safari 확인</button>
+                </div>
+            </div>
+        </div>
+        <div class="section">
+            <h2>option merge</h2>
+            <p id="defOpt"></p>
+            <button id="btnDef">옵션값 Merge</button>
+        </div>
+        <div class="section">
+            <h2>requestAnimation</h2>
+            <p id="requestAnimation"></p>
+            <button id="btnRequestAF">requestAnimationFrame</button>
+            <button id="btnCancelAF">cancelAnimationFrame</button>
+        </div>
+        <div class="section">
+            <h2>maxByte</h2>
+            <p class="maxByte"><span>Pre-order QLED: The next in TV</span> -> <span></span></p>
+            <p class="maxByte"><span>동해물과 백두산이 마르고 닳도록</span> -> <span></span></p>
+            <input type="text" id="inpByte">
+            <button id="btnByte">Rect</button>
+        </div>
+        <div class="section">
+            <h2>image Loaded</h2>
+            <p id="loadingComplete">이미지 로딩완료 메시지 : <span></span></p>
+            <p id="imgLoadArea"><img src="http://img.naver.net/static/www/u/2013/0731/nmms_224940510.gif" alt="image"></p>
+            <button id="btnImgLoad">img Change</button>
+        </div>
+    </div>
+</div>
+
+<script src="js/libs/jquery-1.12.4.min.js"></script>
+<script src="js/apps/common.js"></script>
+<script>
+(function (win, $, doc) {
+    'use strict';
+    win.examProject = win.examProject || {};
+    win.examProject.common = win.examProject.common || {};
+
+    var UTIL = win.examProject.common.util;
+
+    $(function () {
+        // 반응형 브라우저 체크
+        var supportSelector = $('#isSupportChk');
+        if (UTIL.isSupportTransform) {
+            supportSelector.text(UTIL.isSupportTransform);
+        } else {
+            supportSelector.text(UTIL.isSupportTransform);
+        }
+
+        // 디바이스 체크
+        var deviceSelector = $('#isDeviceChk');
+        if (UTIL.isDevice) {
+            deviceSelector.text(UTIL.isDevice);
+        } else {
+            deviceSelector.text(UTIL.isDevice);
+        }
+
+        // 윈도우 넓이값 체크
+        var winsizeSelector = $('#winSizeChk');
+        window.sizeFunc = function () {
+            winsizeSelector.text(UTIL.winSize().w);
+        };
+        window.sizeFunc();
+        $(win).on('resize', window.sizeFunc);
+
+        // 옵션값 Merge
+        var defParams = {
+            wrap : 'ul.ul_wrap',
+            toggleBtnClass : 'ico-active'
+        };
+        var afterOptions = {
+            wrap : '.div_wrap',
+            toggleBtnClass : 'btn-active'
+        };
+        var defOpt = $('#defOpt'),
+            btnDef = $('#btnDef');
+
+        window.viewFunc = function () {
+            var defProp = '';
+            for (var prop in defParams) {
+                defProp += prop + ' : ' + defParams[prop] + '<br>';
+            }
+            defOpt.html(defProp);
+        };
+        window.viewFunc();
+
+        window.defViewFunc = function () {
+            defParams = UTIL.def(defParams, (afterOptions || {}));
+            window.viewFunc();
+        };
+        btnDef.on('click', window.defViewFunc);
+
+        // requestAnimationFrame
+        var requestAF = $('#requestAnimation'),
+            btnRequestAF = $('#btnRequestAF'),
+            btnCancelAF = $('#btnCancelAF'),
+            examTime = 0,
+            examNum = 1,
+            startTime = false;
+        window.requestFunc = function () {
+            if (examTime > 150) {
+                examNum = -1;
+            } else if (examTime < 0) {
+                examNum = 1;
+            }
+            examTime = examTime + examNum;
+            requestAF.text(examTime);
+            window.requestTime = UTIL.requestAFrame.call(window, window.requestFunc);
+        };
+        window.cancelFunc = function () {
+            startTime = false;
+            UTIL.cancelAFrame.call(window, window.requestTime);
+        };
+        window.requestCallFunc = function () {
+            if (startTime) return;
+            startTime = true;
+            window.requestFunc();
+        };
+        btnRequestAF.on('click', window.requestCallFunc);
+        btnCancelAF.on('click', window.cancelFunc);
+
+        // maxByte
+        var btnByte = $('#btnByte'),
+            inpByte = $('#inpByte'),
+            byteClass = $('.maxByte'),
+            replaceStr = '...';
+        window.maxByteFunc = function () {
+            var maxByte = parseInt(inpByte.val(), 10);
+            for (var i = 0, max = byteClass.length; i < max; i++) {
+                var inputText = byteClass.eq(i).find('span:eq(0)').text();
+                var outputName = byteClass.eq(i).find('span:eq(1)');
+                var returnArray = UTIL.getRestrictBytes(inputText, maxByte);
+                if (inputText.length > returnArray.rectLeng) {
+                    inputText = inputText.substr(0, returnArray.rectLeng).split(' ');
+                    inputText.pop();
+                    inputText = inputText.join(' ') + replaceStr;
+                }
+                outputName.text(inputText);
+            }
+        };
+        btnByte.on('click', window.maxByteFunc);
+
+        // image Loaded
+        var btnImg = $('#btnImgLoad'),
+            imgArea = $('#imgLoadArea'),
+            loadTxt = $('#loadingComplete').find('span'),
+            changeUrl = 'https://www.packtpub.com/sites/default/files/3145OS_cov.jpg';
+        window.loadCompleteFunc = function () {
+            imgArea.find('img').attr("src", changeUrl);
+            loadTxt.text('로딩완료').css({
+                'background' : 'blue',
+                'color' : '#fff'
+            });
+        };
+        window.imgChangeFunc = function () {
+            UTIL.imgLoader($('<img>').attr('src', changeUrl), window.loadCompleteFunc);
+        };
+        btnImg.on('click', window.imgChangeFunc);
+    });
+})(window, window.jQuery, window.document);
+</script>
+</body>
+</html>

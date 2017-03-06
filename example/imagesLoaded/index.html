@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>exam - imagesLoaded</title>
+<style>
+/* temporary css */
+*{margin:0;padding:0}
+body{font-size:14px;font-family:"나눔고딕",NanumGothic,"굴림",Gulim,Sans-serif;line-height:1.5}
+h1,h2,h3,h4,h5,h6{font-size:14px}
+ul,li{list-style:none}
+button{font-size:14px;font-family:"나눔고딕",NanumGothic,"굴림",Gulim,Sans-serif;line-height:1.5;cursor:pointer}
+button::-moz-focus-inner{padding:0;border:0}
+.btn_pos{padding:10px}
+.btn_pos button{margin:0;padding:0;width:100px;height:100px;border:1px solid #ccc;vertical-align:top}
+.search_result_wrap{max-width:900px;margin:0 auto}
+.search_result{padding:10px;letter-spacing:-10px}
+.search_result li{display:inline-block;width:33.33%;margin-top:15px;letter-spacing:0;vertical-align:top;*display:inline;zoom:1}
+.search_cardbox{margin:0 10px;padding:15px;border:1px solid #ccc;word-wrap:break-word}
+.search_cardbox .img_wrap{background:#f7f7f7;}
+.search_cardbox .img_wrap img{max-width:100%;vertical-align:top}
+.search_cardbox .card_wrap{margin-top:15px;background:#ddd}
+.search_cardbox .option_wrap{margin-top:15px;background:#eee}
+/* //temporary css */
+</style>
+</head>
+<body>
+<div class="btn_pos js-btn_pos"><button>DOM 추가하기</button><button>DOM<br>전체 바꾸기</button></div>
+<div class="search_result_wrap">
+    <ul class="search_result js-search_result">
+        <li>
+            <div class="search_cardbox">
+                <div class="img_wrap">
+                    <p class="img_view"><img src="https://www.packtpub.com/sites/default/files/3145OS_cov.jpg"></p>
+                </div>
+                <div class="card_wrap">
+                    <div class="card_text">
+                        동해물과 백두산이 마르고 닳도록
+                    </div>
+                </div>
+                <div class="option_wrap">
+                    <div class="option_text">
+                        OptionsOptionsOptions<br>
+                        OptionsOptionsOptions<br>
+                        OptionsOptionsOptions<br>
+                    </div>
+                </div>
+            </div>
+        </li>
+        <li>
+            <div class="search_cardbox">
+                <div class="img_wrap">
+                    <p class="img_view"><img src="http://imgjungle.jungle.co.kr/Magazine/up_img/category/IMG201702170246278510.jpg"></p>
+                </div>
+                <div class="card_wrap">
+                    <div class="card_text">
+                        하나님이 보우하사 우리나라 만세 무궁화 삼천리 화려강산
+                    </div>
+                </div>
+                <div class="option_wrap">
+                    <div class="option_text">
+                        OptionsOptionsOptions<br>
+                        OptionsOptionsOptions<br>
+                    </div>
+                </div>
+            </div>
+        </li>
+    	<li>
+            <div class="search_cardbox">
+                <div class="img_wrap">
+                    <p class="img_view"><img src="http://imgjungle.jungle.co.kr/magazine/up_img/photo/20160113_194600.jpg"></p>
+                </div>
+                <div class="card_wrap">
+                    <div class="card_text">
+                        대한사람 대한으로 길이 보전하세 남산위에 저소나무 철갑을 두른듯 바람서리 불면함은 우리 기상일세
+                    </div>
+                </div>
+                <div class="option_wrap">
+                    <div class="option_text">
+                        OptionsOptionsOptions<br>
+                        OptionsOptionsOptions<br>
+                        OptionsOptionsOptions<br>
+                        OptionsOptionsOptions<br>
+                        OptionsOptionsOptions<br>
+                    </div>
+                </div>
+            </div>
+        </li>
+        <li>
+            <div class="search_cardbox">
+                <div class="img_wrap">
+                    <p class="img_view"><img src="http://imgjungle.jungle.co.kr/magazine/up_img/photo/view_20160113_194952(0).jpg"></p>
+                </div>
+                <div class="card_wrap">
+                    <div class="card_text">
+                        케벨라코사 냐뇨르냐타에 쏘레 나리아세 레나돕 포나템 페스타
+                    </div>
+                </div>
+                <div class="option_wrap">
+                    <div class="option_text">
+                        OptionsOptionsOptions<br>
+                        OptionsOptionsOptions<br>
+                    </div>
+                </div>
+            </div>
+        </li>
+        <li>
+            <div class="search_cardbox">
+                <div class="img_wrap">
+                    <p class="img_view"><img src="http://imgjungle.jungle.co.kr/magazine/up_img/photo/view_20140807_144514.jpg"></p>
+                </div>
+                <div class="card_wrap">
+                    <div class="card_text">
+                        페라리아 프레스카 파레지아나 페스타
+                    </div>
+                </div>
+                <div class="option_wrap">
+                    <div class="option_text">
+                        OptionsOptionsOptions<br>
+                        OptionsOptionsOptions<br>
+                        OptionsOptionsOptions<br>
+                    </div>
+                </div>
+            </div>
+        </li>
+    </ul>
+</div>
+<!-- [ Javascript Area ] -->
+<!-- Libs -->
+<script src="../js/libs/jquery-1.12.4.min.js"></script>
+<script src="../jquery.domchanged/js/jquery.domchanged.min.js"></script>
+<script src="js/imagesloaded.pkgd.min.js"></script>
+<!-- Apps -->
+<script src="../js/apps/common.js"></script>
+<script>
+(function (win, $) {
+    'use strict';
+    win.examProject = win.examProject || {};
+    win.examProject.common = win.examProject.common || {};
+
+    var UTIL = win.examProject.common.util;
+
+    win.examProject.heightMatch = function (container, args) {
+        var defParams = {
+            matchAlign : 3
+        };
+        this.wrap = $(container);
+        this.opts = UTIL.def(defParams, (args || {}));
+        this.init();
+    };
+    win.examProject.heightMatch.prototype = {
+        init : function () {
+            this.setElements();
+            this.bindEvents();
+            this.maxHeightLine();
+            this.maxHeightBuildChk();
+        },
+        setElements : function () {
+            this.obj = this.wrap.find(this.opts.targetElements);
+            this.objWrap = this.obj.parent();
+        },
+        bindEvents : function () {
+            $(win).on('resize orientationchange', $.proxy(this.resizeFunc, this));
+        },
+        resizeFunc : function () {
+            this.maxHeightBuild();
+        },
+        maxHeightLine : function () {
+            this.maxLine = Math.ceil(this.obj.length / this.opts.matchAlign);
+        },
+        maxHeightBuildChk : function () {
+            this.obj.imagesLoaded().always($.proxy(this.maxHeightBuild, this));
+        },
+        maxHeightBuild : function () {
+            var heightArray = [];
+            for (var i = 0; i < this.maxLine; i++) {
+                heightArray[i] = [];
+            }
+            for (var i = 0, max = this.obj.length; i < max; i++) {
+                var _arrayIndex = parseInt((i / this.opts.matchAlign), 10),
+                    _height = this.obj.eq(i).outerHeight(true);
+                heightArray[_arrayIndex].push(_height);
+            }
+            for (var i = 0; i < this.maxLine; i++) {
+                heightArray[i] = Math.max.apply(null, heightArray[i]);
+            }
+            for (var i = 0, max = this.obj.length; i < max; i++) {
+                var _arrayIndex = parseInt((i / this.opts.matchAlign), 10);
+                this.objWrap.eq(i).height(heightArray[_arrayIndex]);
+            }
+        },
+        reInit : function () {
+            this.setElements();
+            this.maxHeightLine();
+            this.maxHeightBuildChk();
+        }
+    };
+    $.fn.projectHeightMatch = function (args) {
+        return new win.examProject.heightMatch(this, args);
+    };
+
+    win.examProject.searchResult = function (container, args) {
+        var defParams = {
+            heightMatchElements : ['.card_text', '.option_text', '.img_view']
+        };
+        this.opts = UTIL.def(defParams, (args || {}));
+        this.init();
+    };
+    win.examProject.searchResult.prototype = {
+        init : function () {
+            this.setElements();
+            this.setLayout();
+            this.heightMatchManager.init(this);
+            this.bindDomchangedEvents(true);
+        },
+        setElements : function () {
+            this.obj = $('.js-search_result');
+        },
+        setLayout : function () {
+            this.bindDomchangedEvents(false);
+            this.opts.heightMatchElementsClass = [];
+            for (var prop in this.opts.heightMatchElements) {
+                this.opts.heightMatchElementsClass.push('js-' + this.opts.heightMatchElements[prop].split('.')[1] + '-wrap');
+            }
+            for (var prop in this.opts.heightMatchElements) {
+                var _thisObj = this.obj.find(this.opts.heightMatchElements[prop]),
+                    _thisObjClass = this.opts.heightMatchElementsClass[prop];
+                for (var i = 0, max = _thisObj.length; i < max; i++) {
+                    if (!_thisObj.eq(i).parent().hasClass(_thisObjClass)) {
+                        _thisObj.eq(i).wrap("<div class='" + _thisObjClass + "'></div>");
+                    }
+                }
+            }
+        },
+        heightMatchManager : {
+            init : function (_parent) {
+                this.opts = _parent.opts;
+                this.heightCall = [];
+                for (var prop in this.opts.heightMatchElements) {
+                    var _target = this.opts.heightMatchElements[prop];
+                    this.heightCall.push(_parent.obj.projectHeightMatch({
+                        targetElements : _target
+                    }));
+                }
+            },
+            reCallHeightMatch : function () {
+                for (var prop in this.heightCall) {
+                    this.heightCall[prop].reInit();
+                }
+            }
+        },
+        bindDomchangedEvents : function (type) {
+            (type) ? this.obj.on('DOMChanged', $.proxy(this.domchangedFunc, this)) : this.obj.off('DOMChanged', $.proxy(this.domchangedFunc, this));
+        },
+        domchangedFunc : function () {
+            this.setLayout();
+            this.heightMatchManager.reCallHeightMatch();
+            this.bindDomchangedEvents(true);
+        }
+    };
+
+    $(function () {
+        win.examSearchResult = new win.examProject.searchResult();
+
+        // temporary js
+        function randomNum() {
+            return Math.floor((Math.random() * 20) + 1);
+        };
+        function randomKorean() {
+            var random = randomNum();
+            var randomtxt = '아 유 레디!? ',
+            totaltxt = '';
+            for (var i = 0; i < random; i++) {
+                totaltxt += randomtxt;
+            }
+            return totaltxt;
+        };
+        function randomEnglish() {
+            var random = randomNum();
+            var randomtxt = 'Are you ready!? ',
+            totaltxt = '';
+            for (var i = 0; i < random; i++) {
+                totaltxt += randomtxt;
+            }
+            return totaltxt;
+        };
+        var imgSol = 'http://imgjungle.jungle.co.kr/bestsite/view_20170223_154439.jpg';
+        var imgList = ['http://imgjungle.jungle.co.kr/bestsite/view_20170223_153655.jpg', 'http://imgjungle.jungle.co.kr/bestsite/view_20170221_100624.jpg', 'http://imgjungle.jungle.co.kr/bestsite/view_20170221_095532.jpg', 'http://imgjungle.jungle.co.kr/bestsite/view_20170221_095912.jpg', 'http://www.lecoqsportif.co.kr/upload/20169191543420.jpg'],
+            imgNum = 0;
+        function domAppend() {
+            var temporaryText = '';
+            temporaryText += '<li>';
+            temporaryText += '<div class="search_cardbox">';
+            temporaryText += '<div class="img_wrap">';
+            temporaryText += '<p class="img_view"><img src="' + imgList[imgNum] + '"></p>';
+            temporaryText += '</div>';
+            temporaryText += '<div class="card_wrap">';
+            temporaryText += '<div class="card_text">';
+            temporaryText += randomKorean();
+            temporaryText += '</div>';
+            temporaryText += '</div>';
+            temporaryText += '<div class="option_wrap">';
+            temporaryText += '<div class="option_text">';
+            temporaryText += randomEnglish();
+            temporaryText += '</div>';
+            temporaryText += '</div>';
+            temporaryText += '</div>';
+            temporaryText += '</li>';
+            imgNum++;
+            return temporaryText;
+        };
+        function allApend() {
+            var totaltxt = '';
+            for (var i = 0; i < imgList.length; i++) {
+                totaltxt += domAppend();
+            }
+            return totaltxt;
+        };
+        $('.js-btn_pos button:eq(0)').one('click', function () {
+            imgNum = 0;
+            imgList[0] = imgSol;
+            $('.js-search_result').append(domAppend());
+        });
+        $('.js-btn_pos button:eq(1)').one('click', function () {
+            $('.js-search_result').html(allApend());
+        });
+        // //temporary js
+    });
+})(window, window.jQuery);
+</script>
+</body>
+</html>

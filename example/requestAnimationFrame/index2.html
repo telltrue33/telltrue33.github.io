@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>exam - imagesLoaded</title>
+<style>
+/* temporary css */
+*{margin:0;padding:0}
+body{font-size:14px;font-family:"나눔고딕",NanumGothic,"굴림",Gulim,Sans-serif;line-height:1.5}
+h1,h2,h3,h4,h5,h6{font-size:14px}
+ul,li{list-style:none}
+button{font-size:14px;font-family:"나눔고딕",NanumGothic,"굴림",Gulim,Sans-serif;line-height:1.5;cursor:pointer}
+button::-moz-focus-inner{padding:0;border:0}
+#header{height:15vw;background:#ddd}
+#container{height:2000px}
+#footer{height:150px;background:#ccc}
+.nav-wrap{height:41px}
+.nav{width:100%}
+.nav ul{display:table;width:100%;table-layout:fixed;border-collapse:collapse;background:yellow}
+.nav ul li{display:table-cell;padding:10px 0;text-align:center}
+.nav-fixed{position:fixed;left:0;top:0;z-index:9001;width:100%}
+/* //temporary css */
+</style>
+</head>
+<body>
+<div id="wrap">
+    <div id="header">header</div>
+    <div id="container">
+        <div class="nav-wrap">
+            <div class="nav">
+                <ul>
+                    <li><a href="#">1</a></li>
+                    <li><a href="#">2</a></li>
+                    <li><a href="#">3</a></li>
+                    <li><a href="#">4</a></li>
+                    <li><a href="#">5</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div id="footer">footer</div>
+</div>
+
+<!-- [ Javascript Area ] -->
+<!-- Libs -->
+<script src="../js/libs/jquery-1.12.4.min.js"></script>
+<!-- Apps -->
+<script src="../js/apps/common.js"></script>
+<script>
+(function (win, $) {
+    'use strict';
+    win.examProject = win.examProject || {};
+    win.examProject.common = win.examProject.common || {};
+
+    var UTIL = win.examProject.common.util;
+
+    win.examProject.fixNavigation = function (container, args) {
+        var defParams = {
+            animateStart : false,
+            fixClass : 'nav-fixed',
+            cloneCss : {
+                view : {
+                    opacity : 1,
+                    zIndex : 100,
+                    top : 0,
+                    bottom : 'auto'
+                },
+                hide : {
+                    opacity : 0.01,
+                    zIndex : -1,
+                    top : 'auto',
+                    bottom : '99.99%'
+                }
+            }
+        };
+        this.opts = UTIL.def(defParams, (args || {}));
+        this.init();
+    };
+    win.examProject.fixNavigation.prototype = {
+        init : function () {
+            this.setElements();
+            this.setOpts();
+            this.setLayout();
+            this.scrollFunc();
+            this.bindEvents();
+        },
+        setElements : function () {
+            this.navObj = $('.nav');
+        },
+        setOpts : function () {
+            this.navPos = this.navObj.offset().top;
+        },
+        setLayout : function () {
+            this.navObjClone = this.navObj.clone().appendTo('#container').addClass(this.opts.fixClass).css(this.opts.cloneCss.hide);
+        },
+        bindEvents : function () {
+            $(win).on('scroll', $.proxy(this.scrollFunc, this));
+            $(win).on('resize', $.proxy(this.resizeFunc, this));
+        },
+        resizeFunc : function () {
+            this.setOpts();
+            this.scrollFunc();
+        },
+        scrollFunc : function () {
+            if (!this.opts.animateStart) {
+                this.opts.animateStart = true;
+                this.animateFunc();
+            }
+            win.clearTimeout(this.scrollEndTime);
+            this.scrollEndTime = win.setTimeout($.proxy(this.scrollEndFunc, this), 150);
+        },
+        scrollEndFunc : function () {
+            this.opts.animateStart = false;
+            this.navPosFunc();
+            UTIL.cancelAFrame.call(win, this.navPosTime);
+        },
+        animateFunc : function () {
+            this.navPosFunc();
+            this.navPosTime = UTIL.requestAFrame.call(win, $.proxy(this.animateFunc, this));
+        },
+        navPosFunc : function () {
+            var _winScroll = $(window).scrollTop();
+            if (_winScroll > this.navPos) {
+                if (!this.navObjClone.data('chkView')) {
+                    this.navObjClone.data('chkView', true);
+                    this.navObjClone.css(this.opts.cloneCss.view);
+                }
+            } else {
+                if (this.navObjClone.data('chkView')) {
+                    this.navObjClone.data('chkView', false);
+                    this.navObjClone.css(this.opts.cloneCss.hide);
+                }
+            }
+        }
+    };
+
+    $(function () {
+        win.examFixNavigation = new win.examProject.fixNavigation();
+    });
+})(window, window.jQuery);
+</script>
+</body>
+</html>
