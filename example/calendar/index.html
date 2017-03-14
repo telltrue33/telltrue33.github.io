@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>exam - calendar</title>
+<style>
+/* temporary css */
+*{margin:0;padding:0}
+body{font-size:14px;font-family:"나눔고딕",NanumGothic,"굴림",Gulim,Sans-serif;line-height:1.5}
+h1,h2,h3,h4,h5,h6{font-size:14px}
+ul,li{list-style:none}
+/* //temporary css */
+</style>
+<link rel="stylesheet" href="css/jquery-ui.css">
+<style>
+.ir-datepicker-wrap{margin:30px}
+.ir-datepicker-wrap:after,.ir-datepicker-wrap:before{display:block;clear:both;content:''}
+.ir-datepicker{position:relative;float:left;height:40px;height:2.77778vw;margin-left:18px;margin-left:1.25vw}
+.ir-datepicker:first-child{margin-left:0}
+.ir-datepicker:first-child:before{display:none}
+.ir-datepicker:before{position:absolute;top:50%;left:-10px;width:5px;height:1px;background:#a3a3a3;content:''}
+.ir-datepicker .ir-input{width:184px;width:12.77778vw;padding-right:40px;padding-right:2.77778vw;color:#a3a3a3}
+.ir-datepicker .ir-input.ir-active{color:#000}
+.ir-datepicker .ir-datewrap{display:none;position:absolute;top:100%;left:0;z-index:10;margin:-1px 0!important}
+.ir-datepicker .ir-datewrap.ir-position-other{display:block;top:auto;bottom:100%}
+</style>
+</head>
+<body>
+<div class="ir-datepicker-wrap js-datepicker-wrap">
+    <div class="ir-datepicker js-datepicker-node">
+        <input type="text" class="ir-input js-dateinput" readonly="readonly">
+        <button type="button" class="ir-btn-pick js-datebtn"><span class="blind">Select Dates</span></button>
+        <div class="ir-datewrap js-datepicker-area">
+            <div class="js-datepicker"></div>
+        </div>
+    </div>
+    <div class="ir-datepicker js-datepicker-node">
+        <input type="text" class="ir-input js-dateinput" readonly="readonly">
+        <button type="button" class="ir-btn-pick js-datebtn"><span class="blind">Select Dates</span></button>
+        <div class="ir-datewrap js-datepicker-area">
+            <div class="js-datepicker"></div>
+        </div>
+    </div>
+</div>
+<!-- [ Javascript Area ] -->
+<!-- Libs -->
+<script src="../js/libs/jquery-1.12.4.min.js"></script>
+<script src="../outside/js/jquery.ba-outside-events.min.js"></script>
+<script src="../jquery.domchanged/js/jquery.domchanged.min.js"></script>
+<script src="js/jquery-ui.modify.js"></script>
+<!-- Apps -->
+<script src="../js/apps/common.js"></script>
+<script>
+(function (win, $) {
+    'use strict';
+    win.examProject = win.examProject || {};
+    win.examProject.common = win.examProject.common || {};
+
+    var UTIL = win.examProject.common.util;
+
+    win.examProject.examDatePicker = function (container, args) {
+        var defParams = {
+            datePickerOpts : {
+                isRTL : $('html').hasClass('rtl'),
+                altFormat : 'MM dd, yy',
+                dateFormat : 'mm/dd/yy',
+                onSelect : function () {}
+            },
+            fromDate : {
+                datePickerOpts : {
+                    defaultDate : 0
+                }
+            },
+            toDate : {
+                datePickerOpts : {
+                    defaultDate : 0
+                }
+            },
+            datePickerType : {
+                selector : {
+                    datePickerNode : '.js-datepicker-node',
+                    datePickerInput : '.js-dateinput',
+                    datePickerToggleBtn : '.js-datebtn',
+                    datePickerArea : '.js-datepicker-area',
+                    datePicker : '.js-datepicker'
+                },
+                selectorClass : {
+                    dateDefaultClass : 'ui-state-default',
+                    dateActiveClass : 'ui-state-active',
+                    inputActiveClass : 'ir-active',
+                    botOptionClass : 'ir-position-other'
+                },
+                altEmptyText : 'Select Dates',
+                focusPicker : null,
+                keydownActive : false
+            }
+        };
+        this.obj = container;
+        this.opts = $.extend({}, defParams, (args || {}));
+        this.init();
+    };
+    win.examProject.examDatePicker.prototype = {
+        init : function () {
+            this.setElements();
+            this.setOpts();
+            this.bindEvents();
+            this.createDatePicker();
+        },
+        setElements : function () {
+            this.objChild = this.obj.find(this.opts.datePickerType.selector.datePickerNode);
+            this.objFrom = this.objChild.eq(0);
+            this.objTo = this.objChild.eq(1);
+            this.fromPickerInputTxt = this.objFrom.find(this.opts.datePickerType.selector.datePickerInput);
+            this.fromPickerBtn = this.objFrom.find(this.opts.datePickerType.selector.datePickerToggleBtn);
+            this.fromPickerWrap = this.objFrom.find(this.opts.datePickerType.selector.datePickerArea).attr('tabIndex', 0);
+            this.fromPickerElements = this.fromPickerWrap.find(this.opts.datePickerType.selector.datePicker);
+            this.toPickerInputTxt = this.objTo.find(this.opts.datePickerType.selector.datePickerInput);
+            this.toPickerBtn = this.objTo.find(this.opts.datePickerType.selector.datePickerToggleBtn);
+            this.toPickerWrap = this.objTo.find(this.opts.datePickerType.selector.datePickerArea).attr('tabIndex', 0);
+            this.toPickerElements = this.toPickerWrap.find(this.opts.datePickerType.selector.datePicker);
+        },
+        setOpts : function () {
+            this.fromPickerElements.data('is-from-date', 'true');
+            this.toPickerElements.data('is-to-date', 'true');
+            if (this.fromPickerWrap.is(':hidden')) return;
+            this.onDomChangeFromFunc(true);
+        },
+        bindEvents : function () {
+            this.fromPickerBtn.on('click', $.proxy(this.onFocusFromFunc, this));
+            this.fromPickerInputTxt.on('click', $.proxy(this.onFocusFromFunc, this));
+            this.toPickerBtn.on('click', $.proxy(this.onFocusToFunc, this));
+            this.toPickerInputTxt.on('click', $.proxy(this.onFocusToFunc, this));
+            this.fromPickerWrap.on('keydown keyup', $.proxy(this.onAccessKeyFunc, this));
+            this.toPickerWrap.on('keydown keyup', $.proxy(this.onAccessKeyFunc, this));
+        },
+        viewLayoutFunc : function (_targetObj) {
+            var target = _targetObj.closest(this.opts.datePickerType.selector.datePickerNode),
+                targetObjHeight = _targetObj.css('opacity', 0).addClass(this.opts.datePickerType.selectorClass.botOptionClass)
+                    .show().outerHeight(true),
+                targetTop = target.offset().top,
+                targetHeight = target.outerHeight(true),
+                targetBot = targetTop + targetHeight,
+                targetPosition = targetBot + targetObjHeight,
+                scrollTop = $(win).scrollTop(),
+                winHeight = UTIL.winSize().h,
+                overPosition = scrollTop + winHeight;
+            _targetObj.hide().removeClass(this.opts.datePickerType.selectorClass.botOptionClass).css('opacity', '');
+            if (targetPosition > overPosition) {
+                _targetObj.addClass(this.opts.datePickerType.selectorClass.botOptionClass);
+            } else {
+                _targetObj.removeClass(this.opts.datePickerType.selectorClass.botOptionClass);
+            }
+        },
+        onFocusFromFunc : function () {
+            if (this.fromPickerWrap.data('is-active')) return;
+            this.fromPickerWrap.data('is-active', true);
+            this.viewLayoutFunc(this.fromPickerWrap);
+            this.fromPickerWrap.stop().slideDown('fast', $.proxy(function () {
+                this.fromPickerWrap.focus();
+                this.onDomChangeFromFunc(true);
+                this.fromPickerWrap.on('mousedownoutside focusoutside', $.proxy(this.fromOutsideFunc, this));
+            }, this));
+        },
+        onFocusToFunc : function () {
+            if (this.toPickerWrap.data('is-active')) return;
+            this.toPickerWrap.data('is-active', true);
+            this.viewLayoutFunc(this.toPickerWrap);
+            this.toPickerWrap.stop().slideDown('fast', $.proxy(function () {
+                this.toPickerWrap.focus();
+                this.onDomChangeToFunc(true);
+                this.toPickerWrap.on('mousedownoutside focusoutside', $.proxy(this.toOutsideFunc, this));
+            }, this));
+        },
+        onDomChangeFromFunc : function (type) {
+            (type) ? this.fromPickerElements.on('DOMChanged', $.proxy(this.onDOMChangedDatePicker, this)) : this.fromPickerElements.off('DOMChanged');
+        },
+        onDomChangeToFunc : function (type) {
+            (type) ? this.toPickerElements.on('DOMChanged', $.proxy(this.onDOMChangedDatePicker, this)) : this.toPickerElements.off('DOMChanged');
+        },
+        fromOutsideFunc : function () {
+            this.fromPickerWrap.stop().slideUp('fast', $.proxy(function () {
+                this.fromPickerWrap.data('is-active', false);
+            }, this));
+            this.onDomChangeFromFunc(false);
+            this.fromPickerWrap.off('mousedownoutside focusoutside');
+        },
+        toOutsideFunc : function () {
+            this.toPickerWrap.stop().slideUp('fast', $.proxy(function () {
+                this.toPickerWrap.data('is-active', false);
+            }, this));
+            this.onDomChangeToFunc(false);
+            this.toPickerWrap.off('mousedownoutside focusoutside');
+        },
+        createDatePicker : function () {
+            var datePickerOpts = this.opts.datePickerOpts,
+                fromPickerOpts = $.extend({}, datePickerOpts, this.opts.fromDate.datePickerOpts),
+                toPickerOpts = $.extend({}, datePickerOpts, this.opts.toDate.datePickerOpts);
+
+            fromPickerOpts.altField = this.fromPickerInputTxt;
+            toPickerOpts.altField = this.toPickerInputTxt;
+
+            fromPickerOpts.onSelect = $.proxy(this.onSelectDatePicker, this);
+            toPickerOpts.onSelect = $.proxy(this.onSelectDatePicker, this);
+
+            this.fromPicker = this.fromPickerElements.datepicker(fromPickerOpts);
+            this.toPicker = this.toPickerElements.datepicker(toPickerOpts);
+            
+            this.setDefaultDatePicker();
+        },
+        setDefaultDatePicker : function () {
+            var defaultDate = $.datepicker.formatDate(this.opts.datePickerOpts.dateFormat, new Date(this.toPicker.val()));
+            this.fromPicker.datepicker('option', 'maxDate', defaultDate);
+            this.toPicker.datepicker('option', 'maxDate', defaultDate);
+
+            this.fromPicker.datepicker('setDate', null);
+            this.toPicker.datepicker('setDate', null);
+
+            this.fromPickerInputTxt.val(this.opts.datePickerType.altEmptyText);
+            this.toPickerInputTxt.val(this.opts.datePickerType.altEmptyText);
+        },
+        onSelectDatePicker : function (selectedDate, inst) {
+            if ($('#' + inst.id).data('is-from-date')) {
+                this.onDomChangeFromFunc(false);
+                this.fromPicker.datepicker('setDate', $.datepicker.formatDate(this.opts.datePickerOpts.dateFormat, new Date(selectedDate)));
+                this.fromPickerInputTxt.addClass(this.opts.datePickerType.selectorClass.inputActiveClass);
+                this.toPicker.datepicker('option', 'minDate', selectedDate);
+                if (!this.toPicker.datepicker('getDate')) {
+                    this.toPicker.datepicker('setDate', null);
+                    this.toPickerInputTxt.val(this.opts.datePickerType.altEmptyText);
+                }
+                this.onDomChangeFromFunc(true);
+            } else {
+                this.onDomChangeToFunc(false);
+                this.toPicker.datepicker('setDate', $.datepicker.formatDate(this.opts.datePickerOpts.dateFormat, new Date(selectedDate)));
+                this.toPickerInputTxt.addClass(this.opts.datePickerType.selectorClass.inputActiveClass);
+                this.fromPicker.datepicker('option', 'maxDate', selectedDate);
+                if (!this.fromPicker.datepicker('getDate')) {
+                    this.fromPicker.datepicker('setDate', null);
+                    this.fromPickerInputTxt.val(this.opts.datePickerType.altEmptyText);
+                }
+                this.onDomChangeToFunc(true);
+            }
+        },
+        onDOMChangedDatePicker : function (e) {
+            var target = $(e.currentTarget),
+                activeClass = '.' + this.opts.datePickerType.selectorClass.dateActiveClass;
+            if (target.data('is-from-date')) {
+                if (this.opts.datePickerType.focusPicker) {
+                    this.fromPickerElements.find(activeClass).focus();
+                }
+            } else {
+                if (this.opts.datePickerType.focusPicker) {
+                    this.toPickerElements.find(activeClass).focus();
+                }
+            }
+            if (this.opts.datePickerType.keydownActive) {
+                if (this.opts.datePickerType.focusPicker === null) {
+                    var activeTarget = this.opts.accessPicker.find(this.opts.accessTarget);
+                    if (activeTarget.hasClass('ui-state-disabled')) {
+                        if (activeTarget.hasClass('ui-datepicker-next')) {
+                            activeTarget = activeTarget.siblings('.ui-datepicker-prev');
+                        } else {
+                            activeTarget = activeTarget.siblings('.ui-datepicker-next');
+                        }
+                    }
+                    activeTarget.focus();
+                }
+            }
+        },
+        onAccessKeyFunc : function (e) {
+            this.opts.accessTarget = $(e.target);
+            this.accessTargetParent = this.opts.accessTarget.closest(this.opts.datePickerType.selector.datePickerNode);
+            if (e.type === 'keydown') {
+                this.opts.datePickerType.keydownActive = true;
+            } else if (e.type === 'keyup') {
+                this.opts.datePickerType.keydownActive = false;
+            }
+            if (this.accessTargetParent.find(this.opts.datePickerType.selector.datePicker).data('is-from-date')) {
+                this.opts.accessPicker = this.fromPickerElements;
+            } else {
+                this.opts.accessPicker = this.toPickerElements;
+            }
+
+            switch (e.which) {
+                case $.ui.keyCode.ESCAPE :
+                    var target = this.accessTargetParent.find(this.opts.datePickerType.selector.datePickerToggleBtn);
+                    if (!target.length) return;
+                    target.focus();
+                    break;
+                case $.ui.keyCode.ENTER :
+                    if (this.opts.accessTarget.hasClass(this.opts.datePickerType.selectorClass.dateDefaultClass)) {
+                        this.opts.datePickerType.focusPicker = this.opts.accessPicker;
+                    } else {
+                        this.opts.datePickerType.focusPicker = null;
+                        this.opts.accessTarget = '.' + this.opts.accessTarget.attr('class').split(' ').join('.');
+                    }
+                break;
+            }
+        }
+    };
+    $.fn.examDatePickerPlugin = function (args) {
+        var returnLengths = [];
+        for (var i = 0, max = $(this).length; i < max; i++){
+            returnLengths.push(new win.examProject.examDatePicker($(this).eq(i), args));
+        }
+        return returnLengths;
+    };
+
+    win.examProject.customDatePicker = function (args) {
+        var defParams = {};
+        this.opts = $.extend({}, defParams, (args || {}));
+        this.init();
+    };
+    win.examProject.customDatePicker.prototype = {
+        init : function () {
+            this.setElements();
+            this.datePickerCall();
+        },
+        setElements : function () {
+            this.obj = $('.js-datepicker-wrap');
+        },
+        datePickerCall : function () {
+            this.obj.examDatePickerPlugin(this.opts);
+        }
+    };
+    $(function () {
+        win.examCustomDatePicker = new win.examProject.customDatePicker({
+            // pickerOpts : {
+            //     nextText : '다음달',
+            //     prevText : '이전달',
+            //     dayNames : ['월요일', '화요일', '수요일', '목요일', '금요일', '토요일', '일요일'],
+            //     dayNamesMin : ['월', '화', '수', '목', '금', '토', '일'],
+            //     monthNames: ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월']
+            // }
+        });
+    });
+})(window, window.jQuery);
+</script>
+</body>
+</html>
