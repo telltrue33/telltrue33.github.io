@@ -69,7 +69,7 @@ ul,li{list-style:none}
             },
             fromDate : {
                 datePickerOpts : {
-                    defaultDate : 0
+                    defaultDate : -7
                 }
             },
             toDate : {
@@ -97,7 +97,7 @@ ul,li{list-style:none}
             }
         };
         this.obj = container;
-        this.opts = $.extend({}, defParams, (args || {}));
+        this.opts = UTIL.def(defParams, (args || {}));
         this.init();
     };
     win.examProject.examDatePicker.prototype = {
@@ -199,6 +199,9 @@ ul,li{list-style:none}
 
             fromPickerOpts.altField = this.fromPickerInputTxt;
             toPickerOpts.altField = this.toPickerInputTxt;
+
+            console.log(fromPickerOpts);
+            console.log(toPickerOpts);
 
             fromPickerOpts.onSelect = $.proxy(this.onSelectDatePicker, this);
             toPickerOpts.onSelect = $.proxy(this.onSelectDatePicker, this);
@@ -309,7 +312,7 @@ ul,li{list-style:none}
 
     win.examProject.customDatePicker = function (args) {
         var defParams = {};
-        this.opts = $.extend({}, defParams, (args || {}));
+        this.opts = UTIL.def(defParams, (args || {}));
         this.init();
     };
     win.examProject.customDatePicker.prototype = {
