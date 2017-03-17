@@ -198,9 +198,9 @@ ul,li{list-style:none}
         moveEnd : function () {
             if (!this.loaded) {
                 this.loaded = !this.loaded;
-                CST_EVENT.EVENT_MANAGER.trigger('initMarble');
+                CST_EVENT.EVENT_MANAGER.trigger(CST_EVENT.SET_MARBLE.INIT);
             } else {
-                CST_EVENT.EVENT_MANAGER.trigger('stopMarble');
+                CST_EVENT.EVENT_MANAGER.trigger(CST_EVENT.SET_MARBLE.STOP);
             }
             this._initNum = this._prevNum;
             this.animated = !this.animated;
