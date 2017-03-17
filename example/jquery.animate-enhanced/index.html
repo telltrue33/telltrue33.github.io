@@ -24,17 +24,17 @@ button::-moz-focus-inner{padding:0;border:0}
 <body>
 <div class="btn_pos js-btn_pos"><button>레이어 띄우기</button></div>
 <div class="layer_area js-layer_area">
-	<span class="layer_dimmed">&nbsp;</span>
-	<div class="layer_pos">
-		<ul>
-			<li>내용1<a href="#">링크</a></li>
-			<li>내용2</li>
-			<li>내용3</li>
-			<li>내용4</li>
-			<li>내용5</li>
-		</ul>
-		<p class="layer_close"><button>닫기</button></p>
-	</div>
+    <span class="layer_dimmed">&nbsp;</span>
+    <div class="layer_pos">
+        <ul>
+            <li>내용1<a href="#">링크</a></li>
+            <li>내용2</li>
+            <li>내용3</li>
+            <li>내용4</li>
+            <li>내용5</li>
+        </ul>
+        <p class="layer_close"><button>닫기</button></p>
+    </div>
 </div>
 <!-- [ Javascript Area ] -->
 <!-- Libs -->
@@ -61,54 +61,54 @@ button::-moz-focus-inner{padding:0;border:0}
             this.bindEvents();
         },
         setElements : function () {
-        	this.btnObj = $('.js-btn_pos button');
-        	this.layerArea = $('.js-layer_area');
-        	this.layerPos = this.layerArea.find('.layer_pos');
-        	this.layerClose = this.layerPos.find('.layer_close button');
+            this.btnObj = $('.js-btn_pos button');
+            this.layerArea = $('.js-layer_area');
+            this.layerPos = this.layerArea.find('.layer_pos');
+            this.layerClose = this.layerPos.find('.layer_close button');
         },
         setLayout : function () {
-        	// focus 를 구현하기 위한 속성 추가
-    		this.layerPos.attr('tabindex', 0);
-    		// focusout 을 잡아내기 위한 태그 추가
+            // focus 를 구현하기 위한 속성 추가
+            this.layerPos.attr('tabindex', 0);
+            // focusout 을 잡아내기 위한 태그 추가
             var focusOutTag = '<span class="js-focusout" tabindex="0" style="overflow:hidden;position:absolute;left:0;top:0;z-index:-1;width:1px;height:1px;font-size:0;line-height:0"></span>';
             this.layerPos.before(focusOutTag);
-    		this.layerPos.after(focusOutTag);
+            this.layerPos.after(focusOutTag);
         },
         bindEvents : function () {
-        	this.btnObj.on('click', $.proxy(this.layerViewFunc, this));
-        	this.layerClose.on('click', $.proxy(this.layerHideFunc, this));
+            this.btnObj.on('click', $.proxy(this.layerViewFunc, this));
+            this.layerClose.on('click', $.proxy(this.layerHideFunc, this));
         },
         bindOutsideEvents : function () {
-        	this.layerPos.on('keydown keyup focusoutside', $.proxy(this.keyboardFunc, this));
-        	this.layerPos.on('clickoutside', $.proxy(this.layerHideFunc, this));
+            this.layerPos.on('keydown keyup focusoutside', $.proxy(this.keyboardFunc, this));
+            this.layerPos.on('clickoutside', $.proxy(this.layerHideFunc, this));
         },
         layerViewFunc : function () {
-        	this.layerArea.fadeIn('fast', $.proxy(function () {
-        		this.bindOutsideEvents();
-        	}, this));
-        	this.layerPos.focus();
+            this.layerArea.fadeIn('fast', $.proxy(function () {
+                this.bindOutsideEvents();
+            }, this));
+            this.layerPos.focus();
         },
         layerHideFunc : function () {
             this.keyShift = false;
-        	this.layerPos.off('keydown keyup focusoutside clickoutside');
-        	this.layerArea.fadeOut('fast');
-        	this.btnObj.focus();
+            this.layerPos.off('keydown keyup focusoutside clickoutside');
+            this.layerArea.fadeOut('fast');
+            this.btnObj.focus();
         },
         keyboardFunc : function (e) {
-        	if (e.type === 'keydown') {
-				if (e.keyCode !== 16 || e.which !== 16) return;
-				this.keyShift = true;
-        	} else if (e.type === 'keyup') {
-				if (e.keyCode !== 16 || e.which !== 16) return;
-				this.keyShift = false;
-        	} else if (e.type === 'focusoutside') {
-				(this.keyShift) ? this.layerClose.focus() : this.layerPos.focus();
-        	}
+            if (e.type === 'keydown') {
+                if (e.keyCode !== 16 || e.which !== 16) return;
+                this.keyShift = true;
+            } else if (e.type === 'keyup') {
+                if (e.keyCode !== 16 || e.which !== 16) return;
+                this.keyShift = false;
+            } else if (e.type === 'focusoutside') {
+                (this.keyShift) ? this.layerClose.focus() : this.layerPos.focus();
+            }
         }
     };
 
     $(function () {
-    	win.examLayerPop = new win.examProject.layerPop();
+        win.examLayerPop = new win.examProject.layerPop();
     });
 })(window, window.jQuery);
 </script>

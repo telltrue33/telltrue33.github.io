@@ -27,9 +27,9 @@ button::-moz-focus-inner{padding:0;border:0}
 <body>
 <div class="btn_pos js-btn_pos"><button>레이어 띄우기</button></div>
 <div class="video_area js-video_area">
-  <video id="my-video" class="video-js" controls preload="auto" poster="img/oceans.png" data-setup="{}">
-    <source src="video/oceans.mp4" type='video/mp4'>
-  </video>
+    <video id="my-video" class="video-js" controls preload="auto" poster="img/oceans.png" data-setup="{}">
+        <source src="video/oceans.mp4" type='video/mp4'>
+    </video>
 </div>
 <!-- [ Javascript Area ] -->
 <!-- Libs -->
@@ -56,7 +56,7 @@ button::-moz-focus-inner{padding:0;border:0}
             this.bindEvents();
         },
         setElements : function () {
-        	this.btnObj = $('.js-btn_pos button');
+            this.btnObj = $('.js-btn_pos button');
             this.layerArea = $('.js-video_area');
             this.videoElements = this.layerArea.find('.video-js');
         },
@@ -64,11 +64,11 @@ button::-moz-focus-inner{padding:0;border:0}
             this.videoPlayer = videojs(this.videoElements.eq(0).get(0));
         },
         bindEvents : function () {
-        	this.btnObj.on('click', $.proxy(this.layerViewFunc, this));
+            this.btnObj.on('click', $.proxy(this.layerViewFunc, this));
             this.videoPlayer.on('ended', $.proxy(this.videoEndFunc, this));
         },
         layerViewFunc : function () {
-        	this.layerArea.fadeIn('fast', $.proxy(this.videoPlayerFunc, this));
+            this.layerArea.fadeIn('fast', $.proxy(this.videoPlayerFunc, this));
         },
         videoPlayerFunc : function () {
             this.videoPlayer.play();
@@ -79,7 +79,7 @@ button::-moz-focus-inner{padding:0;border:0}
     };
 
     $(function () {
-    	win.examVideoPop = new win.examProject.videoPop();
+        win.examVideoPop = new win.examProject.videoPop();
     });
 })(window, window.jQuery);
 </script>
