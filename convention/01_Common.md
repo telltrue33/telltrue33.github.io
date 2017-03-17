@@ -446,6 +446,7 @@ var imgLoader = function (selector, callback) {
 })(window, window.jQuery, window.document);
 ```
 <br>
+
 ### add
 ```javascript
 (function (win, $) {
