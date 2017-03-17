@@ -105,7 +105,7 @@ ul,li{list-style:none}
     $.fn.gameTransform = function (a) {
         for (var b = 0; b < this.length; b++) {
             var c = this[b].style;
-            c.webkitTransform = c.MsTransform = c.msTransform = c.MozTransform = c.OTransform = c.transform = a
+            c.webkitTransform = c.MsTransform = c.msTransform = c.MozTransform = c.OTransform = c.transform = a;
         }
         return this
     };
@@ -113,7 +113,7 @@ ul,li{list-style:none}
         "string" != typeof a && (a += "ms");
         for ( var b = 0; b < this.length; b++) {
             var c = this[b].style;
-            c.webkitTransitionDuration = c.MsTransitionDuration = c.msTransitionDuration = c.MozTransitionDuration = c.OTransitionDuration = c.transitionDuration = a
+            c.webkitTransitionDuration = c.MsTransitionDuration = c.msTransitionDuration = c.MozTransitionDuration = c.OTransitionDuration = c.transitionDuration = a;
         }
         return this
     };
@@ -197,7 +197,7 @@ ul,li{list-style:none}
             this.dot = this.obj.find(this.opts.dot).hide();
         },
         setCross : function () {
-            for(var i=0; i<this.crossChild.length; i++) {
+            for (var i = 0; i < this.crossChild.length; i++) {
                 var _position = this.crossChild.eq(i).position();
                 this.crossArray.xCross[i] = _position.left - this.opts.skew;
                 this.crossArray.yCross[i] = _position.top;
@@ -272,7 +272,7 @@ ul,li{list-style:none}
         start : function (_index) {
             if (!this.animated) {
                 this.animated = !this.animated;
-                var _index= parseInt(_index);
+                var _index = parseInt(_index, 10);
                 if (!this.startType) {
                     this.startType = !this.startType;
                     this.dot.gameTransition(0).fadeIn();
