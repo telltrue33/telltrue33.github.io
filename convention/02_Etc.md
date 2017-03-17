@@ -10,24 +10,24 @@
 ### resize - End
 ```javascript
 var resizeTime;
+var resizeEndFunc = function () {
+    window.console.log('resize 끝났을때 실행');
+};
 $(window).on('resize', function () {
     window.clearTimeout(resizeTime);
     resizeTime = window.setTimeout(resizeEndFunc, 150);
 });
-var resizeEndFunc = function () {
-    window.console.log('resize 끝났을때 실행');
-};
 ```
 ### scroll - End
 ```javascript
 var scrollTime;
+var scrollEndFunc = function () {
+    window.console.log('scroll 끝났을때 실행');
+}
 $(window).on('scroll', function () {
     window.clearTimeout(scrollTime);
     scrollTime = window.setTimeout(scrollEndFunc, 150);
 });
-var scrollEndFunc = function () {
-    window.console.log('scroll 끝났을때 실행');
-}
 ```
 <br>
 
