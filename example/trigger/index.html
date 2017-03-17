@@ -148,17 +148,17 @@ ul,li{list-style:none}
             crossUl : 'ul',
             dot : '#evt_marbleDot',
             speed : 300,    // 스피드
-            skew : 30       // 기울기
+            skew : 30,      // 기울기
+            crossArray : {
+                xCross : [],
+                yCross : []
+            }
         };
         this.obj = $(container);
         this.opts = UTIL.def(defParams, (args || {}));
         this.init();
     };
     win.examProject.marble.prototype = {
-        crossArray : {
-            xCross : [],
-            yCross : []
-        },
         init : function () {
             this.setElements();
             this.setCross();
@@ -173,12 +173,12 @@ ul,li{list-style:none}
         setCross : function () {
             for (var i = 0; i < this.crossChild.length; i++) {
                 var _position = this.crossChild.eq(i).position();
-                this.crossArray.xCross[i] = _position.left - this.opts.skew;
-                this.crossArray.yCross[i] = _position.top;
+                this.opts.crossArray.xCross[i] = _position.left - this.opts.skew;
+                this.opts.crossArray.yCross[i] = _position.top;
             }
         },
         setOpt : function () {
-            this._totalNum = this.crossArray.xCross.length;
+            this._totalNum = this.opts.crossArray.xCross.length;
         },
         setTransTime : function () {
             this._speed = this.opts.speed;
@@ -189,7 +189,7 @@ ul,li{list-style:none}
             return this._prevNum;
         },
         moveDot : function (_moveNum) {
-            var crossArray = this.crossArray,
+            var crossArray = this.opts.crossArray,
             crossX = crossArray.xCross[_moveNum],
             crossY = crossArray.yCross[_moveNum],
             transOpt = (UTIL.transforms3d) ? 'translate3d('+ crossX +'px, '+ crossY +'px, 0px)' : 'translate('+ crossX +'px, '+ crossY +'px)';
