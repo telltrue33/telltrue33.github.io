@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>exam - emitter</title>
+<style>
+/* temporary css */
+*{margin:0;padding:0}
+body{font-size:14px;font-family:"나눔고딕",NanumGothic,"굴림",Gulim,Sans-serif;line-height:1.5}
+h1,h2,h3,h4,h5,h6{font-size:14px}
+ul,li{list-style:none}
+.evt_section{width:320px;margin:0 auto}
+.evt_marblewrap{width:270px;margin:0 auto;padding-top:20px}
+.evt_marble_bx{position:relative;height:180px}
+.evt_marble_bx ul{position:relative;height:180px;background:#ccc;transform:skew(-30deg,0deg);-webkit-transform:skew(-30deg,0deg)}
+.evt_marble_bx ul li{position:absolute;width:30px;height:30px}
+.evt_marble_bx ul li span{display:block;overflow:hidden;height:28px;border:1px solid #999;line-height:999px}
+.evt_marble_bx ul li:nth-child(1) {left:0;bottom:0}
+.evt_marble_bx ul li:nth-child(2) {left:30px;bottom:0}
+.evt_marble_bx ul li:nth-child(3) {left:60px;bottom:0}
+.evt_marble_bx ul li:nth-child(4) {left:90px;bottom:0}
+.evt_marble_bx ul li:nth-child(5) {left:120px;bottom:0}
+.evt_marble_bx ul li:nth-child(6) {left:150px;bottom:0}
+.evt_marble_bx ul li:nth-child(7) {left:180px;bottom:0}
+.evt_marble_bx ul li:nth-child(8) {left:210px;bottom:0}
+.evt_marble_bx ul li:nth-child(9) {left:240px;bottom:0}
+.evt_marble_bx ul li:nth-child(10) {left:240px;bottom:30px}
+.evt_marble_bx ul li:nth-child(11) {left:240px;bottom:60px}
+.evt_marble_bx ul li:nth-child(12) {left:240px;bottom:90px}
+.evt_marble_bx ul li:nth-child(13) {left:240px;bottom:120px}
+.evt_marble_bx ul li:nth-child(14) {left:240px;bottom:150px}
+.evt_marble_bx ul li:nth-child(15) {left:210px;bottom:150px}
+.evt_marble_bx ul li:nth-child(16) {left:180px;bottom:150px}
+.evt_marble_bx ul li:nth-child(17) {left:150px;bottom:150px}
+.evt_marble_bx ul li:nth-child(18) {left:120px;bottom:150px}
+.evt_marble_bx ul li:nth-child(19) {left:90px;bottom:150px}
+.evt_marble_bx ul li:nth-child(20) {left:60px;bottom:150px}
+.evt_marble_bx ul li:nth-child(21) {left:30px;bottom:150px}
+.evt_marble_bx ul li:nth-child(22) {left:0;bottom:150px}
+.evt_marble_bx ul li:nth-child(23) {left:0;bottom:120px}
+.evt_marble_bx ul li:nth-child(24) {left:0;bottom:90px}
+.evt_marble_bx ul li:nth-child(25) {left:0;bottom:60px}
+.evt_marble_bx ul li:nth-child(26) {left:0;bottom:30px}
+.evt_marble_dot{position:absolute;left:0;top:0;width:30px;height:30px}
+.evt_marble_dot em{position:absolute;bottom:10px;width:10px;height:30px;margin-left:-5px;background:red}
+.evt_marble_btn{margin-top:10px;text-align:center}
+.evt_marble_btn input{width:50px;height:26px;border:1px solid #ccc;background:#fff;font-size:12px;font-family:'돋움',Dotum;line-height:26px;text-align:center}
+.evt_marble_btn button{height:28px}
+/* //temporary css */
+</style>
+</head>
+<body>
+<div class="evt_section">
+    <div class="evt_marblewrap" id="evt_marbleWrap">
+        <div class="evt_marble_bx">
+            <ul>
+                <li><span>위치1</span></li>
+                <li><span>위치2</span></li>
+                <li><span>위치3</span></li>
+                <li><span>위치4</span></li>
+                <li><span>위치5</span></li>
+                <li><span>위치6</span></li>
+                <li><span>위치7</span></li>
+                <li><span>위치8</span></li>
+                <li><span>위치9</span></li>
+                <li><span>위치10</span></li>
+                <li><span>위치11</span></li>
+                <li><span>위치12</span></li>
+                <li><span>위치13</span></li>
+                <li><span>위치14</span></li>
+                <li><span>위치15</span></li>
+                <li><span>위치16</span></li>
+                <li><span>위치17</span></li>
+                <li><span>위치18</span></li>
+                <li><span>위치19</span></li>
+                <li><span>위치20</span></li>
+                <li><span>위치21</span></li>
+                <li><span>위치22</span></li>
+                <li><span>위치23</span></li>
+                <li><span>위치24</span></li>
+                <li><span>위치25</span></li>
+                <li><span>위치26</span></li>
+            </ul>
+            <span class="evt_marble_dot" id="evt_marbleDot"><em>&nbsp;</em></span>
+        </div>
+        <div class="evt_marble_btn" id="evt_marbleBtn">
+            <input type="text">
+            <button type="button" class="move">움직이기</button>
+            <button type="button" class="reset">초기화</button>
+        </div>
+    </div>
+</div>
+<!-- [ Javascript Area ] -->
+<!-- Libs -->
+<script src="../js/libs/jquery-1.12.4.min.js"></script>
+<!-- Apps -->
+<script src="../js/apps/common.js"></script>
+<script>
+(function (win, $) {
+    'use strict';
+    win.examProject = win.examProject || {};
+    win.examProject.common = win.examProject.common || {};
+
+    $.fn.gameTransform = function (a) {
+        for (var b = 0; b < this.length; b++) {
+            var c = this[b].style;
+            c.webkitTransform = c.MsTransform = c.msTransform = c.MozTransform = c.OTransform = c.transform = a
+        }
+        return this
+    };
+    $.fn.gameTransition = function (a) {
+        "string" != typeof a && (a += "ms");
+        for ( var b = 0; b < this.length; b++) {
+            var c = this[b].style;
+            c.webkitTransitionDuration = c.MsTransitionDuration = c.msTransitionDuration = c.MozTransitionDuration = c.OTransitionDuration = c.transitionDuration = a
+        }
+        return this
+    };
+
+    win.examProject.common.util2 = {
+        emitter : {
+            subscribers : {},
+            on : function (event, cb, context) {
+                this.subscribers[event] = this.subscribers[event] || [];
+                this.subscribers[event].push({
+                    callback : cb,
+                    context : context
+                });
+            },
+            off : function (event, cb, context) {
+                var idx, subs = this.subscribers[event], sub;
+                if (subs) {
+                    idx = subs.length - 1;
+                    while (idx >= 0) {
+                        sub = subs[idx];
+                        if ((sub.callback === cb) && (!context || sub.context === context)) {
+                            subs.splice(idx, 1);
+                            break;
+                        }
+                        idx--;
+                    }
+                }
+            },
+            emit : function (event) {
+                var subs = this.subscribers[event], idx = 0, args = Array.prototype.slice.call(arguments, 1), sub;
+                if (subs) {
+                    while (idx < subs.length) {
+                        sub = subs[idx];
+                        sub.callback.apply(sub.context || this, args);
+                        idx++;
+                    }
+                }
+            }
+        },
+        wait : function (timeout) {
+            var deferred = $.Deferred();
+            setTimeout(deferred.resolve, timeout);
+            return deferred.promise();
+        },
+        transforms3d : (window.Modernizr && Modernizr.csstransforms3d === true) || (function () {
+            var div = document.createElement('div').style;
+            return ('webkitPerspective' in div || 'MozPerspective' in div || 'OPerspective' in div || 'MsPerspective' in div || 'perspective' in div);
+        })()
+    };
+
+    win.examProject.common.util = win.examProject.common.util.def(win.examProject.common.util, win.examProject.common.util2);
+
+    var UTIL = win.examProject.common.util;
+
+    win.examProject.marble = function (container, args) {
+        var defParams = {
+            container : '.evt_marble_bx',
+            crossUl : 'ul',
+            dot : '#evt_marbleDot',
+            speed : 300,    // 스피드
+            skew : 30       // 기울기
+        };
+        this.obj = $(container);
+        this.opts = UTIL.def(defParams, (args || {}));
+        this.init();
+    };
+    win.examProject.marble.prototype = UTIL.def({
+        crossArray : {
+            xCross : [],
+            yCross : []
+        },
+        init : function () {
+            this.setElements();
+            this.setCross();
+            this.setOpt();
+        },
+        setElements : function () {
+            this.container = this.obj.find(this.opts.container);
+            this.crossUl = this.container.find(this.opts.crossUl);
+            this.crossChild = this.crossUl.children();
+            this.dot = this.obj.find(this.opts.dot).hide();
+        },
+        setCross : function () {
+            for(var i=0; i<this.crossChild.length; i++) {
+                var _position = this.crossChild.eq(i).position();
+                this.crossArray.xCross[i] = _position.left - this.opts.skew;
+                this.crossArray.yCross[i] = _position.top;
+            }
+        },
+        setOpt : function () {
+            this._totalNum = this.crossArray.xCross.length;
+        },
+        setTransTime : function () {
+            this._speed = this.opts.speed;
+            this.dot.gameTransition(this._speed);
+            this._delay = this._speed + 20;
+        },
+        moveFinalPos : function () {
+            return this._prevNum;
+        },
+        moveDot : function (_moveNum) {
+            var crossArray = this.crossArray,
+            crossX = crossArray.xCross[_moveNum],
+            crossY = crossArray.yCross[_moveNum],
+            transOpt = (UTIL.transforms3d) ? 'translate3d('+ crossX +'px, '+ crossY +'px, 0px)' : 'translate('+ crossX +'px, '+ crossY +'px)';
+            this.dot.gameTransform(transOpt);
+        },
+        moveEnd : function () {
+            if (!this.loaded) {
+                this.loaded = !this.loaded;
+                this.emit('initMarble');
+            } else {
+                this.emit('stopMarble');
+            }
+            this._initNum = this._prevNum;
+            this.animated = !this.animated;
+        },
+        generateDirection : function (_index) {
+            this._moveIndex = this._prevNum + _index;
+            if (this._prevNum < this._moveIndex) {
+                this._moveDirection = 'next';
+                this.generateNum();
+            } else if (this._prevNum > this._moveIndex) {
+                this._moveDirection = 'prev';
+                this.generateNum();
+            } else {
+                this.moveEnd();
+            }
+        },
+        generateNum : function () {
+            if (this._moveDirection == 'next') {
+                this._moveNum = this._moveNum + 1;
+                if (this._moveNum >= this._totalNum) {
+                    this._moveIndex = this._moveIndex - this._totalNum;
+                    this._prevNum = this._moveNum = 0;
+                }
+            } else if (this._moveDirection == 'prev') {
+                this._moveNum = this._moveNum - 1;
+                if (this._moveNum < 0) {
+                    this._moveIndex = this._totalNum+this._moveIndex;
+                    this._prevNum = this._moveNum = this._totalNum-1;
+                }
+            }
+            this.generateMove();
+        },
+        generateMove : function () {
+            if (this._moveNum === this._moveIndex) {
+                this.moveDot(this._moveNum);
+                this._prevNum = this._moveNum;
+                UTIL.wait(this._delay).done($.proxy(this.moveEnd, this));
+            } else {
+                this.moveDot(this._moveNum);
+                UTIL.wait(this._delay).done($.proxy(this.generateNum, this));
+            }
+        },
+        start : function (_index) {
+            if (!this.animated) {
+                this.animated = !this.animated;
+                var _index= parseInt(_index);
+                if (!this.startType) {
+                    this.startType = !this.startType;
+                    this.dot.gameTransition(0).fadeIn();
+                    this.moveDot(_index);
+                    this.moveEnd();
+                    this._prevNum = this._moveNum = _index;
+                    UTIL.wait(this.opts.speed).done($.proxy(this.setTransTime, this));
+                } else {
+                    this.generateDirection(_index);
+                }
+            }
+        },
+        reset : function (_index) {
+            if (!this.animated) {
+                this.loaded = !this.loaded;
+                this.startType = !this.startType;
+                this._prevNum = this._moveNum = _index;
+                this.start(_index);
+                return true
+            } else {
+                alert('진행중입니다');
+            }
+        }
+    }, UTIL.emitter);
+
+    $(function () {
+        win.examMarble = new win.examProject.marble('#evt_marbleWrap');
+
+        var marbleBtn = $('#evt_marbleBtn'),
+            inputNum = marbleBtn.find('input'),
+            initNum = 0,    // 초기시작위치값
+            moveNum;
+
+        // 초기시작 및 움직인 위치 값
+        win.examMarble.on('initMarble', function () {
+            console.log('초기시작위치 : ' + initNum);
+        });
+        win.examMarble.on('stopMarble', function () {
+            console.log('움직인위치 : ' + moveNum + ', 최종위치 : ' + win.examMarble.moveFinalPos());
+        });
+
+        // 초기시작위치함수
+        win.examMarble.start(initNum);
+
+        marbleBtn.on('click', '.move', function () {
+            moveNum = inputNum.val();
+            win.examMarble.start(moveNum);
+        });
+        marbleBtn.on('click', '.reset', function () {
+            moveNum = initNum;
+            var _type = win.examMarble.reset(moveNum);
+            if (_type) {
+                inputNum.val(moveNum);
+            }
+        });
+    });
+})(window, window.jQuery);
+</script>
+</body>
+</html>
