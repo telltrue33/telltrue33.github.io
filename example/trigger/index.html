@@ -102,22 +102,6 @@ ul,li{list-style:none}
     win.examProject = win.examProject || {};
     win.examProject.common = win.examProject.common || {};
 
-    $.fn.gameTransform = function (a) {
-        for (var b = 0; b < this.length; b++) {
-            var c = this[b].style;
-            c.webkitTransform = c.MsTransform = c.msTransform = c.MozTransform = c.OTransform = c.transform = a;
-        }
-        return this
-    };
-    $.fn.gameTransition = function (a) {
-        "string" != typeof a && (a += "ms");
-        for ( var b = 0; b < this.length; b++) {
-            var c = this[b].style;
-            c.webkitTransitionDuration = c.MsTransitionDuration = c.msTransitionDuration = c.MozTransitionDuration = c.OTransitionDuration = c.transitionDuration = a;
-        }
-        return this
-    };
-
     win.examProject.common.customEvent = {
         EVENT_MANAGER : $('<div data-evt-manager=\'marble\'/>'),
         SET_MARBLE : {
@@ -141,6 +125,22 @@ ul,li{list-style:none}
 
     var CST_EVENT = win.examProject.common.customEvent,
         UTIL = win.examProject.common.util;
+
+    $.fn.gameTransform = function (a) {
+        for (var b = 0; b < this.length; b++) {
+            var c = this[b].style;
+            c.webkitTransform = c.MsTransform = c.msTransform = c.MozTransform = c.OTransform = c.transform = a;
+        }
+        return this
+    };
+    $.fn.gameTransition = function (a) {
+        "string" != typeof a && (a += "ms");
+        for ( var b = 0; b < this.length; b++) {
+            var c = this[b].style;
+            c.webkitTransitionDuration = c.MsTransitionDuration = c.msTransitionDuration = c.MozTransitionDuration = c.OTransitionDuration = c.transitionDuration = a;
+        }
+        return this
+    };
 
     win.examProject.marble = function (container, args) {
         var defParams = {
