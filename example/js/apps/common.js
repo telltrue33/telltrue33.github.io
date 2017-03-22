@@ -17,7 +17,7 @@
                     for (var prop in src) {
                         if (!hasOwnProperty.call(src, prop)) continue;
                         if ('object' === $.type(org[prop])) {
-                            org[prop] = ('array' === $.type(org[prop])) ? src[prop].slice(0) : def(org[prop], src[prop]);
+                            org[prop] = ('array' === $.type(org[prop])) ? src[prop].slice(0) : this.def(org[prop], src[prop]);
                         } else {
                             org[prop] = src[prop];
                         }
