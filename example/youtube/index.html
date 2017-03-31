@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>exam - youtube</title>
+<style>
+/* temporary css */
+*{margin:0;padding:0}
+body{font-size:14px;font-family:"나눔고딕",NanumGothic,"굴림",Gulim,Sans-serif;line-height:1.5}
+h1,h2,h3,h4,h5,h6{font-size:14px}
+ul,li{list-style:none}
+button{font-size:14px;font-family:"나눔고딕",NanumGothic,"굴림",Gulim,Sans-serif;line-height:1.5;cursor:pointer}
+button::-moz-focus-inner{padding:0;border:0}
+.tabwrap{text-align:center}
+.tablist{display:inline-block;min-width:300px;vertical-align:top}
+.tablist:after{display:block;clear:both;content:''}
+.tablist li{float:left;width:33.3%}
+.tablist li a{display:block;margin:0 5px;padding:5px 0;border:1px solid #ccc;background:#f7f7f7;color:#000}
+.tablist li.on a{background:#000;color:#f7f7f7}
+.framewrap{width:300px;margin:0 auto}
+.iframebx{display:none}
+.embed-container{position:relative;height:0;padding-bottom:56.25%}
+.embed-container iframe,.embed-container object,.embed-container embed{position:absolute;left:0;top:0;width:100%;height:100%}
+/* //temporary css */
+</style>
+</head>
+<body>
+<div class="tabwrap">
+    <ul class="tablist">
+    <li><a href="#">영상1</a></li>
+    <li><a href="#">영상2</a></li>
+    <li><a href="#">영상3</a></li>
+    </ul>
+</div>
+<div class="framewrap">
+    <div class="iframebx">
+        <div class="embed-container">
+            <div id="player0"></div>
+        </div>
+    </div>
+    <div class="iframebx">
+        <div class="embed-container">
+            <div id="player1"></div>
+        </div>
+    </div>
+    <div class="iframebx">
+        <div class="embed-container">
+            <div id="player2"></div>
+        </div>
+    </div>
+</div>
+<!-- [ Javascript Area ] -->
+<!-- Libs -->
+<script src="../js/libs/jquery-1.12.4.min.js"></script>
+<!-- Apps -->
+<script src="../js/apps/common.js"></script>
+<script>
+(function (win, $) {
+    'use strict';
+    win.examProject = win.examProject || {};
+    win.examProject.common = win.examProject.common || {};
+
+    var UTIL = win.examProject.common.util;
+
+    win.examProject.youtubeFrame = function () {
+        this.init();
+    };
+    win.examProject.youtubeFrame.prototype = {
+        init : function () {
+            this.setElements();
+            this.initLayout();
+            this.bindEvents();
+            this.onLoadYoutubeApi();
+        },
+        setElements : function () {
+            this.tabObj = $('.tablist');
+            this.tabObjList = this.tabObj.children();
+            this.bxObj = $('.framewrap');
+            this.bxObjList = this.bxObj.children();
+        },
+        initLayout : function () {
+            this.oldcurrent = this.current = 0;
+            this.tabObjList.eq(this.current).addClass('on').siblings().removeClass('on');
+            this.bxObjList.eq(this.current).show().siblings().hide();
+        },
+        bindEvents : function () {
+            this.tabObj.on('click', 'a', $.proxy(this.onClickFunc, this));
+        },
+        onLoadYoutubeApi : function () {
+            this.iframePlayer = [];
+            this.iframePlayerCode = ['1HDdtQ6-lDI','Mdsxjevn_qM','R0VrTyYDzFg'];
+            // Youtube API {{
+            (function () {
+                var tag = document.createElement('script');
+                tag.src = 'http://www.youtube.com/iframe_api';
+                var firstScriptTag = document.getElementsByTagName('script')[0];
+                firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+            })();
+            // }} Youtube API
+            win.onYouTubeIframeAPIReady = $.proxy(this.onYouTubeIframeAPIReady, this);
+        },
+        onYouTubeIframeAPIReady : function(){
+            this.iframePlayer[this.current] = new win.YT.Player('player'+this.current, {
+                videoId : this.iframePlayerCode[this.current],
+                playerVars : {
+                    autoplay : 1,
+                    controls : 0,
+                    showinfo : 0,
+                    rel : 0
+                },
+                events : {
+                    onReady : $.proxy(this.onPlayerReady, this),
+                    onStateChange : $.proxy(this.onPlayerStateChange, this)
+                },
+                fs : 1
+            });
+        },
+        onPlayerReady : function(e){
+            // this.iframePlayer.playVideo();
+        },
+        onPlayerStateChange : function(e){
+            if((e.data === YT.PlayerState.PLAYING) && !this.done){
+                this.done = !this.done;
+                //this.iframePlayer[this.current].playVideo();
+            }
+            if(e.data === YT.PlayerState.ENDED){
+                this.iframePlayer[this.current].playVideo();
+            }
+        },
+        onClickFunc : function(e){
+            e.preventDefault();
+            var target = $(e.currentTarget);
+            this.current = target.parent().index();
+            if (this.oldcurrent === this.current) return;
+            this.boxViewFunc();
+            this.oldcurrent = this.current;
+        },
+        boxViewFunc : function(){
+            this.iframePlayer[this.oldcurrent].pauseVideo();
+            this.tabObjList.eq(this.oldcurrent).removeClass('on');
+            this.bxObjList.eq(this.oldcurrent).hide();
+            this.tabObjList.eq(this.current).addClass('on');
+            this.bxObjList.eq(this.current).show();
+            if (!this.iframePlayer[this.current]) {
+                this.onYouTubeIframeAPIReady();
+            } else {
+                this.iframePlayer[this.current].playVideo();
+            }
+        }
+    };
+
+    $(function () {
+        win.examYoutubeFrame = new win.examProject.youtubeFrame();
+    });
+})(window, window.jQuery);
+</script>
+</body>
+</html>
