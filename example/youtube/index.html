@@ -100,7 +100,7 @@ button::-moz-focus-inner{padding:0;border:0}
             // }} Youtube API
             win.onYouTubeIframeAPIReady = $.proxy(this.onYouTubeIframeAPIReady, this);
         },
-        onYouTubeIframeAPIReady : function(){
+        onYouTubeIframeAPIReady : function () {
             this.iframePlayer[this.current] = new win.YT.Player('player'+this.current, {
                 videoId : this.iframePlayerCode[this.current],
                 playerVars : {
@@ -116,15 +116,15 @@ button::-moz-focus-inner{padding:0;border:0}
                 fs : 1
             });
         },
-        onPlayerReady : function(e){
+        onPlayerReady : function (e) {
             // this.iframePlayer.playVideo();
         },
-        onPlayerStateChange : function(e){
-            if((e.data === YT.PlayerState.PLAYING) && !this.done){
+        onPlayerStateChange : function (e) {
+            if ((e.data === YT.PlayerState.PLAYING) && !this.done) {
                 this.done = !this.done;
                 //this.iframePlayer[this.current].playVideo();
             }
-            if(e.data === YT.PlayerState.ENDED){
+            if (e.data === YT.PlayerState.ENDED) {
                 this.iframePlayer[this.current].playVideo();
             }
         },
@@ -136,7 +136,7 @@ button::-moz-focus-inner{padding:0;border:0}
             this.boxViewFunc();
             this.oldcurrent = this.current;
         },
-        boxViewFunc : function(){
+        boxViewFunc : function () {
             this.iframePlayer[this.oldcurrent].pauseVideo();
             this.tabObjList.eq(this.oldcurrent).removeClass('on');
             this.bxObjList.eq(this.oldcurrent).hide();
