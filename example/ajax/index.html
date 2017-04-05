@@ -33,7 +33,7 @@ button::-moz-focus-inner{padding:0;border:0}
             dataType : 'jsonp'
         });
     }
-    var stockModel = setAjaxCall('http://asia.tools.euroland.com/tools/pricefeed/?companycode=kr-smsn&format=json');
+    var stockModel = setAjaxCall('https://asia.tools.euroland.com/tools/pricefeed/?companycode=kr-smsn&format=json');
     stockModel.done(function (json) {
         console.log('type1');
         console.log(json);
@@ -43,14 +43,14 @@ button::-moz-focus-inner{padding:0;border:0}
     var ajaxBasic = $.ajax({
         cache : false,
         type : 'GET',
-        url : "http://asia.tools.euroland.com/tools/pricefeed/?companycode=kr-smsn&format=json",
+        url : "https://asia.tools.euroland.com/tools/pricefeed/?companycode=kr-smsn&format=json",
         dataType : 'jsonp'
     });
     var ajaxThen = function () {
         return $.ajax({
             cache : false,
             type : 'GET',
-            url : "http://asia.tools.euroland.com/tools/pricefeed/?companycode=kr-smsn&format=json",
+            url : "https://asia.tools.euroland.com/tools/pricefeed/?companycode=kr-smsn&format=json",
             dataType : 'jsonp'
         });
     }
@@ -63,13 +63,13 @@ button::-moz-focus-inner{padding:0;border:0}
     var ajaxType1 = $.ajax({
         cache : false,
         type : 'GET',
-        url : "http://asia.tools.euroland.com/tools/pricefeed/?companycode=kr-smsn&format=json",
+        url : "https://asia.tools.euroland.com/tools/pricefeed/?companycode=kr-smsn&format=json",
         dataType : 'jsonp'
     });
     var ajaxType2 = $.ajax({
         cache : false,
         type : 'GET',
-        url : "http://asia.tools.euroland.com/tools/pricefeed/?companycode=kr-smsn&format=json",
+        url : "https://asia.tools.euroland.com/tools/pricefeed/?companycode=kr-smsn&format=json",
         dataType : 'jsonp'
     });
     $.when(ajaxType1, ajaxType2).done(function (ajaxType1, ajaxType2) {
