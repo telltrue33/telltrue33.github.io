@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>exam - outside</title>
+<style>
+/* temporary css */
+*{margin:0;padding:0}
+body{font-size:14px;font-family:"나눔고딕",NanumGothic,"굴림",Gulim,Sans-serif;line-height:1.5}
+h1,h2,h3,h4,h5,h6{font-size:14px}
+ul,li{list-style:none}
+button{font-size:14px;font-family:"나눔고딕",NanumGothic,"굴림",Gulim,Sans-serif;line-height:1.5;cursor:pointer}
+button::-moz-focus-inner{padding:0;border:0}
+/* //temporary css */
+</style>
+</head>
+<body>
+<!-- [ Javascript Area ] -->
+<!-- Libs -->
+<script src="../js/libs/jquery-1.12.4.min.js"></script>
+<!-- Apps -->
+<script src="../js/apps/common.js"></script>
+<script>
+(function (win, $) {
+    'use strict';
+    // type1
+    var setAjaxCall = function (searchUrl) {
+        return $.ajax({
+            cache : false,
+            type : 'GET',
+            url : searchUrl,
+            dataType : 'jsonp'
+        });
+    }
+    var stockModel = setAjaxCall('http://asia.tools.euroland.com/tools/pricefeed/?companycode=kr-smsn&format=json');
+    stockModel.done(function (json) {
+        console.log('type1');
+        console.log(json);
+    })
+
+    // type2
+    var ajaxBasic = $.ajax({
+        cache : false,
+        type : 'GET',
+        url : "http://asia.tools.euroland.com/tools/pricefeed/?companycode=kr-smsn&format=json",
+        dataType : 'jsonp'
+    });
+    var ajaxThen = function () {
+        return $.ajax({
+            cache : false,
+            type : 'GET',
+            url : "http://asia.tools.euroland.com/tools/pricefeed/?companycode=kr-smsn&format=json",
+            dataType : 'jsonp'
+        });
+    }
+    ajaxBasic.then(ajaxThen).done(function(ajaxThenData){
+        console.log('type2');
+        console.log(ajaxThenData);
+    });
+
+    // type3
+    var ajaxType1 = $.ajax({
+        cache : false,
+        type : 'GET',
+        url : "http://asia.tools.euroland.com/tools/pricefeed/?companycode=kr-smsn&format=json",
+        dataType : 'jsonp'
+    });
+    var ajaxType2 = $.ajax({
+        cache : false,
+        type : 'GET',
+        url : "http://asia.tools.euroland.com/tools/pricefeed/?companycode=kr-smsn&format=json",
+        dataType : 'jsonp'
+    });
+    $.when(ajaxType1, ajaxType2).done(function (ajaxType1, ajaxType2) {
+        console.log('type3');
+        console.log(ajaxType1);
+        console.log(ajaxType2);
+    });
+})(window, window.jQuery);
+</script>
+</body>
+</html>
