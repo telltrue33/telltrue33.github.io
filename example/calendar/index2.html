@@ -13,7 +13,11 @@ ul,li{list-style:none}
 button{font-size:14px;font-family:"나눔고딕",NanumGothic,"굴림",Gulim,Sans-serif;line-height:1.5;cursor:pointer}
 button::-moz-focus-inner{padding:0;border:0}
 p{margin-bottom:30px;padding-bottom:10px;border-bottom:2px solid #da0707;font-size:20px}
-table{width:100%;background-color:#efefef;table-layout:fixed;border-collapse:collapse;text-align:center}
+table{width:100%;table-layout:fixed;border-collapse:separate;text-align:center}
+table th, table td{border:1px solid #ccc}
+table td a{color:#000;text-decoration:none}
+.on{background:orange}
+.ck_today{border-color:red}
 /* //temporary css */
 </style>
 </head>
@@ -56,6 +60,7 @@ table{width:100%;background-color:#efefef;table-layout:fixed;border-collapse:col
             this.moveYear = this.todayYear;
             this.moveMonth = this.todayMonth;
             this.moveDate = this.todayDate;
+            this.clickDayType = false;
         },
         initLayout : function () {
             this.createOptions();
@@ -110,26 +115,14 @@ table{width:100%;background-color:#efefef;table-layout:fixed;border-collapse:col
             var target = $(e.currentTarget),
                 targetTitle = target.attr('title'),
                 titleString = targetTitle.split('/');
-            this.objCalendar.data('choice-date', {
-                'choiceYear' : parseInt(titleString[0]),
-                'choiceMonth' : parseInt(titleString[1]),
-                'choiceDate' : parseInt(titleString[2])
-            });
-            // if (this.objCalendar.data('choice-date')) {
-            //     var data = this.objCalendar.data('choice-date');
-            //     this.moveYear = data.choiceYear;
-            //     this.moveMonth = data.choiceMonth;
-            //     this.moveDate = data.choiceDate;
-            //     this.todayYear = this.moveYear;
-            //     this.todayMonth = this.moveMonth;
-            //     this.todayDate = this.moveDate;
-            //     this.clickDayType = true;
-            // } else {
-            //     this.moveYear = this.todayYear;
-            //     this.moveMonth = this.todayMonth;
-            //     this.moveDate = this.todayDate;
-            //     this.clickDayType = false;
-            // }
+            this.moveYear = parseInt(titleString[0]);
+            this.moveMonth = parseInt(titleString[1]);
+            this.moveDate = parseInt(titleString[2]);
+            this.choiceYear = this.moveYear;
+            this.choiceMonth = this.moveMonth;
+            this.choiceDate = this.moveDate;
+            this.clickDayType = true;
+            this.createCalendar();
         },
         createOptions : function (){
             var layoutOptions = [];
@@ -163,7 +156,7 @@ table{width:100%;background-color:#efefef;table-layout:fixed;border-collapse:col
                 currentMonth = new Date(this.moveYear, this.moveMonth, 1),
                 weekFirstDay = prevMonth.getDay(),
                 todayCurrentMonth = Math.floor((currentMonth.getTime() - prevMonth.getTime()) / (1000 * 60 * 60 * 24));
-            if (this.moveMonth == 2) {
+            if ((this.moveMonth - 1) == 2) {
                 todayCurrentMonth = 31;
             }
             layoutCalendar.push('<div class="">' + this.moveYear + '/' + this.moveMonth + '</div>\n');
@@ -198,8 +191,8 @@ table{width:100%;background-color:#efefef;table-layout:fixed;border-collapse:col
 
             week_day = weekFirstDay;
 
-            var mm = this.addLead(currentMonth.getMonth());
-            mm = (mm == 0) ? 12 : mm;
+            var mm = currentMonth.getMonth(),
+                mm = (mm == 0) ? 12 : mm;
 
             for (var day_counter = 1; day_counter <= todayCurrentMonth; day_counter++) {
                 week_day %= 7;
@@ -214,7 +207,7 @@ table{width:100%;background-color:#efefef;table-layout:fixed;border-collapse:col
                     layoutCalendar.push('<td class=\"');
                 }
                 if (this.clickDayType) {
-                    if ((this.todayYear == this.moveYear) && (this.todayMonth == this.moveMonth) && (this.todayDate == day_counter)) {
+                    if ((this.choiceYear == this.moveYear) && (this.choiceMonth == this.moveMonth) && (this.choiceDate == day_counter)) {
                         layoutCalendar.push(' on');
                     }
                 }
@@ -240,9 +233,6 @@ table{width:100%;background-color:#efefef;table-layout:fixed;border-collapse:col
             layoutCalendar.push('</tbody>\n');
             layoutCalendar.push('</table>\n');
             this.objCalendar.get(0).innerHTML = layoutCalendar.join('');
-        },
-        addLead : function (x) {
-            return (x < 10) ? x : x;
         }
     };
     $(function () {
