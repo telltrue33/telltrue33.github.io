@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>exam - calendar</title>
+<style>
+/* temporary css */
+*{margin:0;padding:0}
+body{font-size:14px;font-family:"나눔고딕",NanumGothic,"굴림",Gulim,Sans-serif;line-height:1.5}
+h1,h2,h3,h4,h5,h6{font-size:14px}
+ul,li{list-style:none}
+button{font-size:14px;font-family:"나눔고딕",NanumGothic,"굴림",Gulim,Sans-serif;line-height:1.5;cursor:pointer}
+button::-moz-focus-inner{padding:0;border:0}
+p{margin-bottom:30px;padding-bottom:10px;border-bottom:2px solid #da0707;font-size:20px}
+table{width:100%;background-color:#efefef;table-layout:fixed;border-collapse:collapse;text-align:center}
+/* //temporary css */
+</style>
+</head>
+<body>
+<!-- wrapper [s] -->
+<div id="wrapper">
+    <!-- header [s] -->
+    <div id="header">@</div>
+    <!-- header [e] -->
+    <hr />
+    <!-- container [s] -->
+    <div id="container">
+        <div class="js-calendar"></div>
+    </div>
+    <!-- container [e] -->
+    <hr />
+    <!-- footer [s] -->
+    <div id="footer">@</div>
+    <!-- footer [e] -->
+<!-- [ Javascript Area ] -->
+<!-- Libs -->
+<script src="../js/libs/jquery-1.12.4.min.js"></script>
+<script>
+(function (win, $) {
+    'use strict';
+    var calendarTable = {
+        init : function () {
+            this.setElements();
+            this.initOpts();
+            this.initLayout();
+        },
+        setElements : function () {
+            this.obj = $('.js-calendar');
+        },
+        initOpts : function () {
+            var date = new Date();
+            this.todayYear = date.getFullYear();
+            this.todayMonth = date.getMonth() + 1;
+            this.todayDate = date.getDate();
+            this.moveYear = this.todayYear;
+            this.moveMonth = this.todayMonth;
+            this.moveDate = this.todayDate;
+        },
+        initLayout : function () {
+            this.createOptions();
+            this.createElements();
+            this.createCalendar();
+            this.bindEvents();
+        },
+        bindEvents : function () {
+            this.btnPrevYear.on('click', $.proxy(this.onPrevYear, this));
+            this.btnPrevMonth.on('click', $.proxy(this.onPrevMonth, this));
+            this.btnNextMonth.on('click', $.proxy(this.onNextMonth, this));
+            this.btnNextYear.on('click', $.proxy(this.onNextYear, this));
+            this.btnCurrentMonth.on('click', $.proxy(this.onCurrentMonth, this));
+            this.btnCalClose.on('click', $.proxy(this.onCalClose, this));
+            this.objCalendar.on('click', 'a', $.proxy(this.onClickDay, this));
+        },
+        onPrevYear : function () {
+            this.moveYear = this.moveYear - 1;
+            this.createCalendar();
+        },
+        onPrevMonth : function () {
+            this.moveMonth = this.moveMonth - 1;
+            if (this.moveMonth <= 0) {
+                this.moveYear = this.moveYear - 1;
+                this.moveMonth = 12;
+            }
+            this.createCalendar();
+        },
+        onNextMonth : function () {
+            this.moveMonth = this.moveMonth + 1;
+            if (this.moveMonth > 12) {
+                this.moveYear = this.moveYear + 1;
+                this.moveMonth = 1;
+            }
+            this.createCalendar();
+        },
+        onNextYear : function () {
+            this.moveYear = this.moveYear + 1;
+            this.createCalendar();
+        },
+        onCurrentMonth : function () {
+            this.moveYear = this.todayYear;
+            this.moveMonth = this.todayMonth;
+            this.moveDate = this.todayDate;
+            this.createCalendar();
+        },
+        onCalClose : function () {
+            if (win.console) win.console.log('달력닫기');
+        },
+        onClickDay : function (e) {
+            e.preventDefault();
+            var target = $(e.currentTarget),
+                targetTitle = target.attr('title'),
+                titleString = targetTitle.split('/');
+            this.objCalendar.data('choice-date', {
+                'choiceYear' : parseInt(titleString[0]),
+                'choiceMonth' : parseInt(titleString[1]),
+                'choiceDate' : parseInt(titleString[2])
+            });
+            // if (this.objCalendar.data('choice-date')) {
+            //     var data = this.objCalendar.data('choice-date');
+            //     this.moveYear = data.choiceYear;
+            //     this.moveMonth = data.choiceMonth;
+            //     this.moveDate = data.choiceDate;
+            //     this.todayYear = this.moveYear;
+            //     this.todayMonth = this.moveMonth;
+            //     this.todayDate = this.moveDate;
+            //     this.clickDayType = true;
+            // } else {
+            //     this.moveYear = this.todayYear;
+            //     this.moveMonth = this.todayMonth;
+            //     this.moveDate = this.todayDate;
+            //     this.clickDayType = false;
+            // }
+        },
+        createOptions : function (){
+            var layoutOptions = [];
+            layoutOptions.push('<div class="js-options">\n');
+            layoutOptions.push('<button type="button">이전년 이동</button>\n');
+            layoutOptions.push('<button type="button">이전월 이동</button>\n');
+            layoutOptions.push('<button type="button">다음월 이동</button>\n');
+            layoutOptions.push('<button type="button">다음년 이동</button>\n');
+            layoutOptions.push('</div>\n');
+            layoutOptions.push('<div class="js-datetable">\n');
+            layoutOptions.push('</div>\n');
+            layoutOptions.push('<div class="js-options">\n');
+            layoutOptions.push('<button type="button">현재월 이동</button>\n');
+            layoutOptions.push('<button type="button">달력 닫기</button>\n');
+            layoutOptions.push('</div>\n');
+            this.obj.get(0).innerHTML = layoutOptions.join('');
+        },
+        createElements : function () {
+            this.options = this.obj.find('.js-options');
+            this.btnPrevYear = this.options.find('button').eq(0);
+            this.btnPrevMonth = this.options.find('button').eq(1);
+            this.btnNextMonth = this.options.find('button').eq(2);
+            this.btnNextYear = this.options.find('button').eq(3);
+            this.btnCurrentMonth = this.options.find('button').eq(4);
+            this.btnCalClose = this.options.find('button').eq(5);
+            this.objCalendar = this.obj.find('.js-datetable');
+        },
+        createCalendar : function () {
+            var layoutCalendar = [],
+                prevMonth = new Date(this.moveYear, (this.moveMonth - 1), 1),
+                currentMonth = new Date(this.moveYear, this.moveMonth, 1),
+                weekFirstDay = prevMonth.getDay(),
+                todayCurrentMonth = Math.floor((currentMonth.getTime() - prevMonth.getTime()) / (1000 * 60 * 60 * 24));
+            if (this.moveMonth == 2) {
+                todayCurrentMonth = 31;
+            }
+            layoutCalendar.push('<div class="">' + this.moveYear + '/' + this.moveMonth + '</div>\n');
+            layoutCalendar.push('<table>\n');
+            layoutCalendar.push('<caption>caption</caption>\n');
+            layoutCalendar.push('<thead>\n');
+            layoutCalendar.push('<tr>\n');
+            layoutCalendar.push('<th>일</th>\n');
+            layoutCalendar.push('<th>월</th>\n');
+            layoutCalendar.push('<th>화</th>\n');
+            layoutCalendar.push('<th>수</th>\n');
+            layoutCalendar.push('<th>목</th>\n');
+            layoutCalendar.push('<th>금</th>\n');
+            layoutCalendar.push('<th>토</th>\n');
+            layoutCalendar.push('</tr>\n');
+            layoutCalendar.push('</thead>\n');
+            layoutCalendar.push('<tbody>\n');
+
+            if (week_day == 0) {
+                layoutCalendar.push('<tr>\n');
+            }
+
+            for (var week_day = 0, max_day = weekFirstDay; week_day < max_day; week_day++) {
+                if (week_day == 0) {
+                    layoutCalendar.push('<td class="sun"></td>\n');
+                } else if (week_day == 6) {
+                    layoutCalendar.push('<td class="sat"></td>\n');
+                } else {
+                    layoutCalendar.push('<td></td>\n');
+                }
+            }
+
+            week_day = weekFirstDay;
+
+            var mm = this.addLead(currentMonth.getMonth());
+            mm = (mm == 0) ? 12 : mm;
+
+            for (var day_counter = 1; day_counter <= todayCurrentMonth; day_counter++) {
+                week_day %= 7;
+                if (week_day == 0) {
+                    layoutCalendar.push('</tr>\n<tr>\n');
+                }
+                if (week_day == 0) {
+                    layoutCalendar.push('<td class=\"sun');
+                } else if (week_day == 6) {
+                    layoutCalendar.push('<td class=\"sat');
+                } else {
+                    layoutCalendar.push('<td class=\"');
+                }
+                if (this.clickDayType) {
+                    if ((this.todayYear == this.moveYear) && (this.todayMonth == this.moveMonth) && (this.todayDate == day_counter)) {
+                        layoutCalendar.push(' on');
+                    }
+                }
+                if ((this.todayYear == this.moveYear) && (this.todayMonth == this.moveMonth) && (this.todayDate == day_counter)) {
+                    layoutCalendar.push(' ck_today');
+                }
+                layoutCalendar.push('\">');
+                layoutCalendar.push('<a href ="' + day_counter + '" title="' + (this.moveYear + "/" + mm + "/" + day_counter) + '">' + day_counter + '</a></td>\n');
+                week_day++;
+            }
+
+            for (week_day = week_day; week_day < 7; week_day++) {
+                if (week_day == 0) {
+                    layoutCalendar.push('<td class="sun"></td>\n');
+                } else if (week_day == 6) {
+                    layoutCalendar.push('<td class="sat"></td>\n');
+                } else {
+                    layoutCalendar.push('<td></td>\n');
+                }
+            }
+
+            layoutCalendar.push('</tr>\n');
+            layoutCalendar.push('</tbody>\n');
+            layoutCalendar.push('</table>\n');
+            this.objCalendar.get(0).innerHTML = layoutCalendar.join('');
+        },
+        addLead : function (x) {
+            return (x < 10) ? x : x;
+        }
+    };
+    $(function () {
+        calendarTable.init();
+    });
+})(window, window.jQuery);
+</script>
+</div>
+</body>
+</html>
