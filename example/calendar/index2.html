@@ -155,9 +155,9 @@ table td a{color:#000;text-decoration:none}
                 prevMonth = new Date(this.moveYear, (this.moveMonth - 1), 1),
                 currentMonth = new Date(this.moveYear, this.moveMonth, 1),
                 weekFirstDay = prevMonth.getDay(),
-                todayCurrentMonth = Math.floor((currentMonth.getTime() - prevMonth.getTime()) / (1000 * 60 * 60 * 24));
+                daysCurrentMonth = Math.floor((currentMonth.getTime() - prevMonth.getTime()) / (1000 * 60 * 60 * 24));
             if ((this.moveMonth - 1) == 2) {
-                todayCurrentMonth = 31;
+                daysCurrentMonth = 31;
             }
             layoutCalendar.push('<div class="">' + this.moveYear + '/' + this.moveMonth + '</div>\n');
             layoutCalendar.push('<table>\n');
@@ -194,7 +194,7 @@ table td a{color:#000;text-decoration:none}
             var mm = currentMonth.getMonth(),
                 mm = (mm == 0) ? 12 : mm;
 
-            for (var day_counter = 1; day_counter <= todayCurrentMonth; day_counter++) {
+            for (var day_counter = 1; day_counter <= daysCurrentMonth; day_counter++) {
                 week_day %= 7;
                 if (week_day == 0) {
                     layoutCalendar.push('</tr>\n<tr>\n');
