@@ -15,9 +15,11 @@ button::-moz-focus-inner{padding:0;border:0}
 p{margin-bottom:30px;padding-bottom:10px;border-bottom:2px solid #da0707;font-size:20px}
 table{width:100%;table-layout:fixed;border-collapse:separate;text-align:center}
 table th, table td{border:1px solid #ccc}
-table td a{color:#000;text-decoration:none}
+table td a{display:block;color:#000;text-decoration:none}
 .on{background:orange}
 .ck_today{border-color:red}
+.sun, .sun a{color:red}
+.sat, .sat a{color:blue}
 /* //temporary css */
 </style>
 </head>
@@ -54,13 +56,10 @@ table td a{color:#000;text-decoration:none}
         },
         initOpts : function () {
             var date = new Date();
-            this.todayYear = date.getFullYear();
-            this.todayMonth = date.getMonth() + 1;
-            this.todayDate = date.getDate();
-            this.moveYear = this.todayYear;
-            this.moveMonth = this.todayMonth;
-            this.moveDate = this.todayDate;
-            this.clickDayType = false;
+            this.moveYear = this.todayYear = date.getFullYear();
+            this.moveMonth = this.todayMonth = date.getMonth() + 1;
+            this.moveDate = this.todayDate = date.getDate();
+            this.todayString = this.todayYear + '/' + this.todayMonth + '/' + this.todayDate;
         },
         initLayout : function () {
             this.createOptions();
@@ -113,15 +112,9 @@ table td a{color:#000;text-decoration:none}
         onClickDay : function (e) {
             e.preventDefault();
             var target = $(e.currentTarget),
-                targetTitle = target.attr('title'),
-                titleString = targetTitle.split('/');
-            this.moveYear = parseInt(titleString[0]);
-            this.moveMonth = parseInt(titleString[1]);
-            this.moveDate = parseInt(titleString[2]);
-            this.choiceYear = this.moveYear;
-            this.choiceMonth = this.moveMonth;
-            this.choiceDate = this.moveDate;
-            this.clickDayType = true;
+                targetTitle = target.attr('title');
+            this.choiceString = targetTitle;
+            this.dayClickType = true;
             this.createCalendar();
         },
         createOptions : function (){
@@ -180,13 +173,7 @@ table td a{color:#000;text-decoration:none}
             }
 
             for (var week_day = 0, max_day = weekFirstDay; week_day < max_day; week_day++) {
-                if (week_day == 0) {
-                    layoutCalendar.push('<td class="sun"></td>\n');
-                } else if (week_day == 6) {
-                    layoutCalendar.push('<td class="sat"></td>\n');
-                } else {
-                    layoutCalendar.push('<td></td>\n');
-                }
+                layoutCalendar.push('<td></td>\n');
             }
 
             week_day = weekFirstDay;
@@ -199,40 +186,34 @@ table td a{color:#000;text-decoration:none}
                 if (week_day == 0) {
                     layoutCalendar.push('</tr>\n<tr>\n');
                 }
-                if (week_day == 0) {
-                    layoutCalendar.push('<td class=\"sun');
-                } else if (week_day == 6) {
-                    layoutCalendar.push('<td class=\"sat');
-                } else {
-                    layoutCalendar.push('<td class=\"');
-                }
-                if (this.clickDayType) {
-                    if ((this.choiceYear == this.moveYear) && (this.choiceMonth == this.moveMonth) && (this.choiceDate == day_counter)) {
-                        layoutCalendar.push(' on');
-                    }
-                }
-                if ((this.todayYear == this.moveYear) && (this.todayMonth == this.moveMonth) && (this.todayDate == day_counter)) {
-                    layoutCalendar.push(' ck_today');
-                }
-                layoutCalendar.push('\">');
-                layoutCalendar.push('<a href ="' + day_counter + '" title="' + (this.moveYear + "/" + mm + "/" + day_counter) + '">' + day_counter + '</a></td>\n');
+                layoutCalendar.push('<td><a href ="' + day_counter + '" title="' + (this.moveYear + "/" + mm + "/" + day_counter) + '">' + day_counter + '</a></td>\n');
                 week_day++;
             }
 
             for (week_day = week_day; week_day < 7; week_day++) {
-                if (week_day == 0) {
-                    layoutCalendar.push('<td class="sun"></td>\n');
-                } else if (week_day == 6) {
-                    layoutCalendar.push('<td class="sat"></td>\n');
-                } else {
-                    layoutCalendar.push('<td></td>\n');
-                }
+                layoutCalendar.push('<td></td>\n');
             }
 
             layoutCalendar.push('</tr>\n');
             layoutCalendar.push('</tbody>\n');
             layoutCalendar.push('</table>\n');
             this.objCalendar.get(0).innerHTML = layoutCalendar.join('');
+            this.createCssBuild();
+        },
+        createCssBuild : function () {
+            var moveCalendarTrChild = this.objCalendar.find('tr').children(),
+                moveCalendarTd = this.objCalendar.find('td');
+            moveCalendarTrChild.filter(':first-child').addClass('sun');
+            moveCalendarTrChild.filter(':last-child').addClass('sat');
+            moveCalendarTd.find('a[title="' + this.todayString + '"]').parent().addClass('ck_today');
+            if (this.choiceString) {
+                var choiceTarget = moveCalendarTd.find('a[title="' + this.choiceString + '"]');
+                choiceTarget.parent().addClass('on');
+                if (this.dayClickType) {
+                    choiceTarget.focus();
+                    this.dayClickType = false;
+                }
+            }
         }
     };
     $(function () {
