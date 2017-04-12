@@ -29,14 +29,14 @@ ul,li{list-style:none}
 <body>
 <div class="ir-datepicker-wrap js-datepicker-wrap">
     <div class="ir-datepicker js-datepicker-node">
-        <input type="text" class="ir-input js-dateinput" readonly="readonly">
+        <input type="text" name="from-date" class="ir-input js-dateinput" readonly="readonly">
         <button type="button" class="ir-btn-pick js-datebtn"><span class="blind">Select Dates</span></button>
         <div class="ir-datewrap js-datepicker-area">
             <div class="js-datepicker"></div>
         </div>
     </div>
     <div class="ir-datepicker js-datepicker-node">
-        <input type="text" class="ir-input js-dateinput" readonly="readonly">
+        <input type="text" name="to-date" class="ir-input js-dateinput" readonly="readonly">
         <button type="button" class="ir-btn-pick js-datebtn"><span class="blind">Select Dates</span></button>
         <div class="ir-datewrap js-datepicker-area">
             <div class="js-datepicker"></div>
@@ -57,7 +57,15 @@ ul,li{list-style:none}
     win.examProject = win.examProject || {};
     win.examProject.common = win.examProject.common || {};
 
-    var UTIL = win.examProject.common.util;
+    win.examProject.common.dateCustomEvent = {
+        EVENT_MANAGER : $('<div date-evt-manager=\'datepicker\'/>'),
+        SET_EVENT : {
+            DATE : 'totalDate'
+        }
+    };
+
+    var CST_EVENT = win.examProject.common.dateCustomEvent,
+        UTIL = win.examProject.common.util;
 
     win.examProject.examDatePicker = function (container, args) {
         var defParams = {
@@ -93,7 +101,9 @@ ul,li{list-style:none}
                 },
                 altEmptyText : 'Select Dates',
                 focusPicker : null,
-                keydownActive : false
+                keydownActive : false,
+                fromDate : 'from-date',
+                toDate : 'to-date'
             }
         };
         this.obj = container;
@@ -200,9 +210,6 @@ ul,li{list-style:none}
             fromPickerOpts.altField = this.fromPickerInputTxt;
             toPickerOpts.altField = this.toPickerInputTxt;
 
-            console.log(fromPickerOpts);
-            console.log(toPickerOpts);
-
             fromPickerOpts.onSelect = $.proxy(this.onSelectDatePicker, this);
             toPickerOpts.onSelect = $.proxy(this.onSelectDatePicker, this);
 
@@ -231,6 +238,8 @@ ul,li{list-style:none}
                 if (!this.toPicker.datepicker('getDate')) {
                     this.toPicker.datepicker('setDate', null);
                     this.toPickerInputTxt.val(this.opts.datePickerType.altEmptyText);
+                } else {
+                    this.onDatePickerTrigger();
                 }
                 this.onDomChangeFromFunc(true);
             } else {
@@ -241,6 +250,8 @@ ul,li{list-style:none}
                 if (!this.fromPicker.datepicker('getDate')) {
                     this.fromPicker.datepicker('setDate', null);
                     this.fromPickerInputTxt.val(this.opts.datePickerType.altEmptyText);
+                } else {
+                    this.onDatePickerTrigger();
                 }
                 this.onDomChangeToFunc(true);
             }
@@ -300,6 +311,24 @@ ul,li{list-style:none}
                     }
                 break;
             }
+        },
+        onDatePickerTrigger : function () {
+            CST_EVENT.EVENT_MANAGER.trigger(CST_EVENT.SET_EVENT.DATE, this.getStatus());
+        },
+        getStatus : function () {
+            var _this = this;
+            var fields = this.obj.find('input').serializeArray();
+            $.each(fields, function (index, val) {
+                switch (val.name) {
+                    case _this.opts.datePickerType.fromDate :
+                        val.value = $.datepicker.formatDate(_this.opts.datePickerOpts.dateFormat, new Date(val.value));
+                        break;
+                    case _this.opts.datePickerType.toDate :
+                        val.value = $.datepicker.formatDate(_this.opts.datePickerOpts.dateFormat, new Date(val.value));
+                        break;
+                }
+            });
+            return JSON.stringify(fields);
         }
     };
     $.fn.examDatePickerPlugin = function (args) {
@@ -336,6 +365,12 @@ ul,li{list-style:none}
             //     dayNamesMin : ['월', '화', '수', '목', '금', '토', '일'],
             //     monthNames: ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월']
             // }
+        });
+
+        CST_EVENT.EVENT_MANAGER.on(CST_EVENT.SET_EVENT.DATE, function (e, data) {
+            if (win.console) {
+                win.console.log(data);
+            }
         });
     });
 })(window, window.jQuery);
