@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>exam - calendar</title>
+<style>
+/* temporary css */
+*{margin:0;padding:0}
+body{font-size:14px;font-family:"나눔고딕",NanumGothic,"굴림",Gulim,Sans-serif;line-height:1.5}
+h1,h2,h3,h4,h5,h6{font-size:14px}
+ul,li{list-style:none}
+button{font-size:14px;font-family:"나눔고딕",NanumGothic,"굴림",Gulim,Sans-serif;line-height:1.5;cursor:pointer}
+button::-moz-focus-inner{padding:0;border:0}
+p{margin-bottom:30px;padding-bottom:10px;border-bottom:2px solid #da0707;font-size:20px}
+.js-calendar{text-align:center}
+.js-calendar ul{display:inline-block;vertical-align:top;*display:inline;zoom:1}
+.js-calendar ul li{float:left;margin-left:10px}
+.js-calendar ul li:first-child{margin-left:0}
+.js-calendar ul li span{display:block;color:#000}
+.js-calendar ul li a{display:block;padding:3px;color:#000;text-decoration:none}
+.js-calendar ul li.ck_today{background:#ccc}
+.js-calendar ul li.on{background:orange}
+.js-calendar ul li.sun, .js-calendar ul li.sun a{color:red}
+.js-calendar ul li.sat, .js-calendar ul li.sat a{color:blue}
+/* //temporary css */
+</style>
+</head>
+<body>
+<!-- wrapper [s] -->
+<div id="wrapper">
+    <!-- header [s] -->
+    <div id="header">@</div>
+    <!-- header [e] -->
+    <hr />
+    <!-- container [s] -->
+    <div id="container">
+        <div class="js-calendar"></div>
+    </div>
+    <!-- container [e] -->
+    <hr />
+    <!-- footer [s] -->
+    <div id="footer">@</div>
+    <!-- footer [e] -->
+<!-- [ Javascript Area ] -->
+<!-- Libs -->
+<script src="../js/libs/jquery-1.12.4.min.js"></script>
+<script>
+(function (win, $) {
+    'use strict';
+    win.examProject = win.examProject || {};
+
+    win.examProject.calendarDate = (function () {
+        var date = new Date(),
+            dateObj = {
+                getFullYear : date.getFullYear(),
+                getMonth : date.getMonth() + 1,
+                getDate : date.getDate()
+            };
+        return dateObj; 
+    })();
+    win.examProject.calendarTable = function (container, args) {
+        var defParams = {
+            dateWrapClass : 'js-datetable',
+            btnWrapClass : 'js-options',
+            btnPrevYearClass : 'js-prev-year',
+            btnPrevMonthClass : 'js-prev-month',
+            btnNextMonthClass : 'js-next-month',
+            btnNextYearClass : 'js-next-year',
+            btnTodayMonthClass : 'js-today-month',
+            btnCloseClass : 'js-cal-close',
+            weekText : ['일', '월', '화', '수', '목', '금', '토'],
+            captionText : '달력 캡션',
+            prevYearText : '이전년 이동',
+            prevMonthText : '이전월 이동',
+            nextMonthText : '다음월 이동',
+            nextYearText : '다음년 이동',
+            todayMonthText : '현재월 이동',
+            closeText : '달력닫기'
+        };
+        this.opts = $.extend({}, defParams, (args || {}));
+        if (!(this.obj = $(container)).length) return;
+        this.init();
+    };
+    win.examProject.calendarTable.prototype = {
+        init : function () {
+            this.initOpts();
+            this.initLayout();
+        },
+        initOpts : function () {
+            var date = win.examProject.calendarDate;
+            this.moveYear = this.todayYear = date.getFullYear;
+            this.moveMonth = this.todayMonth = date.getMonth;
+            this.moveDate = this.todayDate = date.getDate;
+            this.todayString = this.todayYear + '/' + this.todayMonth + '/' + this.todayDate;
+        },
+        initLayout : function () {
+            this.createOptions();
+            this.createElements();
+            this.createCalendar();
+            this.bindEvents();
+        },
+        bindEvents : function () {
+            this.btnPrevYear.on('click', $.proxy(this.onPrevYear, this));
+            this.btnPrevMonth.on('click', $.proxy(this.onPrevMonth, this));
+            this.btnNextMonth.on('click', $.proxy(this.onNextMonth, this));
+            this.btnNextYear.on('click', $.proxy(this.onNextYear, this));
+            this.btnCurrentMonth.on('click', $.proxy(this.onCurrentMonth, this));
+            this.btnCalClose.on('click', $.proxy(this.onCalClose, this));
+            this.objCalendar.on('click', 'a', $.proxy(this.onClickDay, this));
+        },
+        onPrevYear : function () {
+            this.moveYear = this.moveYear - 1;
+            this.createCalendar();
+        },
+        onPrevMonth : function () {
+            this.moveMonth = this.moveMonth - 1;
+            if (this.moveMonth <= 0) {
+                this.moveYear = this.moveYear - 1;
+                this.moveMonth = 12;
+            }
+            this.createCalendar();
+        },
+        onNextMonth : function () {
+            this.moveMonth = this.moveMonth + 1;
+            if (this.moveMonth > 12) {
+                this.moveYear = this.moveYear + 1;
+                this.moveMonth = 1;
+            }
+            this.createCalendar();
+        },
+        onNextYear : function () {
+            this.moveYear = this.moveYear + 1;
+            this.createCalendar();
+        },
+        onCurrentMonth : function () {
+            this.moveYear = this.todayYear;
+            this.moveMonth = this.todayMonth;
+            this.moveDate = this.todayDate;
+            this.createCalendar();
+        },
+        onCalClose : function () {
+            if (win.console) win.console.log(this.opts.closeText);
+        },
+        onClickDay : function (e) {
+            e.preventDefault();
+            var target = $(e.currentTarget),
+                targetTitle = target.attr('title');
+            this.choiceString = targetTitle;
+            this.dayClickType = true;
+            this.createCalendar();
+        },
+        createOptions : function (){
+            var layoutOptions = [];
+            layoutOptions.push('<div class="' + this.opts.btnWrapClass + '">');
+            layoutOptions.push('<button type="button" class="' + this.opts.btnPrevYearClass + '">' + this.opts.prevYearText + '</button>');
+            layoutOptions.push('<button type="button" class="' + this.opts.btnPrevMonthClass + '">' + this.opts.prevMonthText + '</button>');
+            layoutOptions.push('<button type="button" class="' + this.opts.btnNextMonthClass + '">' + this.opts.nextMonthText + '</button>');
+            layoutOptions.push('<button type="button" class="' + this.opts.btnNextYearClass + '">' + this.opts.nextYearText + '</button>');
+            layoutOptions.push('</div>');
+            layoutOptions.push('<div class="' + this.opts.dateWrapClass + '">');
+            layoutOptions.push('</div>');
+            layoutOptions.push('<div class="' + this.opts.btnWrapClass + '">');
+            layoutOptions.push('<button type="button" class="' + this.opts.btnTodayMonthClass + '">' + this.opts.todayMonthText + '</button>');
+            layoutOptions.push('<button type="button" class="' + this.opts.btnCloseClass + '">' + this.opts.closeText + '</button>');
+            layoutOptions.push('</div>');
+            this.obj.get(0).innerHTML = layoutOptions.join('');
+        },
+        createElements : function () {
+            this.btnWrap = this.obj.find('.' + this.opts.btnWrapClass);
+            this.btnPrevYear = this.btnWrap.find('.' + this.opts.btnPrevYearClass);
+            this.btnPrevMonth = this.btnWrap.find('.' + this.opts.btnPrevMonthClass);
+            this.btnNextMonth = this.btnWrap.find('.' + this.opts.btnNextMonthClass);
+            this.btnNextYear = this.btnWrap.find('.' + this.opts.btnNextYearClass);
+            this.btnCurrentMonth = this.btnWrap.find('.' + this.opts.btnTodayMonthClass);
+            this.btnCalClose = this.btnWrap.find('.' + this.opts.btnCloseClass);
+            this.objCalendar = this.obj.find('.' + this.opts.dateWrapClass);
+        },
+        createCalendar : function () {
+            var layoutCalendar = [],
+                prevMonth = new Date(this.moveYear, (this.moveMonth - 1), 1),
+                currentMonth = new Date(this.moveYear, this.moveMonth, 1),
+                weekFirstDay = prevMonth.getDay(),
+                daysCurrentMonth = Math.floor((currentMonth.getTime() - prevMonth.getTime()) / (1000 * 60 * 60 * 24)),
+                week_day = 0;
+            if ((this.moveMonth - 1) == 2) {
+                daysCurrentMonth = 31;
+            }
+            layoutCalendar.push('<div class="">' + this.moveYear + '/' + this.moveMonth + '</div>');
+            layoutCalendar.push('<ul>');
+            week_day = weekFirstDay;
+            var mm = currentMonth.getMonth(),
+                mm = (mm == 0) ? 12 : mm;
+            for (var day_counter = 1; day_counter <= daysCurrentMonth; day_counter++) {
+                week_day %= 7;
+                if (week_day === 0) {
+                    layoutCalendar.push('<li class="sun">');
+                } else if (week_day === 6) {
+                    layoutCalendar.push('<li class="sat">');
+                } else {
+                    layoutCalendar.push('<li>');
+                }
+                layoutCalendar.push('<span>' + this.opts.weekText[week_day] + '</span>');
+                layoutCalendar.push('<a href ="' + day_counter + '" title="' + (this.moveYear + "/" + mm + "/" + day_counter) + '">' + day_counter + '</a>');
+                layoutCalendar.push('</li>');
+                week_day++;
+            }
+            layoutCalendar.push('</ul>');
+            this.objCalendar.get(0).innerHTML = layoutCalendar.join('');
+            this.createCssBuild();
+        },
+        createCssBuild : function () {
+            var moveCalendarTd = this.objCalendar.find('li');
+            moveCalendarTd.find('a[title="' + this.todayString + '"]').parent().addClass('ck_today');
+            if (this.choiceString) {
+                var choiceTarget = moveCalendarTd.find('a[title="' + this.choiceString + '"]');
+                choiceTarget.parent().addClass('on');
+                if (this.dayClickType) {
+                    choiceTarget.focus();
+                    this.dayClickType = false;
+                }
+            }
+        }
+    };
+    $(function () {
+        win.examCalendarTbl = new win.examProject.calendarTable('.js-calendar:eq(0)');
+    });
+})(window, window.jQuery);
+</script>
+</div>
+</body>
+</html>
