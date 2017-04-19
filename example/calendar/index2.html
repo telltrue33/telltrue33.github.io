@@ -481,13 +481,13 @@ table td.special, table td.special a{color:red}
         },
         fromChkFunc : function (selectDate) {
             this.fromSelectDate = selectDate;
-            this.customMessage();
+            this.customMessage(this.fromSelectDate);
             this.toDate.minDate(selectDate);
             this.rangeChkFunc();
         },
         toChkFunc : function (selectDate) {
             this.toSelectDate = selectDate;
-            this.customMessage();
+            this.customMessage(this.toSelectDate);
             this.fromDate.maxDate(selectDate);
             this.rangeChkFunc();
         },
@@ -496,12 +496,12 @@ table td.special, table td.special a{color:red}
                 console.log(this.fromSelectDate + ' ~ ' + this.toSelectDate);
             }
         },
-        customMessage : function () {
-            if (this.fromSelectDate === '5/9/2017') {
+        customMessage : function (selectDate) {
+            if (selectDate === '5/9/2017') {
                 win.alert('투표, 쉬는날입니다');
-            } else if (this.fromSelectDate === '5/3/2017') {
+            } else if (selectDate === '5/3/2017') {
                 win.alert('석가탄신일, 쉬는날입니다');
-            } else if (this.fromSelectDate === '5/5/2017') {
+            } else if (selectDate === '5/5/2017') {
                 win.alert('어린이날, 쉬는날입니다.');
             }
         }
