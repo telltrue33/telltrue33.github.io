@@ -56,6 +56,7 @@ table th.sat, table td.sat a{color:blue}
         </div>
         <h1>Base Type</h1>
         <div class="js-calendar"></div>
+        <div class="js-calendar"></div>
     </div>
     <!-- container [e] -->
     <hr />
@@ -66,7 +67,7 @@ table th.sat, table td.sat a{color:blue}
 <!-- Libs -->
 <script src="../js/libs/jquery-1.12.4.min.js"></script>
 <script>
-(function (win, $) {
+(function (win, $, doc) {
     'use strict';
     win.examProject = win.examProject || {};
 
@@ -107,6 +108,7 @@ table th.sat, table td.sat a{color:blue}
             nextYearText : '다음년 이동',
             todayMonthText : '현재월 이동',
             closeText : '달력닫기',
+            dragRange : false,
             onSelect : null
         };
         this.opts = $.extend({}, defParams, (args || {}));
@@ -137,6 +139,9 @@ table th.sat, table td.sat a{color:blue}
             this.createElements();
             this.createCalendar();
             this.bindEvents();
+            if (this.opts.dragRange) {
+                this.dragCalendar.init(this);
+            }
         },
         bindEvents : function () {
             this.btnPrevYear.on('click', $.proxy(this.onPrevYear, this));
@@ -147,6 +152,145 @@ table th.sat, table td.sat a{color:blue}
             this.btnCalClose.on('click', $.proxy(this.onCalClose, this));
             this.objCalendar.on('click', 'a', $.proxy(this.onClickDay, this));
             this.objCalendar.on('keydown', 'a', $.proxy(this.onKeyDownDay, this));
+        },
+        dragCalendar : {
+            init : function (_parent) {
+                this.parent = _parent;
+                this.opts = _parent.opts;
+                this.setElements();
+                this.bindEvents();
+            },
+            setElements : function () {
+                this.objTd = this.parent.objCalendar.find('td').filter(function () {
+                    var target = $(this);
+                    if (!target.find('a').length) return false;
+                    return true;
+                });
+                this.objCalendar = this.parent.objCalendar;
+            },
+            bindEvents : function () {
+                this.objTd.off('keydown.dragrange');
+                this.objTd.off('keyup.dragrange');
+                this.objTd.off('mousedown.dragrange');
+                this.objTd.off('mouseenter.dragrange');
+                $(doc).off('mouseup.dragrange');
+                this.objTd.on('keydown.dragrange', 'a', $.proxy(this.onKeyDownFunc, this));
+                this.objTd.on('keyup.dragrange', 'a', $.proxy(this.onKeyUpFunc, this));
+                this.objTd.on('mousedown.dragrange', $.proxy(this.objMouseDownFunc, this));
+                this.objTd.on('mouseenter.dragrange', $.proxy(this.tdOverOutControl, this));
+                $(doc).on('mouseup.dragrange', $.proxy(this.docMouseUpFunc, this));
+            },
+            onKeyDownFunc : function (e) {
+                var keyCode = e.which || e.keyCode,
+                    target = $(e.currentTarget).parent(),
+                    objTd = this.objTd,
+                    targetWhichIndex = objTd.index(target),
+                    moveIndex = targetWhichIndex;
+                if (keyCode === 13) {
+                    if (this.enterDown) {
+                        this.enterDown = false;
+                        $(doc).triggerHandler('mouseup.dragrange');
+                    } else {
+                        this.enterDown = true;
+                        target.triggerHandler('mousedown.dragrange');
+                        target.triggerHandler('mouseenter.dragrange');
+                    }
+                } else if (keyCode === 9) {
+                    if (this.enterDown) {
+                        if (this.shiftDown) {
+                            moveIndex = moveIndex - 1;
+                        } else {
+                            moveIndex = moveIndex + 1;
+                        }
+                        objTd.eq(moveIndex).triggerHandler('mouseenter.dragrange');
+                    }
+                } else if (keyCode === 16) {
+                    if (this.enterDown) {
+                        this.shiftDown = true;
+                    }
+                } else if (keyCode === 37) {
+                    e.preventDefault();
+                    moveIndex = moveIndex - 1;
+                    if (moveIndex <= 0) {
+                        moveIndex = 0;
+                    }
+                } else if (keyCode === 38) {
+                    e.preventDefault();
+                    moveIndex = moveIndex - 7;
+                    if (moveIndex < 0) {
+                        moveIndex = targetWhichIndex;
+                    }
+                } else if (keyCode === 39) {
+                    e.preventDefault();
+                    moveIndex = moveIndex + 1;
+                    if (moveIndex >= objTd.length) {
+                        moveIndex = objTd.length;
+                    }
+                } else if (keyCode === 40) {
+                    e.preventDefault();
+                    moveIndex = moveIndex + 7;
+                    if (moveIndex >= objTd.length) {
+                        moveIndex = targetWhichIndex;
+                    }
+                }
+                if ((keyCode === 37) || (keyCode === 38) || (keyCode === 39) || (keyCode === 40)) {
+                    objTd.eq(moveIndex).triggerHandler('mouseenter.dragrange');
+                }
+
+            },
+            onKeyUpFunc : function (e) {
+                var keyCode = e.which || e.keyCode,
+                    target = $(e.currentTarget).parent();
+                if (this.enterDown) {
+                    if (keyCode === 16) {
+                        this.shiftDown = false;
+                    }
+                }
+            },
+            tdOverOutControl : function (e) {
+                e.stopPropagation();
+                if (!this.objDown) return;
+                var target = $(e.currentTarget);
+                this.tdOverOutView(target);
+            },
+            tdOverOutView : function (target) {
+                var objTd = this.objTd,
+                    targetWhichIndex = objTd.index(target);
+                for (var i = 0, max = objTd.length; i < max; i++) {
+                    if (((i <= this.downWhichIndex) && (i >= targetWhichIndex)) || ((i >= this.downWhichIndex) && (i <= targetWhichIndex))) {
+                        objTd.eq(i).addClass(this.opts.calActiveClass);
+                        this.targetWhichIndex = targetWhichIndex;
+                    } else {
+                        objTd.eq(i).removeClass(this.opts.calActiveClass);
+                    }
+                }
+
+            },
+            objMouseDownFunc : function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                var target = $(e.currentTarget);
+                this.objDown = true;
+                this.downWhichIndex = this.objTd.index(target);
+                target.triggerHandler('mouseenter');
+            },
+            docMouseUpFunc : function (e) {
+                e.stopPropagation();
+                if (!this.objDown) return;
+                this.objDown = false;
+                this.endMoveFunc();
+            },
+            endMoveFunc : function () {
+                var sortArrays = [this.downWhichIndex, this.targetWhichIndex],
+                    sortArrays = sortArrays.sort(function (a, b) {return a - b}),
+                    fromData = this.objTd.eq(sortArrays[0]).find('a').data(this.opts.dataLinkDateName),
+                    toData = this.objTd.eq(sortArrays[1]).find('a').data(this.opts.dataLinkDateName),
+                    dataObj = {
+                        fromDate : this.parent.dateStringBuild(fromData.year, fromData.month, fromData.date),
+                        toDate : this.parent.dateStringBuild(toData.year, toData.month, toData.date)
+                    };
+                this.parent.outCallback(dataObj);
+            }
         },
         onPrevYear : function () {
             this.moveYear = this.moveYear - 1;
@@ -188,15 +332,17 @@ table th.sat, table td.sat a{color:blue}
         },
         onClickDay : function (e) {
             e.preventDefault();
-            var target = $(e.currentTarget),
-                targetDate = target.data(this.opts.dataLinkDateName);
-            this.choiceYear = targetDate.year;
-            this.choiceMonth = targetDate.month;
-            this.choiceDate = targetDate.date;
-            this.choiceFullDate = this.dateStringBuild(this.choiceYear, this.choiceMonth, this.choiceDate);
-            this.dayClickType = true;
-            this.createCalendar();
-            this.outCallback(this.choiceFullDate);
+            if (!this.opts.dragRange) {
+                var target = $(e.currentTarget),
+                    targetDate = target.data(this.opts.dataLinkDateName);
+                this.choiceYear = targetDate.year;
+                this.choiceMonth = targetDate.month;
+                this.choiceDate = targetDate.date;
+                this.choiceFullDate = this.dateStringBuild(this.choiceYear, this.choiceMonth, this.choiceDate);
+                this.dayClickType = true;
+                this.createCalendar();
+                this.outCallback(this.choiceFullDate);
+            }
         },
         onKeyDownDay : function (e) {
             var target = $(e.currentTarget),
@@ -382,7 +528,11 @@ table th.sat, table td.sat a{color:blue}
                 } else if ((this.moveYear == this.rangeMaxYear) && (this.moveMonth == this.rangeMaxMonth) && (day_counter > this.rangeMaxDate)) {
                     layoutCalendar.push('<span>' + day_counter + '</span>');
                 } else {
-                    layoutCalendar.push('<a href ="' + day_counter + '">' + day_counter + '</a>');
+                    if (this.opts.dragRange) {
+                        layoutCalendar.push('<a tabindex="0">' + day_counter + '</a>');
+                    } else {
+                        layoutCalendar.push('<a href ="' + day_counter + '">' + day_counter + '</a>');
+                    }
                 }
                 layoutCalendar.push('</td>');
                 week_day++;
@@ -402,6 +552,9 @@ table th.sat, table td.sat a{color:blue}
             this.createDataBuild();
             this.createCssBuild();
             this.useageCssBuild();
+            if (this.opts.dragRange) {
+                this.dragCalendar.init(this);
+            }
         },
         createDataBuild : function () {
             var _this = this;
@@ -522,7 +675,7 @@ table th.sat, table td.sat a{color:blue}
             }
         }
     };
-})(window, window.jQuery);
+})(window, window.jQuery, window.document);
 
 (function (win, $) {
     'use strict';
@@ -589,7 +742,8 @@ table th.sat, table td.sat a{color:blue}
         setElements : function () {
             this.fromElements = $(this.opts.dateElements).eq(0);
             this.toElements = $(this.opts.dateElements).eq(1);
-            this.dateElements = $(this.opts.dateElements).eq(2);
+            this.dateElements = $(this.opts.dateElements).eq(3);
+            this.dateElements2 = $(this.opts.dateElements).eq(2);
         },
         initOpts : function () {
             this.toSelectDate = this.fromSelectDate = null;
@@ -605,6 +759,10 @@ table th.sat, table td.sat a{color:blue}
             });
             this.onePick = new win.examProject.calendarTable(this.dateElements.get(0), this.opts.regionEng);
             this.onePick.onSelect = $.proxy(this.onChkFunc, this);
+            this.onePick2 = new win.examProject.calendarTable(this.dateElements2.get(0), {
+                dragRange : true,
+                onSelect : $.proxy(this.dragRangeChkFunc, this)
+            });
         },
         fromChkFunc : function (selectDate) {
             this.customMessage(selectDate);
@@ -626,6 +784,9 @@ table th.sat, table td.sat a{color:blue}
         onChkFunc : function (selectDate) {
             this.customMessage(selectDate);
             if (win.console) win.console.log(selectDate);
+        },
+        dragRangeChkFunc : function (selectDate) {
+            if (win.console) win.console.log(selectDate.fromDate + ' ~ ' + selectDate.toDate);
         },
         customMessage : function (selectDate) {
             if (selectDate === '05/09/2017') {
