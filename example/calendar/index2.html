@@ -367,42 +367,66 @@ table td.special, table td.special a{color:red}
             });
         },
         createCssBuild : function () {
-            var _this = this,
-                moveCalendarTd = this.objCalendar.find('td'),
+            var moveCalendarTd = this.objCalendar.find('td'),
                 linkTarget = moveCalendarTd.find('a');
             for (var i = 0, max = linkTarget.length; i < max; i++) {
                 var target = linkTarget.eq(i),
-                    targetData = target.data(_this.opts.dataLinkDateName);
-                if ((targetData.year == _this.todayYear) && (targetData.month == _this.todayMonth) && (targetData.date == _this.todayDate)) {
-                    target.parent().addClass(_this.opts.calTodayClass);
+                    targetData = target.data(this.opts.dataLinkDateName);
+                if ((targetData.year == this.todayYear) && (targetData.month == this.todayMonth) && (targetData.date == this.todayDate)) {
+                    target.parent().addClass(this.opts.calTodayClass);
                 }
             }
         },
         useageCssBuild : function () {
-            var _this = this,
-                moveCalendarTd = this.objCalendar.find('td'),
+            this.useageChoiceCssBuild();
+            this.useageRestCssBuild();
+        },
+        useageChoiceCssBuild : function () {
+            var moveCalendarTd = this.objCalendar.find('td'),
                 linkTarget = moveCalendarTd.find('a');
             for (var i = 0, max = linkTarget.length; i < max; i++) {
                 var target = linkTarget.eq(i),
-                    targetData = target.data(_this.opts.dataLinkDateName);
-                if ((targetData.year == _this.choiceYear) && (targetData.month == _this.choiceMonth) && (targetData.date == _this.choiceDate)) {
-                    target.parent().addClass(_this.opts.calActiveClass);
-                    if (_this.dayClickType) {
-                        _this.dayClickType = false;
+                    targetData = target.data(this.opts.dataLinkDateName);
+                if ((targetData.year == this.choiceYear) && (targetData.month == this.choiceMonth) && (targetData.date == this.choiceDate)) {
+                    target.parent().addClass(this.opts.calActiveClass);
+                    if (this.dayClickType) {
+                        this.dayClickType = false;
                         target.focus();
                     }
                 }
             }
-            // for (var i = 0, max = this.opts.restDays.length; i < max; i++) {
-            //     var dateObj = this.dateObjectBuild(this.opts.restDays[i]);
-            //     moveCalendarTd.find('a').filter(function () {
-            //         var target = $(this),
-            //             targetData = target.data(_this.opts.dataLinkDateName);
-            //         if ((targetData.year == dateObj.year) && (targetData.month == dateObj.month) && (targetData.date == dateObj.date)) {
-            //             target.parent().addClass(_this.opts.calRestClass);
-            //         }
-            //     });
-            // }
+        },
+        // 공휴일
+        useageRestCssBuild : function () {
+            var moveCalendarTd = this.objCalendar.find('td'),
+                linkTarget = moveCalendarTd.find('a'),
+                restArrays = this.opts.restDays;
+            if (!restArrays.length) return;
+            for (var i = 0, max = restArrays.length; i < max; i++) {
+                var restObj = restArrays[i],
+                    restYear = restObj.year,
+                    restDetails = restObj.detail;
+                if (restYear == this.moveYear) {
+                    for (var j = 0, jmax = restDetails.length; j < jmax; j++) {
+                        var detailObj = restDetails[j],
+                            restMonth = detailObj.month,
+                            restDays = detailObj.day;
+                        if (restMonth == this.moveMonth) {
+                            for (var k = 0, kmax = restDays.length; k < kmax; k++) {
+                                var restDay = restDays[k];
+                                for (var a = 0, amax = linkTarget.length; a < amax; a++) {
+                                    var target = linkTarget.eq(a),
+                                        targetData = target.data(this.opts.dataLinkDateName);
+                                    if (targetData.date == restDay) {
+                                        target.parent().addClass(this.opts.calRestClass);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            
         },
         dateStringBuild : function (year, month, date) {
             var formatLine = this.opts.dateFormat,
@@ -462,7 +486,41 @@ table td.special, table td.special a{color:red}
                 todayMonthText : 'todayMonth Move',
                 closeText : 'date close'
             },
-            restDays : ['1/27/2017', '1/28/2017', '1/29/2017', '1/30/2017', '3/1/2017', '5/3/2017', '5/5/2017', '5/9/2017', '6/6/2017', '8/15/2017', '10/3/2017', '10/4/2017', '10/5/2017', '10/6/2017', '10/9/2017', '12/25/2017']
+            restDays : [
+                {
+                    year : '2017',
+                    detail : [
+                        {
+                            month : '1',
+                            day : ['27','28','29','30']
+                        },
+                        {
+                            month : '3',
+                            day : ['1']
+                        },
+                        {
+                            month : '5',
+                            day : ['3','5','9']
+                        },
+                        {
+                            month : '6',
+                            day : ['6']
+                        },
+                        {
+                            month : '8',
+                            day : ['15']
+                        },
+                        {
+                            month : '10',
+                            day : ['3','4','5','6','9']
+                        },
+                        {
+                            month : '12',
+                            day : ['25']
+                        }
+                    ]
+                }
+            ]
         };
         this.opts = $.extend({}, defParams);
         this.init();
@@ -510,11 +568,11 @@ table td.special, table td.special a{color:red}
             }
         },
         customMessage : function (selectDate) {
-            if (selectDate === '5/9/2017') {
+            if (selectDate === '05/09/2017') {
                 win.alert('투표, 쉬는날입니다');
-            } else if (selectDate === '5/3/2017') {
+            } else if (selectDate === '05/03/2017') {
                 win.alert('석가탄신일, 쉬는날입니다');
-            } else if (selectDate === '5/5/2017') {
+            } else if (selectDate === '05/05/2017') {
                 win.alert('어린이날, 쉬는날입니다.');
             }
         }
