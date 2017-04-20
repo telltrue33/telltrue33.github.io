@@ -273,6 +273,7 @@ table th.sat, table td.sat a{color:blue}
                 this.objDown = true;
                 this.downWhichIndex = this.objTd.index(target);
                 target.triggerHandler('mouseenter');
+                target.find('a').focus();
             },
             docMouseUpFunc : function (e) {
                 e.stopPropagation();
