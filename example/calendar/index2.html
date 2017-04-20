@@ -10,23 +10,33 @@
 body{font-size:14px;font-family:"나눔고딕",NanumGothic,"굴림",Gulim,Sans-serif;line-height:1.5}
 h1,h2,h3,h4,h5,h6{font-size:14px}
 ul,li{list-style:none}
-button{font-size:14px;font-family:"나눔고딕",NanumGothic,"굴림",Gulim,Sans-serif;line-height:1.5;cursor:pointer}
+button{overflow:visible;border:0;font-size:14px;font-family:"나눔고딕",NanumGothic,"굴림",Gulim,Sans-serif;line-height:1.5;background-color:transparent;cursor:pointer}
 button::-moz-focus-inner{padding:0;border:0}
 p{margin-bottom:30px;padding-bottom:10px;border-bottom:2px solid #da0707;font-size:20px}
 h1{margin:50px 0 10px;font-size:20px}
+.blind,legend,caption{overflow:hidden;position:absolute;top:0;left:0;width:1px;height:1px;font-size:1px;line-height:100px;white-space:nowrap}
 
 .calendar_wrap{zoom:1}
 .calendar_wrap:after{display:block;clear:both;content:''}
-.calendar_wrap .markup-half{float:left;width:50%;padding:0 20px;box-sizing:border-box}
+.calendar_wrap .markup-half{float:left;position:relative;width:50%;padding:15px 20px 0;box-sizing:border-box}
 table{width:100%;table-layout:fixed;border-collapse:separate;text-align:center}
-table th, table td{border:1px solid #ccc}
 table td{color:#ccc}
+table td span{display:block}
 table td a{display:block;color:#000;text-decoration:none}
-table td.on{background:orange}
 table td.ck_today{border-color:red}
 table th.sun, table td.sun a{color:red}
 table th.sat, table td.sat a{color:blue}
-table td.special, table td.special a{color:red}
+
+.info{font-size:16px;font-weight:bold;color:#000;text-align:center}
+.layout{margin-top:20px}
+.layout th,.layout td{font-size:14px}
+.layout td{padding:2px}
+.layout td span{padding:5px}
+.layout td a{position:relative;padding:3px;background:#f5f5f5;color:#000}
+.layout td.on a:before,.layout td a:active:before,.layout td a:focus:before{position:absolute;top:0;right:0;bottom:0;left:0;border:2px solid #2ab327;content:''}
+.layout td.ck_today a{background:#2ab327;color:#fff}
+.js-options{position:relative;font-size:0}
+.js-options button{width:20px 28px;padding:10px}
 /* //temporary css */
 </style>
 </head>
@@ -292,7 +302,8 @@ table td.special, table td.special a{color:red}
             if ((this.moveMonth - 1) == 2) {
                 daysCurrentMonth = 31;
             }
-            layoutCalendar.push('<div class="">' + this.dateStringBuild(this.moveYear, this.moveMonth) + '</div>');
+            layoutCalendar.push('<div class="info">' + this.dateStringBuild(this.moveYear, this.moveMonth) + '</div>');
+            layoutCalendar.push('<div class="layout">');
             layoutCalendar.push('<table>');
             layoutCalendar.push('<caption>' + this.opts.captionText + '</caption>');
             layoutCalendar.push('<thead>');
@@ -350,6 +361,7 @@ table td.special, table td.special a{color:red}
             layoutCalendar.push('</tr>');
             layoutCalendar.push('</tbody>');
             layoutCalendar.push('</table>');
+            layoutCalendar.push('</div>');
             this.objCalendar.get(0).innerHTML = layoutCalendar.join('');
             this.createDataBuild();
             this.createCssBuild();
