@@ -115,6 +115,7 @@ table td.special, table td.special a{color:red}
             this.moveMonth = this.todayMonth = date.getMonth;
             this.moveDate = this.todayDate = date.getDate;
             this.choiceDate = null;
+            this.onSelect = this.opts.onSelect;
             for (var i = 0; i < this.opts.dateFormat.length; i++) {
                 if (iChars.indexOf(this.opts.dateFormat.charAt(i)) != -1) {
                     this.opts.middleText = this.opts.dateFormat.charAt(i);
@@ -467,11 +468,16 @@ table td.special, table td.special a{color:red}
             return dateObj;
         },
         outCallback : function () {
-            if (this.opts.onSelect !== null) {
-                this.opts.onSelect(this.choiceFullDate, this);
+            if (this.onSelect !== null) {
+                this.onSelect(this.choiceFullDate, this);
             }
         }
     };
+})(window, window.jQuery);
+
+(function (win, $) {
+    'use strict';
+    win.examProject = win.examProject || {};
 
     win.examProject.dateForm = function () {
         var defParams = {
@@ -549,6 +555,7 @@ table td.special, table td.special a{color:red}
                 onSelect : $.proxy(this.toChkFunc, this)
             });
             this.onePick = new win.examProject.calendarTable(this.dateElements.get(0), this.opts.regionEng);
+            this.onePick.onSelect = $.proxy(this.onChkFunc, this);
         },
         fromChkFunc : function (selectDate) {
             this.customMessage(selectDate);
@@ -566,6 +573,10 @@ table td.special, table td.special a{color:red}
             if (this.fromSelectDate && this.toSelectDate) {
                 if (win.console) win.console.log(this.fromSelectDate + ' ~ ' + this.toSelectDate);
             }
+        },
+        onChkFunc : function (selectDate) {
+            this.customMessage(selectDate);
+            if (win.console) win.console.log(selectDate);
         },
         customMessage : function (selectDate) {
             if (selectDate === '05/09/2017') {

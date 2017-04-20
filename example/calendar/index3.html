@@ -13,6 +13,7 @@ ul,li{list-style:none}
 button{font-size:14px;font-family:"나눔고딕",NanumGothic,"굴림",Gulim,Sans-serif;line-height:1.5;cursor:pointer}
 button::-moz-focus-inner{padding:0;border:0}
 p{margin-bottom:30px;padding-bottom:10px;border-bottom:2px solid #da0707;font-size:20px}
+
 .js-calendar{text-align:center}
 .js-calendar ul{display:inline-block;vertical-align:top;*display:inline;zoom:1}
 .js-calendar ul li{float:left;margin-left:10px}
@@ -23,6 +24,7 @@ p{margin-bottom:30px;padding-bottom:10px;border-bottom:2px solid #da0707;font-si
 .js-calendar ul li.on{background:orange}
 .js-calendar ul li.sun, .js-calendar ul li.sun a{color:red}
 .js-calendar ul li.sat, .js-calendar ul li.sat a{color:blue}
+.js-calendar ul li.special, .js-calendar ul li.special a{color:red}
 /* //temporary css */
 </style>
 </head>
@@ -69,14 +71,25 @@ p{margin-bottom:30px;padding-bottom:10px;border-bottom:2px solid #da0707;font-si
             btnNextYearClass : 'js-next-year',
             btnTodayMonthClass : 'js-today-month',
             btnCloseClass : 'js-cal-close',
-            weekText : ['일', '월', '화', '수', '목', '금', '토'],
+            calActiveClass : 'on',
+            calTodayClass : 'ck_today',
+            calRestClass : 'special',
+            dateFormat : 'mm/dd/yy',
+            dataLinkDateName : 'link-date',
+            restDays : [],
+            weekText : ['일','월','화','수','목','금','토'],
+            monthText : ['01','02','03','04','05','06','07','08','09','10','11','12'],
+            dayText : ['01','02','03','04','05','06','07','08','09','10',
+                '11','12','13','14','15','16','17','18','19','20',
+                '21','22','23','24','25','26','27','28','29','30','31'],
             captionText : '달력 캡션',
             prevYearText : '이전년 이동',
             prevMonthText : '이전월 이동',
             nextMonthText : '다음월 이동',
             nextYearText : '다음년 이동',
             todayMonthText : '현재월 이동',
-            closeText : '달력닫기'
+            closeText : '달력닫기',
+            onSelect : null
         };
         this.opts = $.extend({}, defParams, (args || {}));
         if (!(this.obj = $(container)).length) return;
@@ -88,11 +101,18 @@ p{margin-bottom:30px;padding-bottom:10px;border-bottom:2px solid #da0707;font-si
             this.initLayout();
         },
         initOpts : function () {
-            var date = win.examProject.calendarDate;
+            var date = win.examProject.calendarDate,
+                iChars = "~`!#$%^&*+=-[]\\\';,/{}|\":<>?";
             this.moveYear = this.todayYear = date.getFullYear;
             this.moveMonth = this.todayMonth = date.getMonth;
             this.moveDate = this.todayDate = date.getDate;
-            this.todayString = this.todayYear + '/' + this.todayMonth + '/' + this.todayDate;
+            this.choiceDate = null;
+            this.onSelect = this.opts.onSelect;
+            for (var i = 0; i < this.opts.dateFormat.length; i++) {
+                if (iChars.indexOf(this.opts.dateFormat.charAt(i)) != -1) {
+                    this.opts.middleText = this.opts.dateFormat.charAt(i);
+                }
+            }
         },
         initLayout : function () {
             this.createOptions();
@@ -145,10 +165,14 @@ p{margin-bottom:30px;padding-bottom:10px;border-bottom:2px solid #da0707;font-si
         onClickDay : function (e) {
             e.preventDefault();
             var target = $(e.currentTarget),
-                targetTitle = target.attr('title');
-            this.choiceString = targetTitle;
+                targetDate = target.data(this.opts.dataLinkDateName);
+            this.choiceYear = targetDate.year;
+            this.choiceMonth = targetDate.month;
+            this.choiceDate = targetDate.date;
+            this.choiceFullDate = this.dateStringBuild(this.choiceYear, this.choiceMonth, this.choiceDate);
             this.dayClickType = true;
             this.createCalendar();
+            this.outCallback();
         },
         createOptions : function (){
             var layoutOptions = [];
@@ -186,7 +210,7 @@ p{margin-bottom:30px;padding-bottom:10px;border-bottom:2px solid #da0707;font-si
             if ((this.moveMonth - 1) == 2) {
                 daysCurrentMonth = 31;
             }
-            layoutCalendar.push('<div class="">' + this.moveYear + '/' + this.moveMonth + '</div>');
+            layoutCalendar.push('<div class="">' + this.dateStringBuild(this.moveYear, this.moveMonth) + '</div>');
             layoutCalendar.push('<ul>');
             week_day = weekFirstDay;
             var mm = currentMonth.getMonth(),
@@ -201,29 +225,213 @@ p{margin-bottom:30px;padding-bottom:10px;border-bottom:2px solid #da0707;font-si
                     layoutCalendar.push('<li>');
                 }
                 layoutCalendar.push('<span>' + this.opts.weekText[week_day] + '</span>');
-                layoutCalendar.push('<a href ="' + day_counter + '" title="' + (this.moveYear + "/" + mm + "/" + day_counter) + '">' + day_counter + '</a>');
+                layoutCalendar.push('<a href ="' + day_counter + '">' + day_counter + '</a>');
                 layoutCalendar.push('</li>');
                 week_day++;
             }
             layoutCalendar.push('</ul>');
             this.objCalendar.get(0).innerHTML = layoutCalendar.join('');
+            this.createDataBuild();
             this.createCssBuild();
+            this.useageCssBuild();
+        },
+        createDataBuild : function () {
+            var _this = this;
+            this.objCalendar.find('a').filter(function () {
+                var target = $(this),
+                    dataObj = {
+                        year : _this.moveYear,
+                        month : _this.moveMonth,
+                        date : target.text()
+                    };
+                target.data(_this.opts.dataLinkDateName, dataObj);
+            });
         },
         createCssBuild : function () {
-            var moveCalendarTd = this.objCalendar.find('li');
-            moveCalendarTd.find('a[title="' + this.todayString + '"]').parent().addClass('ck_today');
-            if (this.choiceString) {
-                var choiceTarget = moveCalendarTd.find('a[title="' + this.choiceString + '"]');
-                choiceTarget.parent().addClass('on');
-                if (this.dayClickType) {
-                    choiceTarget.focus();
-                    this.dayClickType = false;
+            var moveCalendarTd = this.objCalendar.find('li'),
+                linkTarget = moveCalendarTd.find('a');
+            for (var i = 0, max = linkTarget.length; i < max; i++) {
+                var target = linkTarget.eq(i),
+                    targetData = target.data(this.opts.dataLinkDateName);
+                if ((targetData.year == this.todayYear) && (targetData.month == this.todayMonth) && (targetData.date == this.todayDate)) {
+                    target.parent().addClass(this.opts.calTodayClass);
                 }
+            }
+        },
+        useageCssBuild : function () {
+            this.useageChoiceCssBuild();
+            this.useageRestCssBuild();
+        },
+        useageChoiceCssBuild : function () {
+            var moveCalendarTd = this.objCalendar.find('li'),
+                linkTarget = moveCalendarTd.find('a');
+            for (var i = 0, max = linkTarget.length; i < max; i++) {
+                var target = linkTarget.eq(i),
+                    targetData = target.data(this.opts.dataLinkDateName);
+                if ((targetData.year == this.choiceYear) && (targetData.month == this.choiceMonth) && (targetData.date == this.choiceDate)) {
+                    target.parent().addClass(this.opts.calActiveClass);
+                    if (this.dayClickType) {
+                        this.dayClickType = false;
+                        target.focus();
+                    }
+                }
+            }
+        },
+        // 공휴일
+        useageRestCssBuild : function () {
+            var moveCalendarTd = this.objCalendar.find('li'),
+                linkTarget = moveCalendarTd.find('a'),
+                restArrays = this.opts.restDays;
+            if (!restArrays.length) return;
+            for (var i = 0, max = restArrays.length; i < max; i++) {
+                var restObj = restArrays[i],
+                    restYear = restObj.year,
+                    restDetails = restObj.detail;
+                if (restYear == this.moveYear) {
+                    for (var j = 0, jmax = restDetails.length; j < jmax; j++) {
+                        var detailObj = restDetails[j],
+                            restMonth = detailObj.month,
+                            restDays = detailObj.day;
+                        if (restMonth == this.moveMonth) {
+                            for (var k = 0, kmax = restDays.length; k < kmax; k++) {
+                                var restDay = restDays[k];
+                                for (var a = 0, amax = linkTarget.length; a < amax; a++) {
+                                    var target = linkTarget.eq(a),
+                                        targetData = target.data(this.opts.dataLinkDateName);
+                                    if (targetData.date == restDay) {
+                                        target.parent().addClass(this.opts.calRestClass);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            
+        },
+        dateStringBuild : function (year, month, date) {
+            var formatLine = this.opts.dateFormat,
+                formatArrays = formatLine.split(this.opts.middleText),
+                dateArrays = [],
+                buildString = '';
+            for (var i = 0, max = formatArrays.length; i < max; i++) {
+                if (formatArrays[i] == 'yy') {
+                    dateArrays[i] = year;
+                } else if (formatArrays[i] == 'mm') {
+                    dateArrays[i] = this.opts.monthText[month - 1];
+                } else if (formatArrays[i] == 'dd') {
+                    dateArrays[i] = this.opts.dayText[date - 1];
+                }
+            }
+            for (var j = 0, jmax = dateArrays.length; j < jmax; j++) {
+                if ((dateArrays[j] == undefined) || (dateArrays[j] == null)) {
+                    dateArrays.splice(j, 1);
+                }
+            }
+            buildString = dateArrays.join(this.opts.middleText);
+            return buildString;
+        },
+        dateObjectBuild : function (date) {
+            var formatLine = this.opts.dateFormat,
+                formatArrays = formatLine.split(this.opts.middleText),
+                dateArrays = date.split(this.opts.middleText),
+                dateObj = {};
+            for (var i = 0, max = formatArrays.length; i < max; i++) {
+                if (formatArrays[i] == 'yy') {
+                    dateObj.year = parseInt(dateArrays[i]);
+                } else if (formatArrays[i] == 'mm') {
+                    dateObj.month = parseInt(dateArrays[i]);
+                } else if (formatArrays[i] == 'dd') {
+                    dateObj.date = parseInt(dateArrays[i]);
+                }
+            }
+            return dateObj;
+        },
+        outCallback : function () {
+            if (this.onSelect !== null) {
+                this.onSelect(this.choiceFullDate, this);
+            }
+        }
+    };
+})(window, window.jQuery);
+
+(function (win, $) {
+    win.examProject.dateForm = function () {
+        var defParams = {
+            dateElements : '.js-calendar',
+            restDays : [
+                {
+                    year : '2017',
+                    detail : [
+                        {
+                            month : '1',
+                            day : ['27','28','29','30']
+                        },
+                        {
+                            month : '3',
+                            day : ['1']
+                        },
+                        {
+                            month : '5',
+                            day : ['3','5','9']
+                        },
+                        {
+                            month : '6',
+                            day : ['6']
+                        },
+                        {
+                            month : '8',
+                            day : ['15']
+                        },
+                        {
+                            month : '10',
+                            day : ['3','4','5','6','9']
+                        },
+                        {
+                            month : '12',
+                            day : ['25']
+                        }
+                    ]
+                }
+            ]
+        };
+        this.opts = $.extend({}, defParams);
+        this.init();
+    };
+    win.examProject.dateForm.prototype = {
+        init : function () {
+            this.setElements();
+            this.initOpts();
+            this.setDate();
+        },
+        setElements : function () {
+            this.dateElements = $(this.opts.dateElements).eq(0);
+        },
+        initOpts : function () {
+            this.selectDate = null;
+        },
+        setDate : function () {
+            this.onePick = new win.examProject.calendarTable(this.dateElements.get(0), {
+                restDays : this.opts.restDays,
+                onSelect : $.proxy(this.onChkFunc, this)
+            });
+        },
+        onChkFunc : function (selectDate) {
+            this.customMessage(selectDate);
+            if (win.console) win.console.log(selectDate);
+        },
+        customMessage : function (selectDate) {
+            if (selectDate === '05/09/2017') {
+                win.alert('투표, 쉬는날입니다');
+            } else if (selectDate === '05/03/2017') {
+                win.alert('석가탄신일, 쉬는날입니다');
+            } else if (selectDate === '05/05/2017') {
+                win.alert('어린이날, 쉬는날입니다.');
             }
         }
     };
     $(function () {
-        win.examCalendarTbl = new win.examProject.calendarTable('.js-calendar:eq(0)');
+        win.examCalendarTblFrom = new win.examProject.dateForm();
     });
 })(window, window.jQuery);
 </script>
