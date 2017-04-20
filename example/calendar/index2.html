@@ -87,7 +87,9 @@ table td.special, table td.special a{color:red}
             restDays : [],
             weekText : ['일','월','화','수','목','금','토'],
             monthText : ['01','02','03','04','05','06','07','08','09','10','11','12'],
-            dayText : ['01','02','03','04','05','06','07','08','09','10','11','12','13','14','15','16','17','18','19','20','21','22','23','24','25','26','27','28','29','30','31'],
+            dayText : ['01','02','03','04','05','06','07','08','09','10',
+                '11','12','13','14','15','16','17','18','19','20',
+                '21','22','23','24','25','26','27','28','29','30','31'],
             captionText : '달력 캡션',
             prevYearText : '이전년 이동',
             prevMonthText : '이전월 이동',
@@ -366,41 +368,41 @@ table td.special, table td.special a{color:red}
         },
         createCssBuild : function () {
             var _this = this,
-                moveCalendarTd = this.objCalendar.find('td');
-            moveCalendarTd.find('a').filter(function () {
-                var target = $(this),
+                moveCalendarTd = this.objCalendar.find('td'),
+                linkTarget = moveCalendarTd.find('a');
+            for (var i = 0, max = linkTarget.length; i < max; i++) {
+                var target = linkTarget.eq(i),
                     targetData = target.data(_this.opts.dataLinkDateName);
                 if ((targetData.year == _this.todayYear) && (targetData.month == _this.todayMonth) && (targetData.date == _this.todayDate)) {
                     target.parent().addClass(_this.opts.calTodayClass);
                 }
-            });
+            }
         },
         useageCssBuild : function () {
             var _this = this,
-                moveCalendarTd = this.objCalendar.find('td');
-            moveCalendarTd.find('a').filter(function () {
-                var target = $(this),
+                moveCalendarTd = this.objCalendar.find('td'),
+                linkTarget = moveCalendarTd.find('a');
+            for (var i = 0, max = linkTarget.length; i < max; i++) {
+                var target = linkTarget.eq(i),
                     targetData = target.data(_this.opts.dataLinkDateName);
                 if ((targetData.year == _this.choiceYear) && (targetData.month == _this.choiceMonth) && (targetData.date == _this.choiceDate)) {
                     target.parent().addClass(_this.opts.calActiveClass);
                     if (_this.dayClickType) {
                         _this.dayClickType = false;
-                        return true;
-                    } else {
-                        return false;
+                        target.focus();
                     }
                 }
-            }).focus();
-            for (var i = 0, max = this.opts.restDays.length; i < max; i++) {
-                var dateObj = this.dateObjectBuild(this.opts.restDays[i]);
-                moveCalendarTd.find('a').filter(function () {
-                    var target = $(this),
-                        targetData = target.data(_this.opts.dataLinkDateName);
-                    if ((targetData.year == dateObj.year) && (targetData.month == dateObj.month) && (targetData.date == dateObj.date)) {
-                        target.parent().addClass(_this.opts.calRestClass);
-                    }
-                });
             }
+            // for (var i = 0, max = this.opts.restDays.length; i < max; i++) {
+            //     var dateObj = this.dateObjectBuild(this.opts.restDays[i]);
+            //     moveCalendarTd.find('a').filter(function () {
+            //         var target = $(this),
+            //             targetData = target.data(_this.opts.dataLinkDateName);
+            //         if ((targetData.year == dateObj.year) && (targetData.month == dateObj.month) && (targetData.date == dateObj.date)) {
+            //             target.parent().addClass(_this.opts.calRestClass);
+            //         }
+            //     });
+            // }
         },
         dateStringBuild : function (year, month, date) {
             var formatLine = this.opts.dateFormat,
@@ -504,7 +506,7 @@ table td.special, table td.special a{color:red}
         },
         rangeChkFunc : function () {
             if (this.fromSelectDate && this.toSelectDate) {
-                console.log(this.fromSelectDate + ' ~ ' + this.toSelectDate);
+                if (win.console) win.console.log(this.fromSelectDate + ' ~ ' + this.toSelectDate);
             }
         },
         customMessage : function (selectDate) {
