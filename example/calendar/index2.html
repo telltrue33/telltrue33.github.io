@@ -79,10 +79,15 @@ table td.special, table td.special a{color:red}
             btnNextYearClass : 'js-next-year',
             btnTodayMonthClass : 'js-today-month',
             btnCloseClass : 'js-cal-close',
+            calActiveClass : 'on',
+            calTodayClass : 'ck_today',
+            calRestClass : 'special',
             dateFormat : 'mm/dd/yy',
             dataLinkDateName : 'link-date',
             restDays : [],
-            weekText : ['일', '월', '화', '수', '목', '금', '토'],
+            weekText : ['일','월','화','수','목','금','토'],
+            monthText : ['01','02','03','04','05','06','07','08','09','10','11','12'],
+            dayText : ['01','02','03','04','05','06','07','08','09','10','11','12','13','14','15','16','17','18','19','20','21','22','23','24','25','26','27','28','29','30','31'],
             captionText : '달력 캡션',
             prevYearText : '이전년 이동',
             prevMonthText : '이전월 이동',
@@ -366,7 +371,7 @@ table td.special, table td.special a{color:red}
                 var target = $(this),
                     targetData = target.data(_this.opts.dataLinkDateName);
                 if ((targetData.year == _this.todayYear) && (targetData.month == _this.todayMonth) && (targetData.date == _this.todayDate)) {
-                    target.parent().addClass('ck_today');
+                    target.parent().addClass(_this.opts.calTodayClass);
                 }
             });
         },
@@ -377,16 +382,22 @@ table td.special, table td.special a{color:red}
                 var target = $(this),
                     targetData = target.data(_this.opts.dataLinkDateName);
                 if ((targetData.year == _this.choiceYear) && (targetData.month == _this.choiceMonth) && (targetData.date == _this.choiceDate)) {
-                    target.parent().addClass('on');
+                    target.parent().addClass(_this.opts.calActiveClass);
+                    if (_this.dayClickType) {
+                        _this.dayClickType = false;
+                        return true;
+                    } else {
+                        return false;
+                    }
                 }
-            });
+            }).focus();
             for (var i = 0, max = this.opts.restDays.length; i < max; i++) {
                 var dateObj = this.dateObjectBuild(this.opts.restDays[i]);
                 moveCalendarTd.find('a').filter(function () {
                     var target = $(this),
                         targetData = target.data(_this.opts.dataLinkDateName);
                     if ((targetData.year == dateObj.year) && (targetData.month == dateObj.month) && (targetData.date == dateObj.date)) {
-                        target.parent().addClass('special');
+                        target.parent().addClass(_this.opts.calRestClass);
                     }
                 });
             }
@@ -400,9 +411,9 @@ table td.special, table td.special a{color:red}
                 if (formatArrays[i] == 'yy') {
                     dateArrays[i] = year;
                 } else if (formatArrays[i] == 'mm') {
-                    dateArrays[i] = month;
+                    dateArrays[i] = this.opts.monthText[month - 1];
                 } else if (formatArrays[i] == 'dd') {
-                    dateArrays[i] = date;
+                    dateArrays[i] = this.opts.dayText[date - 1];
                 }
             }
             for (var j = 0, jmax = dateArrays.length; j < jmax; j++) {
@@ -480,15 +491,15 @@ table td.special, table td.special a{color:red}
             this.onePick = new win.examProject.calendarTable(this.dateElements.get(0), this.opts.regionEng);
         },
         fromChkFunc : function (selectDate) {
-            this.fromSelectDate = selectDate;
-            this.customMessage(this.fromSelectDate);
+            this.customMessage(selectDate);
             this.toDate.minDate(selectDate);
+            this.fromSelectDate = selectDate;
             this.rangeChkFunc();
         },
         toChkFunc : function (selectDate) {
-            this.toSelectDate = selectDate;
-            this.customMessage(this.toSelectDate);
+            this.customMessage(selectDate);
             this.fromDate.maxDate(selectDate);
+            this.toSelectDate = selectDate;
             this.rangeChkFunc();
         },
         rangeChkFunc : function () {
