@@ -33,7 +33,7 @@ table th.sat, table td.sat a{color:blue}
 .layout td{padding:2px}
 .layout td span{padding:5px}
 .layout td a{position:relative;padding:3px;background:#f5f5f5;color:#000}
-.layout td.on a:before,.layout td a:active:before,.layout td a:focus:before{position:absolute;top:0;right:0;bottom:0;left:0;border:2px solid #2ab327;content:''}
+.layout td.on a:before{position:absolute;top:0;right:0;bottom:0;left:0;border:2px solid #2ab327;content:''}
 .layout td.ck_today a{background:#2ab327;color:#fff}
 .js-options{position:relative;font-size:0}
 .js-options button{width:20px 28px;padding:10px}
@@ -55,7 +55,6 @@ table th.sat, table td.sat a{color:blue}
             <div class="markup-half js-calendar"></div>
         </div>
         <h1>Base Type</h1>
-        <div class="js-calendar"></div>
         <div class="js-calendar"></div>
     </div>
     <!-- container [e] -->
@@ -123,9 +122,9 @@ table th.sat, table td.sat a{color:blue}
         initOpts : function () {
             var date = win.examProject.calendarDate,
                 iChars = "~`!#$%^&*+=-[]\\\';,/{}|\":<>?";
-            this.moveYear = this.todayYear = date.getFullYear;
-            this.moveMonth = this.todayMonth = date.getMonth;
-            this.moveDate = this.todayDate = date.getDate;
+            this.opts.moveYear = this.todayYear = date.getFullYear;
+            this.opts.moveMonth = this.todayMonth = date.getMonth;
+            this.opts.moveDate = this.todayDate = date.getDate;
             this.choiceDate = null;
             this.onSelect = this.opts.onSelect;
             for (var i = 0; i < this.opts.dateFormat.length; i++) {
@@ -139,9 +138,6 @@ table th.sat, table td.sat a{color:blue}
             this.createElements();
             this.createCalendar();
             this.bindEvents();
-            if (this.opts.dragRange) {
-                this.dragCalendar.init(this);
-            }
         },
         bindEvents : function () {
             this.btnPrevYear.on('click', $.proxy(this.onPrevYear, this));
@@ -159,6 +155,7 @@ table th.sat, table td.sat a{color:blue}
                 this.opts = _parent.opts;
                 this.setElements();
                 this.bindEvents();
+                this.useageCssBuild();
             },
             setElements : function () {
                 this.objTd = this.parent.objCalendar.find('td').filter(function () {
@@ -172,11 +169,13 @@ table th.sat, table td.sat a{color:blue}
                 this.objTd.off('keydown.dragrange');
                 this.objTd.off('keyup.dragrange');
                 this.objTd.off('mousedown.dragrange');
+                this.objTd.off('mouseup.dragrange');
                 this.objTd.off('mouseenter.dragrange');
                 $(doc).off('mouseup.dragrange');
                 this.objTd.on('keydown.dragrange', 'a', $.proxy(this.onKeyDownFunc, this));
                 this.objTd.on('keyup.dragrange', 'a', $.proxy(this.onKeyUpFunc, this));
                 this.objTd.on('mousedown.dragrange', $.proxy(this.objMouseDownFunc, this));
+                this.objTd.on('mouseup.dragrange', $.proxy(this.objMouseUpFunc, this));
                 this.objTd.on('mouseenter.dragrange', $.proxy(this.tdOverOutControl, this));
                 $(doc).on('mouseup.dragrange', $.proxy(this.docMouseUpFunc, this));
             },
@@ -189,7 +188,7 @@ table th.sat, table td.sat a{color:blue}
                 if (keyCode === 13) {
                     if (this.enterDown) {
                         this.enterDown = false;
-                        $(doc).triggerHandler('mouseup.dragrange');
+                        target.triggerHandler('mouseup.dragrange');
                     } else {
                         this.enterDown = true;
                         target.triggerHandler('mousedown.dragrange');
@@ -264,22 +263,49 @@ table th.sat, table td.sat a{color:blue}
                         objTd.eq(i).removeClass(this.opts.calActiveClass);
                     }
                 }
-
             },
             objMouseDownFunc : function (e) {
                 e.preventDefault();
                 e.stopPropagation();
                 var target = $(e.currentTarget);
+                if (this.objDown) return;
                 this.objDown = true;
                 this.downWhichIndex = this.objTd.index(target);
                 target.triggerHandler('mouseenter');
                 target.find('a').focus();
             },
-            docMouseUpFunc : function (e) {
+            objMouseUpFunc : function (e) {
                 e.stopPropagation();
+                var target = $(e.currentTarget);
+                if (!this.objDown) return;
+                this.objDown = false;
+                target.find('a').focus();
+                this.endMoveFunc();
+            },
+            docMouseUpFunc : function (e) {
                 if (!this.objDown) return;
                 this.objDown = false;
                 this.endMoveFunc();
+            },
+            useageCssBuild : function () {
+                if (!this.rangeChoiceData) return;
+                var rangeChoiceData = this.rangeChoiceData,
+                    rangeChoiceFromDate = this.parent.dateObjectBuild(rangeChoiceData.fromDate),
+                    rangeChoiceToDate = this.parent.dateObjectBuild(rangeChoiceData.toDate),
+                    rangeChoiceYear = rangeChoiceFromDate.year,
+                    rangeChoiceMonth = rangeChoiceFromDate.month,
+                    rangeChoiceFromDate = (rangeChoiceFromDate.date - 1),
+                    rangeChoiceToDate = (rangeChoiceToDate.date - 1),
+                    objTd = this.objTd;
+                if ((this.opts.moveYear == rangeChoiceYear) && (this.opts.moveMonth == rangeChoiceMonth)) {
+                    for (var i = 0, max = objTd.length; i < max; i++) {
+                        if ((i >= rangeChoiceFromDate) && (i <= rangeChoiceToDate)) {
+                            objTd.eq(i).addClass(this.opts.calActiveClass);
+                        } else {
+                            objTd.eq(i).removeClass(this.opts.calActiveClass);
+                        }
+                    }
+                }
             },
             endMoveFunc : function () {
                 var sortArrays = [this.downWhichIndex, this.targetWhichIndex],
@@ -290,41 +316,42 @@ table th.sat, table td.sat a{color:blue}
                         fromDate : this.parent.dateStringBuild(fromData.year, fromData.month, fromData.date),
                         toDate : this.parent.dateStringBuild(toData.year, toData.month, toData.date)
                     };
+                this.rangeChoiceData = dataObj;
                 this.parent.outCallback(dataObj);
             }
         },
         onPrevYear : function () {
-            this.moveYear = this.moveYear - 1;
+            this.opts.moveYear = this.opts.moveYear - 1;
             this.rangeBuild();
             this.createCalendar();
         },
         onPrevMonth : function () {
-            this.moveMonth = this.moveMonth - 1;
-            if (this.moveMonth <= 0) {
-                this.moveYear = this.moveYear - 1;
-                this.moveMonth = 12;
+            this.opts.moveMonth = this.opts.moveMonth - 1;
+            if (this.opts.moveMonth <= 0) {
+                this.opts.moveYear = this.opts.moveYear - 1;
+                this.opts.moveMonth = 12;
             }
             this.rangeBuild();
             this.createCalendar();
         },
         onNextMonth : function () {
-            this.moveMonth = this.moveMonth + 1;
-            if (this.moveMonth > 12) {
-                this.moveYear = this.moveYear + 1;
-                this.moveMonth = 1;
+            this.opts.moveMonth = this.opts.moveMonth + 1;
+            if (this.opts.moveMonth > 12) {
+                this.opts.moveYear = this.opts.moveYear + 1;
+                this.opts.moveMonth = 1;
             }
             this.rangeBuild();
             this.createCalendar();
         },
         onNextYear : function () {
-            this.moveYear = this.moveYear + 1;
+            this.opts.moveYear = this.opts.moveYear + 1;
             this.rangeBuild();
             this.createCalendar();
         },
         onCurrentMonth : function () {
-            this.moveYear = this.todayYear;
-            this.moveMonth = this.todayMonth;
-            this.moveDate = this.todayDate;
+            this.opts.moveYear = this.todayYear;
+            this.opts.moveMonth = this.todayMonth;
+            this.opts.moveDate = this.todayDate;
             this.rangeBuild();
             this.createCalendar();
         },
@@ -402,38 +429,38 @@ table th.sat, table td.sat a{color:blue}
         },
         minCssBuild : function () {
             if (!this.rangeMinYear) return;
-            if ((this.moveYear <= this.rangeMinYear) && (this.moveMonth <= this.rangeMinMonth)) {
+            if ((this.opts.moveYear <= this.rangeMinYear) && (this.opts.moveMonth <= this.rangeMinMonth)) {
                 this.btnPrevYear.prop('disabled', true);
                 this.btnPrevMonth.prop('disabled', true);
-                this.moveYear = this.rangeMinYear;
-                this.moveMonth = this.rangeMinMonth;
+                this.opts.moveYear = this.rangeMinYear;
+                this.opts.moveMonth = this.rangeMinMonth;
             } else {
                 this.btnPrevYear.prop('disabled', false);
                 this.btnPrevMonth.prop('disabled', false);
             }
-            if (this.moveYear < this.rangeMinYear) {
+            if (this.opts.moveYear < this.rangeMinYear) {
                 this.btnPrevYear.prop('disabled', true);
                 this.btnPrevMonth.prop('disabled', true);
-                this.moveYear = this.rangeMinYear;
-                this.moveMonth = this.rangeMinMonth;
+                this.opts.moveYear = this.rangeMinYear;
+                this.opts.moveMonth = this.rangeMinMonth;
             }
         },
         maxCssBuild : function () {
             if (!this.rangeMaxYear) return;
-            if ((this.moveYear >= this.rangeMaxYear) && (this.moveMonth >= this.rangeMaxMonth)) {
+            if ((this.opts.moveYear >= this.rangeMaxYear) && (this.opts.moveMonth >= this.rangeMaxMonth)) {
                 this.btnNextYear.prop('disabled', true);
                 this.btnNextMonth.prop('disabled', true);
-                this.moveYear = this.rangeMaxYear;
-                this.moveMonth = this.rangeMaxMonth;
+                this.opts.moveYear = this.rangeMaxYear;
+                this.opts.moveMonth = this.rangeMaxMonth;
             } else {
                 this.btnNextYear.prop('disabled', false);
                 this.btnNextMonth.prop('disabled', false);
             }
-            if (this.moveYear > this.rangeMaxYear) {
+            if (this.opts.moveYear > this.rangeMaxYear) {
                 this.btnNextYear.prop('disabled', true);
                 this.btnNextMonth.prop('disabled', true);
-                this.moveYear = this.rangeMaxYear;
-                this.moveMonth = this.rangeMaxMonth;
+                this.opts.moveYear = this.rangeMaxYear;
+                this.opts.moveMonth = this.rangeMaxMonth;
             }
         },
         createOptions : function (){
@@ -464,9 +491,9 @@ table th.sat, table td.sat a{color:blue}
         },
         createCalendar : function () {
             var layoutCalendar = [],
-                pPrevMonth = new Date(this.moveYear, (this.moveMonth - 2), 1),
-                prevMonth = new Date(this.moveYear, (this.moveMonth - 1), 1),
-                currentMonth = new Date(this.moveYear, this.moveMonth, 1),
+                pPrevMonth = new Date(this.opts.moveYear, (this.opts.moveMonth - 2), 1),
+                prevMonth = new Date(this.opts.moveYear, (this.opts.moveMonth - 1), 1),
+                currentMonth = new Date(this.opts.moveYear, this.opts.moveMonth, 1),
                 weekFirstDay = prevMonth.getDay(),
                 daysCurrentMonth = Math.floor((currentMonth.getTime() - prevMonth.getTime()) / (1000 * 60 * 60 * 24)),
                 daysPrevMonth = Math.floor((prevMonth.getTime() - pPrevMonth.getTime()) / (1000 * 60 * 60 * 24)),
@@ -482,10 +509,10 @@ table th.sat, table td.sat a{color:blue}
                 }
                 return returnPush;
             };
-            if ((this.moveMonth - 1) == 2) {
+            if ((this.opts.moveMonth - 1) == 2) {
                 daysCurrentMonth = 31;
             }
-            layoutCalendar.push('<div class="info">' + this.dateStringBuild(this.moveYear, this.moveMonth) + '</div>');
+            layoutCalendar.push('<div class="info">' + this.dateStringBuild(this.opts.moveYear, this.opts.moveMonth) + '</div>');
             layoutCalendar.push('<div class="layout">');
             layoutCalendar.push('<table>');
             layoutCalendar.push('<caption>' + this.opts.captionText + '</caption>');
@@ -524,9 +551,9 @@ table th.sat, table td.sat a{color:blue}
                     layoutCalendar.push('</tr><tr>');
                 }
                 tdPush(week_day);
-                if ((this.moveYear == this.rangeMinYear) && (this.moveMonth == this.rangeMinMonth) && (day_counter < this.rangeMinDate)) {
+                if ((this.opts.moveYear == this.rangeMinYear) && (this.opts.moveMonth == this.rangeMinMonth) && (day_counter < this.rangeMinDate)) {
                     layoutCalendar.push('<span>' + day_counter + '</span>');
-                } else if ((this.moveYear == this.rangeMaxYear) && (this.moveMonth == this.rangeMaxMonth) && (day_counter > this.rangeMaxDate)) {
+                } else if ((this.opts.moveYear == this.rangeMaxYear) && (this.opts.moveMonth == this.rangeMaxMonth) && (day_counter > this.rangeMaxDate)) {
                     layoutCalendar.push('<span>' + day_counter + '</span>');
                 } else {
                     if (this.opts.dragRange) {
@@ -562,8 +589,8 @@ table th.sat, table td.sat a{color:blue}
             this.moveCalendarLink = this.objCalendar.find('a').filter(function () {
                 var target = $(this),
                     dataObj = {
-                        year : _this.moveYear,
-                        month : _this.moveMonth,
+                        year : _this.opts.moveYear,
+                        month : _this.opts.moveMonth,
                         date : target.text()
                     };
                 target.data(_this.opts.dataLinkDateName, dataObj);
@@ -610,12 +637,12 @@ table th.sat, table td.sat a{color:blue}
                 var restObj = restArrays[i],
                     restYear = restObj.year,
                     restDetails = restObj.detail;
-                if (restYear == this.moveYear) {
+                if (restYear == this.opts.moveYear) {
                     for (var j = 0, jmax = restDetails.length; j < jmax; j++) {
                         var detailObj = restDetails[j],
                             restMonth = detailObj.month,
                             restDays = detailObj.day;
-                        if (restMonth == this.moveMonth) {
+                        if (restMonth == this.opts.moveMonth) {
                             for (var k = 0, kmax = restDays.length; k < kmax; k++) {
                                 var restDay = restDays[k];
                                 for (var a = 0, amax = linkTarget.length; a < amax; a++) {
@@ -743,8 +770,7 @@ table th.sat, table td.sat a{color:blue}
         setElements : function () {
             this.fromElements = $(this.opts.dateElements).eq(0);
             this.toElements = $(this.opts.dateElements).eq(1);
-            this.dateElements = $(this.opts.dateElements).eq(3);
-            this.dateElements2 = $(this.opts.dateElements).eq(2);
+            this.dateElements = $(this.opts.dateElements).eq(2);
         },
         initOpts : function () {
             this.toSelectDate = this.fromSelectDate = null;
@@ -758,9 +784,7 @@ table th.sat, table td.sat a{color:blue}
                 restDays : this.opts.restDays,
                 onSelect : $.proxy(this.toChkFunc, this)
             });
-            this.onePick = new win.examProject.calendarTable(this.dateElements.get(0), this.opts.regionEng);
-            this.onePick.onSelect = $.proxy(this.onChkFunc, this);
-            this.onePick2 = new win.examProject.calendarTable(this.dateElements2.get(0), {
+            this.onePick = new win.examProject.calendarTable(this.dateElements.get(0), {
                 dragRange : true,
                 onSelect : $.proxy(this.dragRangeChkFunc, this)
             });
@@ -781,10 +805,6 @@ table th.sat, table td.sat a{color:blue}
             if (this.fromSelectDate && this.toSelectDate) {
                 if (win.console) win.console.log(this.fromSelectDate + ' ~ ' + this.toSelectDate);
             }
-        },
-        onChkFunc : function (selectDate) {
-            this.customMessage(selectDate);
-            if (win.console) win.console.log(selectDate);
         },
         dragRangeChkFunc : function (selectDate) {
             if (win.console) win.console.log(selectDate.fromDate + ' ~ ' + selectDate.toDate);
