@@ -146,6 +146,7 @@ table th.sat, table td.sat a{color:blue}
             this.btnCurrentMonth.on('click', $.proxy(this.onCurrentMonth, this));
             this.btnCalClose.on('click', $.proxy(this.onCalClose, this));
             this.objCalendar.on('click', 'a', $.proxy(this.onClickDay, this));
+            this.objCalendar.on('keydown', 'a', $.proxy(this.onKeyDownDay, this));
         },
         onPrevYear : function () {
             this.moveYear = this.moveYear - 1;
@@ -196,6 +197,41 @@ table th.sat, table td.sat a{color:blue}
             this.dayClickType = true;
             this.createCalendar();
             this.outCallback();
+        },
+        onKeyDownDay : function (e) {
+            var target = $(e.currentTarget),
+                moveCalendarLinks = this.moveCalendarLink,
+                targetIndex = moveCalendarLinks.index(target),
+                keyCode = e.which || e.keyCode,
+                moveIndex = targetIndex;
+            if (keyCode === 37) {
+                e.preventDefault();
+                moveIndex = moveIndex - 1;
+                if (moveIndex <= 0) {
+                    moveIndex = 0;
+                }
+            } else if (keyCode === 38) {
+                e.preventDefault();
+                moveIndex = moveIndex - 7;
+                if (moveIndex < 0) {
+                    moveIndex = targetIndex;
+                }
+            } else if (keyCode === 39) {
+                e.preventDefault();
+                moveIndex = moveIndex + 1;
+                if (moveIndex >= moveCalendarLinks.length) {
+                    moveIndex = moveCalendarLinks.length;
+                }
+            } else if (keyCode === 40) {
+                e.preventDefault();
+                moveIndex = moveIndex + 7;
+                if (moveIndex >= moveCalendarLinks.length) {
+                    moveIndex = targetIndex;
+                }
+            }
+            if ((keyCode === 37) || (keyCode === 38) || (keyCode === 39) || (keyCode === 40)) {
+                moveCalendarLinks.eq(moveIndex).focus();
+            }
         },
         rangeBuild : function () {
             this.minCssBuild();
@@ -369,7 +405,7 @@ table th.sat, table td.sat a{color:blue}
         },
         createDataBuild : function () {
             var _this = this;
-            this.objCalendar.find('a').filter(function () {
+            this.moveCalendarLink = this.objCalendar.find('a').filter(function () {
                 var target = $(this),
                     dataObj = {
                         year : _this.moveYear,
@@ -377,6 +413,7 @@ table th.sat, table td.sat a{color:blue}
                         date : target.text()
                     };
                 target.data(_this.opts.dataLinkDateName, dataObj);
+                return true;
             });
         },
         createCssBuild : function () {
