@@ -65,6 +65,7 @@ table th.sat, table td.sat a{color:blue}
 <!-- [ Javascript Area ] -->
 <!-- Libs -->
 <script src="../js/libs/jquery-1.12.4.min.js"></script>
+<script src="../js/libs/jquery.mousewheel.min.js"></script>
 <script>
 (function (win, $, doc) {
     'use strict';
@@ -108,6 +109,7 @@ table th.sat, table td.sat a{color:blue}
             todayMonthText : '현재월 이동',
             closeText : '달력닫기',
             dragRange : false,
+            mousewheelControl : false,
             onSelect : null
         };
         this.opts = $.extend({}, defParams, (args || {}));
@@ -148,6 +150,7 @@ table th.sat, table td.sat a{color:blue}
             this.btnCalClose.on('click', $.proxy(this.onCalClose, this));
             this.objCalendar.on('click', 'a', $.proxy(this.onClickDay, this));
             this.objCalendar.on('keydown', 'a', $.proxy(this.onKeyDownDay, this));
+            this.objCalendar.on('mousewheel', $.proxy(this.mouseWheelFunc, this));
         },
         dragCalendar : {
             init : function (_parent) {
@@ -697,6 +700,14 @@ table th.sat, table td.sat a{color:blue}
             }
             return dateObj;
         },
+        mouseWheelFunc : function (e) {
+            e.preventDefault();
+            if (e.deltaY < 0) {
+                 this.btnPrevMonth.triggerHandler('click');
+            } else {
+                 this.btnNextMonth.triggerHandler('click');
+            }
+        },
         outCallback : function (selectDate) {
             if (this.onSelect !== null) {
                 this.onSelect(selectDate, this);
@@ -778,14 +789,17 @@ table th.sat, table td.sat a{color:blue}
         setDate : function () {
             this.fromDate = new win.examProject.calendarTable(this.fromElements.get(0), {
                 restDays : this.opts.restDays,
+                mousewheelControl : true,
                 onSelect : $.proxy(this.fromChkFunc, this)
             });
             this.toDate = new win.examProject.calendarTable(this.toElements.get(0), {
                 restDays : this.opts.restDays,
+                mousewheelControl : true,
                 onSelect : $.proxy(this.toChkFunc, this)
             });
             this.onePick = new win.examProject.calendarTable(this.dateElements.get(0), {
                 dragRange : true,
+                mousewheelControl : true,
                 onSelect : $.proxy(this.dragRangeChkFunc, this)
             });
         },
