@@ -150,7 +150,9 @@ table th.sat, table td.sat a{color:blue}
             this.btnCalClose.on('click', $.proxy(this.onCalClose, this));
             this.objCalendar.on('click', 'a', $.proxy(this.onClickDay, this));
             this.objCalendar.on('keydown', 'a', $.proxy(this.onKeyDownDay, this));
-            this.objCalendar.on('mousewheel', $.proxy(this.mouseWheelFunc, this));
+            if (this.opts.mousewheelControl) {
+                this.objCalendar.on('mousewheel', $.proxy(this.mouseWheelFunc, this));
+            }
         },
         dragCalendar : {
             init : function (_parent) {
