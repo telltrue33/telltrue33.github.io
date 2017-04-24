@@ -370,9 +370,9 @@ table th.sat, table td.sat a{color:blue}
             for (var max_day = weekFirstDay; week_day < max_day; week_day++) {
                 tdPush(week_day);
                 layoutCalendar.push('<span>' + prevDay + '</span>');
+                layoutCalendar.push('</td>');
                 prevDay++;
             }
-            layoutCalendar.push('</td>');
             week_day = weekFirstDay;
             var mm = currentMonth.getMonth(),
                 mm = (mm == 0) ? 12 : mm;
@@ -396,9 +396,9 @@ table th.sat, table td.sat a{color:blue}
             for (week_day = week_day; week_day < 7; week_day++) {
                 tdPush(week_day);
                 layoutCalendar.push('<span>' + nextDay + '</span>');
+                layoutCalendar.push('</td>');
                 nextDay++;
             }
-            layoutCalendar.push('</td>');
             layoutCalendar.push('</tr>');
             layoutCalendar.push('</tbody>');
             layoutCalendar.push('</table>');
