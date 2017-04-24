@@ -539,9 +539,9 @@ table th.sat, table td.sat a{color:blue}
         mouseWheelFunc : function (e) {
             e.preventDefault();
             if (e.deltaY < 0) {
-                 this.btnPrevMonth.triggerHandler('click');
-            } else {
                  this.btnNextMonth.triggerHandler('click');
+            } else {
+                 this.btnPrevMonth.triggerHandler('click');
             }
         },
         outCallback : function (selectDate) {
