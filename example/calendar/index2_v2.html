@@ -67,6 +67,7 @@ table th.sat, table td.sat a{color:blue}
 <script src="../js/libs/jquery-1.12.4.min.js"></script>
 <script src="../js/libs/jquery.mousewheel.min.js"></script>
 <script>
+
 (function (win, $, doc) {
     'use strict';
     win.examProject = win.examProject || {};
@@ -152,177 +153,6 @@ table th.sat, table td.sat a{color:blue}
             this.objCalendar.on('keydown', 'a', $.proxy(this.onKeyDownDay, this));
             if (this.opts.mousewheelControl) {
                 this.objCalendar.on('mousewheel', $.proxy(this.mouseWheelFunc, this));
-            }
-        },
-        dragCalendar : {
-            init : function (_parent) {
-                this.parent = _parent;
-                this.opts = _parent.opts;
-                this.setElements();
-                this.bindEvents();
-                this.useageCssBuild();
-            },
-            setElements : function () {
-                this.objTd = this.parent.objCalendar.find('td').filter(function () {
-                    var target = $(this);
-                    if (!target.find('a').length) return false;
-                    return true;
-                });
-                this.objCalendar = this.parent.objCalendar;
-            },
-            bindEvents : function () {
-                this.objTd.off('keydown.dragrange');
-                this.objTd.off('keyup.dragrange');
-                this.objTd.off('mousedown.dragrange');
-                this.objTd.off('mouseup.dragrange');
-                this.objTd.off('mouseenter.dragrange');
-                $(doc).off('mouseup.dragrange');
-                this.objTd.on('keydown.dragrange', 'a', $.proxy(this.onKeyDownFunc, this));
-                this.objTd.on('keyup.dragrange', 'a', $.proxy(this.onKeyUpFunc, this));
-                this.objTd.on('mousedown.dragrange', $.proxy(this.objMouseDownFunc, this));
-                this.objTd.on('mouseup.dragrange', $.proxy(this.objMouseUpFunc, this));
-                this.objTd.on('mouseenter.dragrange', $.proxy(this.tdOverOutControl, this));
-                $(doc).on('mouseup.dragrange', $.proxy(this.docMouseUpFunc, this));
-            },
-            onKeyDownFunc : function (e) {
-                var keyCode = e.which || e.keyCode,
-                    target = $(e.currentTarget).parent(),
-                    objTd = this.objTd,
-                    targetWhichIndex = objTd.index(target),
-                    moveIndex = targetWhichIndex;
-                if (keyCode === 13) {
-                    if (this.enterDown) {
-                        this.enterDown = false;
-                        target.triggerHandler('mouseup.dragrange');
-                    } else {
-                        this.enterDown = true;
-                        target.triggerHandler('mousedown.dragrange');
-                        target.triggerHandler('mouseenter.dragrange');
-                    }
-                } else if (keyCode === 9) {
-                    if (this.enterDown) {
-                        if (this.shiftDown) {
-                            moveIndex = moveIndex - 1;
-                        } else {
-                            moveIndex = moveIndex + 1;
-                        }
-                        objTd.eq(moveIndex).triggerHandler('mouseenter.dragrange');
-                    }
-                } else if (keyCode === 16) {
-                    if (this.enterDown) {
-                        this.shiftDown = true;
-                    }
-                } else if (keyCode === 37) {
-                    e.preventDefault();
-                    moveIndex = moveIndex - 1;
-                    if (moveIndex <= 0) {
-                        moveIndex = 0;
-                    }
-                } else if (keyCode === 38) {
-                    e.preventDefault();
-                    moveIndex = moveIndex - 7;
-                    if (moveIndex < 0) {
-                        moveIndex = targetWhichIndex;
-                    }
-                } else if (keyCode === 39) {
-                    e.preventDefault();
-                    moveIndex = moveIndex + 1;
-                    if (moveIndex >= objTd.length) {
-                        moveIndex = objTd.length;
-                    }
-                } else if (keyCode === 40) {
-                    e.preventDefault();
-                    moveIndex = moveIndex + 7;
-                    if (moveIndex >= objTd.length) {
-                        moveIndex = targetWhichIndex;
-                    }
-                }
-                if ((keyCode === 37) || (keyCode === 38) || (keyCode === 39) || (keyCode === 40)) {
-                    objTd.eq(moveIndex).triggerHandler('mouseenter.dragrange');
-                }
-
-            },
-            onKeyUpFunc : function (e) {
-                var keyCode = e.which || e.keyCode,
-                    target = $(e.currentTarget).parent();
-                if (this.enterDown) {
-                    if (keyCode === 16) {
-                        this.shiftDown = false;
-                    }
-                }
-            },
-            tdOverOutControl : function (e) {
-                e.stopPropagation();
-                if (!this.objDown) return;
-                var target = $(e.currentTarget);
-                this.tdOverOutView(target);
-            },
-            tdOverOutView : function (target) {
-                var objTd = this.objTd,
-                    targetWhichIndex = objTd.index(target);
-                for (var i = 0, max = objTd.length; i < max; i++) {
-                    if (((i <= this.downWhichIndex) && (i >= targetWhichIndex)) || ((i >= this.downWhichIndex) && (i <= targetWhichIndex))) {
-                        objTd.eq(i).addClass(this.opts.calActiveClass);
-                        this.targetWhichIndex = targetWhichIndex;
-                    } else {
-                        objTd.eq(i).removeClass(this.opts.calActiveClass);
-                    }
-                }
-            },
-            objMouseDownFunc : function (e) {
-                e.preventDefault();
-                e.stopPropagation();
-                var target = $(e.currentTarget);
-                if (this.objDown) return;
-                this.objDown = true;
-                this.downWhichIndex = this.objTd.index(target);
-                target.triggerHandler('mouseenter');
-                target.find('a').focus();
-            },
-            objMouseUpFunc : function (e) {
-                e.stopPropagation();
-                var target = $(e.currentTarget);
-                if (!this.objDown) return;
-                this.objDown = false;
-                target.find('a').focus();
-                this.endMoveFunc();
-            },
-            docMouseUpFunc : function (e) {
-                if (!this.objDown) return;
-                this.objDown = false;
-                this.endMoveFunc();
-            },
-            useageCssBuild : function () {
-                if (!this.rangeChoiceData) return;
-                var rangeChoiceData = this.rangeChoiceData,
-                    rangeChoiceFromDate = this.parent.dateObjectBuild(rangeChoiceData.fromDate),
-                    rangeChoiceToDate = this.parent.dateObjectBuild(rangeChoiceData.toDate),
-                    rangeChoiceYear = rangeChoiceFromDate.year,
-                    rangeChoiceMonth = rangeChoiceFromDate.month,
-                    rangeChoiceFromDate = (rangeChoiceFromDate.date - 1),
-                    rangeChoiceToDate = (rangeChoiceToDate.date - 1),
-                    objTd = this.objTd;
-                if ((this.opts.moveYear == rangeChoiceYear) && (this.opts.moveMonth == rangeChoiceMonth)) {
-                    for (var i = 0, max = objTd.length; i < max; i++) {
-                        if ((i >= rangeChoiceFromDate) && (i <= rangeChoiceToDate)) {
-                            objTd.eq(i).addClass(this.opts.calActiveClass);
-                        } else {
-                            objTd.eq(i).removeClass(this.opts.calActiveClass);
-                        }
-                    }
-                }
-            },
-            endMoveFunc : function () {
-                var sortArrays = [this.downWhichIndex, this.targetWhichIndex],
-                    sortArrays = sortArrays.sort(function (a, b) {return a - b}),
-                    fromData = this.objTd.eq(sortArrays[0]).find('a').data(this.opts.dataLinkDateName),
-                    toData = this.objTd.eq(sortArrays[1]).find('a').data(this.opts.dataLinkDateName),
-                    dataObj = {
-                        fromDate : this.parent.dateStringBuild(fromData.year, fromData.month, fromData.date),
-                        toDate : this.parent.dateStringBuild(toData.year, toData.month, toData.date)
-                    };
-                this.rangeChoiceData = dataObj;
-                this.parent.outCallback(dataObj);
             }
         },
         onPrevYear : function () {
@@ -544,9 +374,9 @@ table th.sat, table td.sat a{color:blue}
             for (var max_day = weekFirstDay; week_day < max_day; week_day++) {
                 tdPush(week_day);
                 layoutCalendar.push('<span>' + prevDay + '</span>');
+                layoutCalendar.push('</td>');
                 prevDay++;
             }
-            layoutCalendar.push('</td>');
             week_day = weekFirstDay;
             var mm = currentMonth.getMonth(),
                 mm = (mm == 0) ? 12 : mm;
@@ -574,9 +404,9 @@ table th.sat, table td.sat a{color:blue}
             for (week_day = week_day; week_day < 7; week_day++) {
                 tdPush(week_day);
                 layoutCalendar.push('<span>' + nextDay + '</span>');
+                layoutCalendar.push('</td>');
                 nextDay++;
             }
-            layoutCalendar.push('</td>');
             layoutCalendar.push('</tr>');
             layoutCalendar.push('</tbody>');
             layoutCalendar.push('</table>');
@@ -586,7 +416,11 @@ table th.sat, table td.sat a{color:blue}
             this.createCssBuild();
             this.useageCssBuild();
             if (this.opts.dragRange) {
-                this.dragCalendar.init(this);
+                if (!this.dragCalendar) {
+                    this.dragCalendar = new win.examProject.dragCalendar(this);
+                } else {
+                    this.dragCalendar.init(this);
+                }
             }
         },
         createDataBuild : function () {
@@ -716,6 +550,187 @@ table th.sat, table td.sat a{color:blue}
             }
         }
     };
+
+    win.examProject.dragCalendar = function (_parent) {
+        var defParams = {
+            customEvent : '.dragrange' + (new Date()).getTime()
+        };
+        this.opts = $.extend({}, defParams, (_parent.opts || {}));
+        this.parent = _parent;
+        this.init();
+    };
+    win.examProject.dragCalendar.prototype = {
+        init : function (_parent) {
+            if (_parent) {
+                this.opts.moveYear = _parent.opts.moveYear;
+                this.opts.moveMonth = _parent.opts.moveMonth;
+            }
+            this.setElements();
+            this.bindEvents();
+            this.useageCssBuild();
+        },
+        setElements : function () {
+            this.objCalendar = this.parent.objCalendar;
+            this.objTd = this.objCalendar.find('td').filter(function () {
+                var target = $(this);
+                if (!target.find('a').length) return false;
+                return true;
+            });
+        },
+        bindEvents : function () {
+            this.objTd.off('keydown' + this.opts.customEvent);
+            this.objTd.off('keyup' + this.opts.customEvent);
+            this.objTd.off('mousedown' + this.opts.customEvent);
+            this.objTd.off('mouseup' + this.opts.customEvent);
+            this.objTd.off('mouseenter' + this.opts.customEvent);
+            $(doc).off('mouseup' + this.opts.customEvent);
+            this.objTd.on('keydown' + this.opts.customEvent, 'a', $.proxy(this.onKeyDownFunc, this));
+            this.objTd.on('keyup' + this.opts.customEvent, 'a', $.proxy(this.onKeyUpFunc, this));
+            this.objTd.on('mousedown' + this.opts.customEvent, $.proxy(this.objMouseDownFunc, this));
+            this.objTd.on('mouseup' + this.opts.customEvent, $.proxy(this.objMouseUpFunc, this));
+            this.objTd.on('mouseenter' + this.opts.customEvent, $.proxy(this.tdOverOutControl, this));
+            $(doc).on('mouseup' + this.opts.customEvent, $.proxy(this.docMouseUpFunc, this));
+        },
+        onKeyDownFunc : function (e) {
+            var keyCode = e.which || e.keyCode,
+                target = $(e.currentTarget).parent(),
+                objTd = this.objTd,
+                targetWhichIndex = objTd.index(target),
+                moveIndex = targetWhichIndex;
+            if (keyCode === 13) {
+                if (this.enterDown) {
+                    this.enterDown = false;
+                    target.triggerHandler('mouseup' + this.opts.customEvent);
+                } else {
+                    this.enterDown = true;
+                    target.triggerHandler('mousedown' + this.opts.customEvent);
+                    target.triggerHandler('mouseenter' + this.opts.customEvent);
+                }
+            } else if (keyCode === 9) {
+                if (this.enterDown) {
+                    if (this.shiftDown) {
+                        moveIndex = moveIndex - 1;
+                    } else {
+                        moveIndex = moveIndex + 1;
+                    }
+                    objTd.eq(moveIndex).triggerHandler('mouseenter' + this.opts.customEvent);
+                }
+            } else if (keyCode === 16) {
+                if (this.enterDown) {
+                    this.shiftDown = true;
+                }
+            } else if (keyCode === 37) {
+                e.preventDefault();
+                moveIndex = moveIndex - 1;
+                if (moveIndex <= 0) {
+                    moveIndex = 0;
+                }
+            } else if (keyCode === 38) {
+                e.preventDefault();
+                moveIndex = moveIndex - 7;
+                if (moveIndex < 0) {
+                    moveIndex = targetWhichIndex;
+                }
+            } else if (keyCode === 39) {
+                e.preventDefault();
+                moveIndex = moveIndex + 1;
+                if (moveIndex >= objTd.length) {
+                    moveIndex = objTd.length;
+                }
+            } else if (keyCode === 40) {
+                e.preventDefault();
+                moveIndex = moveIndex + 7;
+                if (moveIndex >= objTd.length) {
+                    moveIndex = targetWhichIndex;
+                }
+            }
+            if ((keyCode === 37) || (keyCode === 38) || (keyCode === 39) || (keyCode === 40)) {
+                objTd.eq(moveIndex).triggerHandler('mouseenter' + this.opts.customEvent);
+            }
+        },
+        onKeyUpFunc : function (e) {
+            var keyCode = e.which || e.keyCode,
+                target = $(e.currentTarget).parent();
+            if (this.enterDown) {
+                if (keyCode === 16) {
+                    this.shiftDown = false;
+                }
+            }
+        },
+        tdOverOutControl : function (e) {
+            e.stopPropagation();
+            if (!this.objDown) return;
+            var target = $(e.currentTarget);
+            this.tdOverOutView(target);
+        },
+        tdOverOutView : function (target) {
+            var objTd = this.objTd,
+                targetWhichIndex = objTd.index(target);
+            for (var i = 0, max = objTd.length; i < max; i++) {
+                if (((i <= this.downWhichIndex) && (i >= targetWhichIndex)) || ((i >= this.downWhichIndex) && (i <= targetWhichIndex))) {
+                    objTd.eq(i).addClass(this.opts.calActiveClass);
+                    this.targetWhichIndex = targetWhichIndex;
+                } else {
+                    objTd.eq(i).removeClass(this.opts.calActiveClass);
+                }
+            }
+        },
+        objMouseDownFunc : function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            var target = $(e.currentTarget);
+            if (this.objDown) return;
+            this.objDown = true;
+            this.downWhichIndex = this.objTd.index(target);
+            target.triggerHandler('mouseenter');
+            target.find('a').focus();
+        },
+        objMouseUpFunc : function (e) {
+            e.stopPropagation();
+            var target = $(e.currentTarget);
+            if (!this.objDown) return;
+            this.objDown = false;
+            target.find('a').focus();
+            this.endMoveFunc();
+        },
+        docMouseUpFunc : function (e) {
+            if (!this.objDown) return;
+            this.objDown = false;
+            this.endMoveFunc();
+        },
+        useageCssBuild : function () {
+            if (!this.rangeChoiceData) return;
+            var rangeChoiceData = this.rangeChoiceData,
+                rangeChoiceFromDate = this.parent.dateObjectBuild(rangeChoiceData.fromDate),
+                rangeChoiceToDate = this.parent.dateObjectBuild(rangeChoiceData.toDate),
+                rangeChoiceYear = rangeChoiceFromDate.year,
+                rangeChoiceMonth = rangeChoiceFromDate.month,
+                rangeChoiceFromDate = (rangeChoiceFromDate.date - 1),
+                rangeChoiceToDate = (rangeChoiceToDate.date - 1),
+                objTd = this.objTd;
+            if ((this.opts.moveYear == rangeChoiceYear) && (this.opts.moveMonth == rangeChoiceMonth)) {
+                for (var i = 0, max = objTd.length; i < max; i++) {
+                    if ((i >= rangeChoiceFromDate) && (i <= rangeChoiceToDate)) {
+                        objTd.eq(i).addClass(this.opts.calActiveClass);
+                    } else {
+                        objTd.eq(i).removeClass(this.opts.calActiveClass);
+                    }
+                }
+            }
+        },
+        endMoveFunc : function () {
+            var sortArrays = [this.downWhichIndex, this.targetWhichIndex],
+                sortArrays = sortArrays.sort(function (a, b) {return a - b}),
+                fromData = this.objTd.eq(sortArrays[0]).find('a').data(this.opts.dataLinkDateName),
+                toData = this.objTd.eq(sortArrays[1]).find('a').data(this.opts.dataLinkDateName),
+                dataObj = {
+                    fromDate : this.parent.dateStringBuild(fromData.year, fromData.month, fromData.date),
+                    toDate : this.parent.dateStringBuild(toData.year, toData.month, toData.date)
+                };
+            this.rangeChoiceData = dataObj;
+            this.parent.outCallback(dataObj);
+        }
+    }
 })(window, window.jQuery, window.document);
 
 (function (win, $) {
