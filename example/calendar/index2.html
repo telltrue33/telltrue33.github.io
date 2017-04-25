@@ -31,7 +31,7 @@ table th.sat, table td.sat a{color:blue}
 .layout{margin-top:20px}
 .layout th,.layout td{font-size:14px}
 .layout td{padding:2px}
-.layout td span{padding:5px}
+.layout td span{padding:3px}
 .layout td a{position:relative;padding:3px;background:#f5f5f5;color:#000}
 .layout td.on a:before{position:absolute;top:0;right:0;bottom:0;left:0;border:2px solid #2ab327;content:''}
 .layout td.ck_today a{background:#2ab327;color:#fff}
@@ -55,6 +55,7 @@ table th.sat, table td.sat a{color:blue}
             <div class="markup-half js-calendar"></div>
         </div>
         <h1>Base Type</h1>
+        <div class="js-calendar"></div>
         <div class="js-calendar"></div>
     </div>
     <!-- container [e] -->
@@ -108,6 +109,7 @@ table th.sat, table td.sat a{color:blue}
             nextYearText : '다음년 이동',
             todayMonthText : '현재월 이동',
             closeText : '달력닫기',
+            range : false,
             mousewheelControl : false,
             onSelect : null
         };
@@ -200,8 +202,22 @@ table th.sat, table td.sat a{color:blue}
             this.choiceDate = targetDate.date;
             this.choiceFullDate = this.dateStringBuild(this.choiceYear, this.choiceMonth, this.choiceDate);
             this.dayClickType = true;
-            this.createCalendar();
-            this.outCallback(this.choiceFullDate);
+            if (this.opts.range) {
+                if (this.rangeFromDate && this.rangeToDate) {
+                    this.rangeFromDate = this.rangeToDate = null;
+                }
+                if (!this.rangeFromDate) {
+                    this.rangeFromDate = targetDate.fullDate;
+                    this.createCalendar();
+                } else {
+                    this.rangeToDate = targetDate.fullDate;
+                    this.createCalendar();
+                    this.rangeEndFunc();
+                }
+            } else {
+                this.createCalendar();
+                this.outCallback(this.choiceFullDate);
+            }
         },
         onKeyDownDay : function (e) {
             var target = $(e.currentTarget),
@@ -236,6 +252,28 @@ table th.sat, table td.sat a{color:blue}
             }
             if ((keyCode === 37) || (keyCode === 38) || (keyCode === 39) || (keyCode === 40)) {
                 moveCalendarLinks.eq(moveIndex).focus();
+            }
+        },
+        rangeEndFunc : function () {
+            var sortArrays = [this.rangeFromDate, this.rangeToDate],
+                sortArrays = sortArrays.sort(),
+                fromData = sortArrays[0].split(this.opts.middleText),
+                toData = sortArrays[1].split(this.opts.middleText),
+                dataObj = {
+                    fromDate : this.dateStringBuild(fromData[0], fromData[1], fromData[2]),
+                    toDate : this.dateStringBuild(toData[0], toData[1], toData[2])
+                };
+            this.rangeFromObject = this.dateObjectBuild(dataObj.fromDate);
+            this.rangeToObject = this.dateObjectBuild(dataObj.toDate);
+            this.outCallback(dataObj);
+        },
+        rangeCompare : function (startDate, inDate, endDate) {
+            var sortArrays = [startDate, inDate, endDate],
+                sortArrays = sortArrays.sort();
+            if (sortArrays[1] === inDate) {
+                return true;
+            } else {
+                return false;
             }
         },
         rangeBuild : function () {
@@ -415,7 +453,10 @@ table th.sat, table td.sat a{color:blue}
                     dataObj = {
                         year : _this.opts.moveYear,
                         month : _this.opts.moveMonth,
-                        date : target.text()
+                        date : parseInt(target.text()),
+                        fullDate : _this.opts.moveYear + _this.opts.middleText + 
+                            _this.opts.monthText[_this.opts.moveMonth - 1] + _this.opts.middleText + 
+                            _this.opts.dayText[target.text() - 1]
                     };
                 target.data(_this.opts.dataLinkDateName, dataObj);
                 return true;
@@ -434,6 +475,7 @@ table th.sat, table td.sat a{color:blue}
         },
         useageCssBuild : function () {
             this.useageChoiceCssBuild();
+            this.useageRangeCssBuild();
             this.useageRestCssBuild();
         },
         useageChoiceCssBuild : function () {
@@ -447,6 +489,23 @@ table th.sat, table td.sat a{color:blue}
                     if (this.dayClickType) {
                         this.dayClickType = false;
                         target.focus();
+                    }
+                }
+            }
+        },
+        useageRangeCssBuild : function () {
+            if (!this.opts.range) return;
+            var moveCalendarTd = this.objCalendar.find('td'),
+                linkTarget = moveCalendarTd.find('a');
+            if (this.rangeFromDate && this.rangeToDate) {
+                for (var i = 0, max = linkTarget.length; i < max; i++) {
+                    var target = linkTarget.eq(i),
+                        targetData = target.data(this.opts.dataLinkDateName),
+                        rangeType = this.rangeCompare(this.rangeFromDate, targetData.fullDate, this.rangeToDate);
+                    if (rangeType) {
+                        target.parent().addClass(this.opts.calActiveClass);
+                    } else {
+                        target.parent().removeClass(this.opts.calActiveClass);
                     }
                 }
             }
@@ -603,6 +662,7 @@ table th.sat, table td.sat a{color:blue}
             this.fromElements = $(this.opts.dateElements).eq(0);
             this.toElements = $(this.opts.dateElements).eq(1);
             this.dateElements = $(this.opts.dateElements).eq(2);
+            this.dateElementsRange = $(this.opts.dateElements).eq(3);
         },
         initOpts : function () {
             this.toSelectDate = this.fromSelectDate = null;
@@ -613,13 +673,23 @@ table th.sat, table td.sat a{color:blue}
                 mousewheelControl : true,
                 onSelect : $.proxy(this.fromChkFunc, this)
             });
+
             this.toDate = new win.examProject.calendarTable(this.toElements.get(0), {
                 restDays : this.opts.restDays,
                 mousewheelControl : true,
                 onSelect : $.proxy(this.toChkFunc, this)
             });
-            this.onePick = new win.examProject.calendarTable(this.dateElements.get(0), this.opts.regionEng);
-            this.onePick.onSelect = $.proxy(this.onChkFunc, this);
+
+            var oneOpts = $.extend({}, this.opts.regionEng, {
+                onSelect : $.proxy(this.onChkFunc, this)
+            });
+            this.onePick = new win.examProject.calendarTable(this.dateElements.get(0), oneOpts);
+
+            this.onePick2 = new win.examProject.calendarTable(this.dateElementsRange.get(0), {
+                range : true,
+                mousewheelControl : true,
+                onSelect : $.proxy(this.onChkRangeFunc, this)
+            });
         },
         fromChkFunc : function (selectDate) {
             this.customMessage(selectDate);
@@ -641,6 +711,9 @@ table th.sat, table td.sat a{color:blue}
         onChkFunc : function (selectDate) {
             this.customMessage(selectDate);
             if (win.console) win.console.log(selectDate);
+        },
+        onChkRangeFunc : function (selectDate) {
+            if (win.console) win.console.log(selectDate.fromDate + ' ~ ' + selectDate.toDate);
         },
         customMessage : function (selectDate) {
             if (selectDate === '05/09/2017') {
