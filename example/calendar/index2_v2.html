@@ -139,6 +139,8 @@ table th.sat, table td.sat a{color:blue}
             if (UTIL.isDevice && this.opts.dragRange) {
                 this.opts.dragRange = false;
                 this.opts.range = true;
+            } else if (this.opts.dragRange) {
+                this.opts.range = false;
             }
             for (var i = 0; i < this.opts.dateFormat.length; i++) {
                 if (iChars.indexOf(this.opts.dateFormat.charAt(i)) != -1) {
@@ -517,7 +519,7 @@ table th.sat, table td.sat a{color:blue}
             }
         },
         useageRangeCssBuild : function () {
-            if (!this.opts.range) return;
+            if (!this.opts.range && !this.opts.dragRange) return;
             var moveCalendarTd = this.objCalendar.find('td'),
                 linkTarget = moveCalendarTd.find('a');
             if (this.rangeFromDate && this.rangeToDate) {
@@ -634,7 +636,7 @@ table th.sat, table td.sat a{color:blue}
             }
             this.setElements();
             this.bindEvents();
-            this.useageCssBuild();
+            this.parent.useageRangeCssBuild();
         },
         setElements : function () {
             this.objCalendar = this.parent.objCalendar;
@@ -737,10 +739,10 @@ table th.sat, table td.sat a{color:blue}
             for (var i = 0, max = linkTarget.length; i < max; i++) {
                 var targets = linkTarget.eq(i),
                     targetsData = targets.data(this.opts.dataLinkDateName).fullDate,
-                    rangeType = this.parent.rangeCompare(this.rangeFromDate, targetsData, targetData);
+                    rangeType = this.parent.rangeCompare(this.parent.rangeFromDate, targetsData, targetData);
                 if (rangeType) {
                     targets.parent().addClass(this.opts.calActiveClass);
-                    this.rangeToDate = targetData;
+                    this.parent.rangeToDate = targetData;
                 } else {
                     targets.parent().removeClass(this.opts.calActiveClass);
                 }
@@ -753,7 +755,7 @@ table th.sat, table td.sat a{color:blue}
                 targetDate = target.find('a').data(this.opts.dataLinkDateName);
             if (this.objDown) return;
             this.objDown = true;
-            this.rangeFromDate = targetDate.fullDate;
+            this.parent.rangeFromDate = targetDate.fullDate;
             target.triggerHandler('mouseenter');
             target.find('a').focus();
         },
@@ -763,41 +765,12 @@ table th.sat, table td.sat a{color:blue}
             if (!this.objDown) return;
             this.objDown = false;
             target.find('a').focus();
-            this.endMoveFunc();
+            this.parent.rangeEndFunc();
         },
         docMouseUpFunc : function (e) {
             if (!this.objDown) return;
             this.objDown = false;
-            this.endMoveFunc();
-        },
-        useageCssBuild : function () {
-            if (!this.rangeChoiceData) return;
-            var moveCalendarTd = this.objCalendar.find('td'),
-                linkTarget = moveCalendarTd.find('a');
-            for (var i = 0, max = linkTarget.length; i < max; i++) {
-                var targets = linkTarget.eq(i),
-                    targetsData = targets.data(this.opts.dataLinkDateName).fullDate,
-                    rangeType = this.parent.rangeCompare(this.rangeFromDate, targetsData, this.rangeToDate);
-                if (rangeType) {
-                    targets.parent().addClass(this.opts.calActiveClass);
-                } else {
-                    targets.parent().removeClass(this.opts.calActiveClass);
-                }
-            }
-        },
-        endMoveFunc : function () {
-            var sortArrays = [this.rangeFromDate, this.rangeToDate],
-                sortArrays = sortArrays.sort(),
-                fromData = sortArrays[0].split(this.opts.middleText),
-                toData = sortArrays[1].split(this.opts.middleText),
-                dataObj = {
-                    fromDate : this.parent.dateStringBuild(fromData[0], fromData[1], fromData[2]),
-                    toDate : this.parent.dateStringBuild(toData[0], toData[1], toData[2])
-                };
-            this.rangeFromObject = this.parent.dateObjectBuild(dataObj.fromDate);
-            this.rangeToObject = this.parent.dateObjectBuild(dataObj.toDate);
-            this.rangeChoiceData = dataObj;
-            this.parent.outCallback(dataObj);
+            this.parent.rangeEndFunc();
         }
     }
 })(window, window.jQuery, window.document);
