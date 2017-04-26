@@ -141,6 +141,16 @@ table th.sat, table td.sat a{color:blue}
                 this.opts.choiceMonth = selectDateObject.month;
                 this.opts.choiceDate = selectDateObject.date;
             }
+            if (this.opts.range) {
+                if (this.opts.rangeFromDate && this.opts.rangeFromDate.length) {
+                    var rangeFromDate = this.dateObjectBuild(this.opts.rangeFromDate);
+                    this.opts.rangeFromDate = rangeFromDate.year + this.opts.middleText + this.opts.monthText[rangeFromDate.month - 1] + this.opts.middleText + this.opts.dayText[rangeFromDate.date - 1];
+                }
+                if (this.opts.rangeToDate && this.opts.rangeToDate.length) {
+                    var rangeToDate = this.dateObjectBuild(this.opts.rangeToDate);
+                    this.opts.rangeToDate = rangeToDate.year + this.opts.middleText + this.opts.monthText[rangeToDate.month - 1] + this.opts.middleText + this.opts.dayText[rangeToDate.date - 1];
+                }
+            }
         },
         initLayout : function () {
             this.createOptions();
