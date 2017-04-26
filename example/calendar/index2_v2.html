@@ -114,7 +114,10 @@ table th.sat, table td.sat a{color:blue}
             nextYearText : '다음년 이동',
             todayMonthText : '현재월 이동',
             closeText : '달력닫기',
+            selectDate : null,
             range : false,
+            rangeFromDate : null,
+            rangeToDate : null,
             dragRange : false,
             mousewheelControl : false,
             onSelect : null
@@ -134,7 +137,7 @@ table th.sat, table td.sat a{color:blue}
             this.opts.moveYear = this.todayYear = date.getFullYear;
             this.opts.moveMonth = this.todayMonth = date.getMonth;
             this.opts.moveDate = this.todayDate = date.getDate;
-            this.opts.choiceDate = null;
+            this.opts.choiceFullDate = null;
             this.onSelect = this.opts.onSelect;
             if (UTIL.isDevice && this.opts.dragRange) {
                 this.opts.dragRange = false;
@@ -145,6 +148,22 @@ table th.sat, table td.sat a{color:blue}
             for (var i = 0; i < this.opts.dateFormat.length; i++) {
                 if (iChars.indexOf(this.opts.dateFormat.charAt(i)) != -1) {
                     this.opts.middleText = this.opts.dateFormat.charAt(i);
+                }
+            }
+            if (this.opts.selectDate && this.opts.selectDate.length) {
+                var selectDateObject = this.dateObjectBuild(this.opts.selectDate);
+                this.opts.choiceYear = selectDateObject.year;
+                this.opts.choiceMonth = selectDateObject.month;
+                this.opts.choiceDate = selectDateObject.date;
+            }
+            if (this.opts.range || this.opts.dragRange) {
+                if (this.opts.rangeFromDate && this.opts.rangeFromDate.length) {
+                    var rangeFromDate = this.dateObjectBuild(this.opts.rangeFromDate);
+                    this.opts.rangeFromDate = rangeFromDate.year + this.opts.middleText + this.opts.monthText[rangeFromDate.month - 1] + this.opts.middleText + this.opts.dayText[rangeFromDate.date - 1];
+                }
+                if (this.opts.rangeToDate && this.opts.rangeToDate.length) {
+                    var rangeToDate = this.dateObjectBuild(this.opts.rangeToDate);
+                    this.opts.rangeToDate = rangeToDate.year + this.opts.middleText + this.opts.monthText[rangeToDate.month - 1] + this.opts.middleText + this.opts.dayText[rangeToDate.date - 1];
                 }
             }
         },
@@ -213,7 +232,7 @@ table th.sat, table td.sat a{color:blue}
                 this.opts.choiceYear = targetDate.year;
                 this.opts.choiceMonth = targetDate.month;
                 this.opts.choiceDate = targetDate.date;
-                this.choiceFullDate = this.dateStringBuild(this.opts.choiceYear, this.opts.choiceMonth, this.opts.choiceDate);
+                this.opts.choiceFullDate = this.dateStringBuild(this.opts.choiceYear, this.opts.choiceMonth, this.opts.choiceDate);
                 this.dayClickType = true;
                 if (this.opts.range) {
                     if (this.opts.rangeFromDate && this.opts.rangeToDate) {
@@ -229,7 +248,7 @@ table th.sat, table td.sat a{color:blue}
                     }
                 } else {
                     this.createCalendar();
-                    this.outCallback(this.choiceFullDate);
+                    this.outCallback(this.opts.choiceFullDate);
                 }
             }
         },
