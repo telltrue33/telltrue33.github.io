@@ -1,9 +1,6 @@
 (function (win, $, doc) {
     'use strict';
     win.examProject = win.examProject || {};
-    win.examProject.common = win.examProject.common || {};
-
-    var UTIL = win.examProject.common.util;
 
     win.examProject.calendarDate = (function () {
         var date = new Date(),
@@ -48,7 +45,10 @@
             rangeToDate : null,
             dragRange : false,
             mousewheelControl : false,
-            onSelect : null
+            onSelect : null,
+            isDevice : (function () {
+                return ('ontouchstart' in win || (win.DocumentTouch && doc instanceof win.DocumentTouch));
+            })()
         };
         this.opts = $.extend({}, defParams, (args || {}));
         if (!(this.obj = $(container)).length) return;
@@ -67,7 +67,7 @@
             this.opts.moveDate = this.todayDate = date.getDate;
             this.opts.choiceFullDate = null;
             this.onSelect = this.opts.onSelect;
-            if (UTIL.isDevice && this.opts.dragRange) {
+            if (this.opts.isDevice && this.opts.dragRange) {
                 this.opts.dragRange = false;
                 this.opts.range = true;
             } else if (this.opts.dragRange) {
