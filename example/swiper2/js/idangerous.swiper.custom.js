@@ -844,6 +844,7 @@ var Swiper = function (selector, params) {
             _this.callPlugins('onInit');
             if (params.onInit) _this.fireCallback(params.onInit, _this);
         }
+        _this.updateAutoHeight();
         _this.initialized = true;
     };
 
@@ -2023,6 +2024,7 @@ var Swiper = function (selector, params) {
     function slideChangeCallbacks(direction) {
         //Transition Start Callback
         _this.callPlugins('onSlideChangeStart');
+        _this.updateAutoHeight();
         if (params.onSlideChangeStart) {
             if (params.queueStartCallbacks && _this.support.transitions) {
                 if (_this._queueStartCallbacks) return;
@@ -2143,7 +2145,6 @@ var Swiper = function (selector, params) {
         if (params.pagination) {
             _this.updatePagination(position);
         }
-        _this.updateAutoHeight();
     };
     _this.updateAutoHeight = function () {
         if (!params.freeMode && params.mode == 'horizontal') {
