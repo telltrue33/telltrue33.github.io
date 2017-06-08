@@ -2024,7 +2024,7 @@ var Swiper = function (selector, params) {
     function slideChangeCallbacks(direction) {
         //Transition Start Callback
         _this.callPlugins('onSlideChangeStart');
-        _this.updateAutoHeight();
+        _this.updateAutoHeight('slide');
         if (params.onSlideChangeStart) {
             if (params.queueStartCallbacks && _this.support.transitions) {
                 if (_this._queueStartCallbacks) return;
@@ -2146,10 +2146,14 @@ var Swiper = function (selector, params) {
             _this.updatePagination(position);
         }
     };
-    _this.updateAutoHeight = function () {
+    _this.updateAutoHeight = function (slideMoveType) {
         if (!params.freeMode && params.mode == 'horizontal') {
             var activeHeight = _this.slides[_this.activeIndex].getHeight(true);
-            $(_this.container).stop().animate({'height':activeHeight});
+            if (slideMoveType === 'slide') {
+                $(_this.container).stop().animate({'height':activeHeight});
+            } else {
+                $(_this.container).stop().css({'height':activeHeight});
+            }
         }
     };
     /*==================================================
@@ -2561,6 +2565,7 @@ var Swiper = function (selector, params) {
         // Callbacks
         if (params.onSwiperCreated) _this.fireCallback(params.onSwiperCreated, _this);
         _this.callPlugins('onSwiperCreated');
+        _this.updateAutoHeight();
     }
 
     makeSwiper();
