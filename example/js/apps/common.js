@@ -6,9 +6,23 @@
 
     win.examProject.common = (function () {
         return {
+            customEvent : {
+                PAGEIS : {
+                    EVENT_MANAGER : $('<div data-evt-manager=\'page\'/>'),
+                    PAGEOBJS : [],
+                    REPOSITION : 'PAGE_REPOSITION'
+                }
+            },
             util : {
                 isSupportTransform : (function () {
                     return ('WebkitTransform' in doc.body.style || 'MozTransform' in doc.body.style || 'msTransform' in doc.body.style || 'OTransform' in doc.body.style || 'transform' in doc.body.style);
+                })(),
+                isSupportTransition : (function () {
+                    return ('WebkitTransition' in doc.body.style || 'MozTransition' in doc.body.style || 'msTransition' in doc.body.style || 'OTransition' in doc.body.style || 'transition' in doc.body.style);
+                })(),
+                isSupportTransforms3d : (window.Modernizr && Modernizr.csstransforms3d === true) || (function () {
+                    var div = document.createElement('div').style;
+                    return ('webkitPerspective' in div || 'MozPerspective' in div || 'OPerspective' in div || 'MsPerspective' in div || 'perspective' in div);
                 })(),
                 isDevice : (function () {
                     return ('ontouchstart' in win || (win.DocumentTouch && doc instanceof win.DocumentTouch));
@@ -23,6 +37,11 @@
                         }
                     }
                     return org;
+                },
+                wait : function(timeout){
+                    var deferred = $.Deferred();
+                    setTimeout(deferred.resolve, timeout);
+                    return deferred.promise();
                 },
                 winSize : (function () {
                     var isWinSafari = (function () {
@@ -100,4 +119,26 @@
             }
         }
     })();
+
+    var CST_EVENT = win.stProject.common.customEvent;
+
+    win.stProject.page = (function () {
+        return {
+            init : function () {
+                this.bindEvents();
+            },
+            bindEvents : function () {
+                CST_EVENT.PAGEIS.EVENT_MANAGER.on(CST_EVENT.PAGEIS.REPOSITION, $.proxy(this.pageReposition, this));
+            },
+            pageReposition : function () {
+                for (var i = 0, max = CST_EVENT.PAGEIS.PAGEOBJS.length; i < max; i++) {
+                    CST_EVENT.PAGEIS.PAGEOBJS[i].reInit();
+                }
+            }
+        }
+    })();
+
+    $(function () {
+        win.stProject.page.init();
+    });
 })(window, window.jQuery, window.document);
