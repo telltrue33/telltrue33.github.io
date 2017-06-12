@@ -120,9 +120,9 @@
         }
     })();
 
-    var CST_EVENT = win.stProject.common.customEvent;
+    var CST_EVENT = win.examProject.common.customEvent;
 
-    win.stProject.page = (function () {
+    win.examProject.page = (function () {
         return {
             init : function () {
                 this.bindEvents();
@@ -139,6 +139,6 @@
     })();
 
     $(function () {
-        win.stProject.page.init();
+        win.examProject.page.init();
     });
 })(window, window.jQuery, window.document);
