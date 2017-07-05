@@ -120,12 +120,26 @@
         }
     })();
 
-    var CST_EVENT = win.examProject.common.customEvent;
+    var CST_EVENT = win.examProject.common.customEvent,
+        UTIL = win.examProject.common.util;
 
     win.examProject.page = (function () {
         return {
             init : function () {
+                this.setOpts();
+                this.setElements();
                 this.bindEvents();
+            },
+            setOpts : function () {
+                this.scrollLocked = false;
+                this.lockStyles = {
+                    'overflow-y' : 'scroll',
+                    'position' : 'fixed',
+                    'width' : '100%'
+                };
+            },
+            setElements : function () {
+                this.html = $('html');
             },
             bindEvents : function () {
                 CST_EVENT.PAGEIS.EVENT_MANAGER.on(CST_EVENT.PAGEIS.REPOSITION, $.proxy(this.pageReposition, this));
@@ -133,6 +147,32 @@
             pageReposition : function () {
                 for (var i = 0, max = CST_EVENT.PAGEIS.PAGEOBJS.length; i < max; i++) {
                     CST_EVENT.PAGEIS.PAGEOBJS[i].reInit();
+                }
+            },
+            scrollLock : function (type) {
+                var _this = this;
+                function saveStyles () {
+                    _this.prevStyle = _this.html.attr('style');
+                    _this.prevScroll = {
+                        scrollLeft : $(win).scrollLeft(),
+                        scrollTop : $(win).scrollTop()
+                    };
+                };
+                if (type) {
+                    if (this.scrollLocked) return;
+                    var appliedLock = {};
+                    saveStyles();
+                    $.extend(appliedLock, this.lockStyles, {
+                        'left' : - this.prevScroll.scrollLeft,
+                        'top' : - this.prevScroll.scrollTop
+                    });
+                    this.html.css(appliedLock);
+                    this.scrollLocked = true;
+                } else {
+                    if (!this.scrollLocked) return;
+                    this.html.removeAttr('style').attr('style', this.prevStyle);
+                    $(win).scrollLeft(this.prevScroll.scrollLeft).scrollTop(this.prevScroll.scrollTop);
+                    this.scrollLocked = false;
                 }
             }
         }
