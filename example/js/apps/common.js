@@ -120,8 +120,7 @@
         }
     })();
 
-    var CST_EVENT = win.examProject.common.customEvent,
-        UTIL = win.examProject.common.util;
+    var CST_EVENT = win.examProject.common.customEvent;
 
     win.examProject.page = (function () {
         return {
