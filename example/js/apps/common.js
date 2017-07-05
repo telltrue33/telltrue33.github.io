@@ -131,6 +131,7 @@
             },
             setOpts : function () {
                 this.scrollLocked = false;
+                this.prevStyles = {};
                 this.lockStyles = {
                     'overflow-y' : 'scroll',
                     'position' : 'fixed',
@@ -151,7 +152,21 @@
             scrollLock : function (type) {
                 var _this = this;
                 function saveStyles () {
-                    _this.prevStyle = _this.html.attr('style');
+                    var styleAttr =  _this.html.attr('style'),
+                        styleStrs = [],
+                        styleHash = {};
+                    if (!styleAttr) return;
+                    styleStrs = styleAttr.split(';');
+                    $.each(styleStrs, function styleProp (styleString) {
+                        var styleString = styleStrs[styleString];
+                        if (!styleString) return;
+                        var keyValue = styleString.split(':');
+                        if (keyValue.length < 2) return;
+                        styleHash[$.trim(keyValue[0])] = $.trim(keyValue[1]);
+                    });
+                    $.extend(_this.prevStyles, styleHash);
+                };
+                function saveScrolls () {
                     _this.prevScroll = {
                         scrollLeft : $(win).scrollLeft(),
                         scrollTop : $(win).scrollTop()
@@ -159,17 +174,22 @@
                 };
                 if (type) {
                     if (this.scrollLocked) return;
-                    var appliedLock = {};
+                    this.appliedLock = {};
                     saveStyles();
-                    $.extend(appliedLock, this.lockStyles, {
+                    saveScrolls();
+                    $.extend(this.appliedLock, this.lockStyles, {
                         'left' : - this.prevScroll.scrollLeft,
                         'top' : - this.prevScroll.scrollTop
                     });
-                    this.html.css(appliedLock);
+                    this.html.css(this.appliedLock);
                     this.scrollLocked = true;
                 } else {
                     if (!this.scrollLocked) return;
-                    this.html.removeAttr('style').attr('style', this.prevStyle);
+                    saveStyles();
+                    for (var key in this.appliedLock) {
+                        delete this.prevStyles[key];
+                    }
+                    this.html.attr('style', $('<x>').css(this.prevStyles).attr('style') || '');
                     $(win).scrollLeft(this.prevScroll.scrollLeft).scrollTop(this.prevScroll.scrollTop);
                     this.scrollLocked = false;
                 }
