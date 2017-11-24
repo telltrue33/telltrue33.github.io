@@ -106,6 +106,7 @@ ul,li{list-style:none}
         emitter : {
             subscribers : {},
             on : function (event, cb, context) {
+                this.subscribers = JSON.parse(JSON.stringify(this.subscribers));
                 this.subscribers[event] = this.subscribers[event] || [];
                 this.subscribers[event].push({
                     callback : cb,
