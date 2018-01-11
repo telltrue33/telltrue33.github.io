@@ -259,7 +259,7 @@ var imgLoader = function (selector, callback) {
                         };
                 })(),
                 cancelAFrame : (function () {
-                    return win.cancelAnimationFrame || win.webkitCancelAnimationFrame || win.mozCancelAnimationFrame || win.oCancelAnimationFrame || win.msCancelAnimationFrame ||
+                    return win.cancelAnimationFrame || win.webkitCancelAnimationFrame || win.webkitCancelRequestAnimationFrame || win.mozCancelAnimationFrame || win.oCancelAnimationFrame || win.msCancelAnimationFrame ||
                         function (id) {
                             win.clearTimeout(id);
                         };
@@ -400,7 +400,7 @@ var imgLoader = function (selector, callback) {
                         };
                 })(),
                 cancelAFrame : (function () {
-                    return win.cancelAnimationFrame || win.webkitCancelAnimationFrame || win.mozCancelAnimationFrame || win.oCancelAnimationFrame || win.msCancelAnimationFrame ||
+                    return win.cancelAnimationFrame || win.webkitCancelAnimationFrame || win.webkitCancelRequestAnimationFrame || win.mozCancelAnimationFrame || win.oCancelAnimationFrame || win.msCancelAnimationFrame ||
                         function (id) {
                             win.clearTimeout(id);
                         };
