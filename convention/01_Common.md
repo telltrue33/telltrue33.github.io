@@ -107,7 +107,7 @@ var requestAFrame = (function () {
         };
 })();
 var cancelAFrame = (function () {
-    return window.cancelAnimationFrame || window.webkitCancelAnimationFrame || window.mozCancelAnimationFrame || window.oCancelAnimationFrame || window.msCancelAnimationFrame ||
+    return window.cancelAnimationFrame || window.webkitCancelAnimationFrame || window.webkitCancelRequestAnimationFrame || window.mozCancelAnimationFrame || window.oCancelAnimationFrame || window.msCancelAnimationFrame ||
         function (id) {
             window.clearTimeout(id);
         };
