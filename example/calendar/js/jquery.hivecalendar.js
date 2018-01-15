@@ -8,13 +8,13 @@
         }
         var defParams = {
             nowDate : (function () {
-        var date = new Date(),
-            dateObj = {
-                getFullYear : date.getFullYear(),
-                getMonth : date.getMonth() + 1,
-                getDate : date.getDate()
-            };
-        return dateObj; 
+                var date = new Date(),
+                    dateObj = {
+                        getFullYear : date.getFullYear(),
+                        getMonth : date.getMonth() + 1,
+                        getDate : date.getDate()
+                    };
+                return dateObj; 
             })(),
             isDevice : (function () {
                 return ('ontouchstart' in win || (win.DocumentTouch && doc instanceof win.DocumentTouch));
