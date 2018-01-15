@@ -332,7 +332,7 @@
         },
         onMouseWheelFunc : function (e) {
             e.preventDefault();
-            if (e.originalEvent.wheelDelta < 0) {
+            if (e.deltaY < 0) {
                  this.btnNextMonth.triggerHandler(this.changeEvents('click'));
             } else {
                  this.btnPrevMonth.triggerHandler(this.changeEvents('click'));
