@@ -19,24 +19,26 @@ h1{margin:50px 0 10px;font-size:20px}
 .calendar_wrap{zoom:1}
 .calendar_wrap:after{display:block;clear:both;content:''}
 .calendar_wrap .markup-half{float:left;position:relative;width:50%;padding:15px 20px 0;box-sizing:border-box}
-.js-calendar table{width:100%;table-layout:fixed;border-collapse:separate;text-align:center}
-.js-calendar table td{color:#ccc}
-.js-calendar table td span{display:block}
-.js-calendar table td a{display:block;color:#000;text-decoration:none}
-.js-calendar table td.ck_today{border-color:red}
-.js-calendar table th.sun, .js-calendar table td.sun a{color:red}
-.js-calendar table th.sat, .js-calendar table td.sat a{color:blue}
 
-.js-calendar .info{font-size:16px;font-weight:bold;color:#000;text-align:center}
-.js-calendar .layout{margin-top:20px}
-.js-calendar .layout th,.js-calendar .layout td{font-size:14px}
-.js-calendar .layout td{padding:2px}
-.js-calendar .layout td span{padding:3px}
-.js-calendar .layout td a{position:relative;padding:3px;background:#f5f5f5;color:#000}
-.js-calendar .layout td.on a:before{position:absolute;top:0;right:0;bottom:0;left:0;border:2px solid #2ab327;content:''}
-.js-calendar .layout td.ck_today a{background:#2ab327;color:#fff}
-.js-calendar .js-options{position:relative;font-size:0}
-.js-calendar .js-options button{width:20px 28px;padding:10px}
+.hive-datepicker-wrap table{width:100%;table-layout:fixed;border-collapse:separate;text-align:center}
+.hive-datepicker-wrap table td{color:#ccc}
+.hive-datepicker-wrap table td span{display:block}
+.hive-datepicker-wrap table td a{display:block;color:#000;text-decoration:none}
+.hive-datepicker-wrap table td.dp-today{border-color:red}
+.hive-datepicker-wrap table th.sun, .hive-datepicker-wrap table td.sun a{color:red}
+.hive-datepicker-wrap table th.sat, .hive-datepicker-wrap table td.sat a{color:blue}
+
+.hive-datepicker-wrap .dp-table-info{font-size:16px;font-weight:bold;color:#000;text-align:center}
+.hive-datepicker-wrap .dp-table-container{position:relative;margin-top:20px}
+.hive-datepicker-wrap .dp-table-layout th,.hive-datepicker-wrap .dp-table-layout td{font-size:14px}
+.hive-datepicker-wrap .dp-table-layout td{padding:2px}
+.hive-datepicker-wrap .dp-table-layout td span{padding:3px}
+.hive-datepicker-wrap .dp-table-layout td a{position:relative;padding:3px;background:#f5f5f5;color:#000}
+.hive-datepicker-wrap .dp-table-layout td.dp-active a:before{position:absolute;top:0;right:0;bottom:0;left:0;border:2px solid #2ab327;content:''}
+.hive-datepicker-wrap .dp-table-layout td.dp-today a{background:#2ab327;color:#fff}
+.hive-datepicker-wrap .dp-table-layout td.dp-special a{color:red}
+.hive-datepicker-wrap .dp-options-wrap{position:relative;font-size:0}
+.hive-datepicker-wrap .dp-options-wrap button{width:20px 28px;padding:10px}
 /* //temporary css */
 </style>
 </head>
@@ -49,14 +51,17 @@ h1{margin:50px 0 10px;font-size:20px}
     <hr />
     <!-- container [s] -->
     <div id="container">
-        <h1>Range Type</h1>
-        <div class="calendar_wrap">
-            <div class="markup-half js-calendar"></div>
-            <div class="markup-half js-calendar"></div>
-        </div>
         <h1>Base Type</h1>
-        <div class="js-calendar"></div>
-        <div class="js-calendar"></div>
+        <div class="hive-datepicker-wrap dp-base"></div>
+        <h1>Range Type</h1>
+        <div class="hive-datepicker-wrap dp-range"></div>
+        <h1>Range Type (2 Picker)</h1>
+        <div class="calendar_wrap">
+            <div class="markup-half hive-datepicker-wrap dp-range-from"></div>
+            <div class="markup-half hive-datepicker-wrap dp-range-to"></div>
+        </div>
+        <h1>Range Type (Drag Rage)</h1>
+        <div class="hive-datepicker-wrap dp-range-drag"></div>
     </div>
     <!-- container [e] -->
     <hr />
@@ -76,7 +81,6 @@ h1{margin:50px 0 10px;font-size:20px}
 
     win.examProject.dateForm = function () {
         var defParams = {
-            dateElements : '.js-calendar',
             regionEng : {
                 weekText : ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'],
                 captionText : 'date caption',
@@ -89,7 +93,7 @@ h1{margin:50px 0 10px;font-size:20px}
             },
             restDays : [
                 {
-                    year : '2017',
+                    year : '2018',
                     detail : [
                         {
                             month : '1',
@@ -133,48 +137,51 @@ h1{margin:50px 0 10px;font-size:20px}
             this.setDate();
         },
         setElements : function () {
-            this.fromElements = $(this.opts.dateElements).eq(0);
-            this.toElements = $(this.opts.dateElements).eq(1);
-            this.dateElements = $(this.opts.dateElements).eq(2);
-            this.dateElementsRange = $(this.opts.dateElements).eq(3);
+            this.dateElements = $('.dp-base');
+            this.dateElementsRange = $('.dp-range');
+            this.fromElements = $('.dp-range-from');
+            this.toElements = $('.dp-range-to');
+            this.dateElementsDragRange = $('.dp-range-drag');
         },
         initOpts : function () {
             this.toSelectDate = this.fromSelectDate = null;
         },
         setDate : function () {
-            this.fromDate = new win.examProject.hiveCalendar(this.fromElements.get(0), {
-                restDays : this.opts.restDays,
-                mousewheelControl : true,
-                onSelect : $.proxy(this.fromChkFunc, this)
-            });
-
-            this.toDate = new win.examProject.hiveCalendar(this.toElements.get(0), {
-                restDays : this.opts.restDays,
-                mousewheelControl : true,
-                onSelect : $.proxy(this.toChkFunc, this)
-            });
-
-            var oneOpts = $.extend({}, this.opts.regionEng, {
+            var baseOpts = $.extend({}, this.opts.regionEng, {
                 restDays : this.opts.restDays,
                 onSelect : $.proxy(this.onChkFunc, this)
             });
-            this.onePick = new win.examProject.hiveCalendar(this.dateElements.get(0), oneOpts);
+            this.basePicker = new HiveDatepicker(this.dateElements.get(0), baseOpts);
 
-            this.onePick2 = new win.examProject.hiveCalendar(this.dateElementsRange.get(0), {
+            this.rangePicker = new HiveDatepicker(this.dateElementsRange.get(0), {
                 range : true,
-                mousewheelControl : true,
                 onSelect : $.proxy(this.onChkRangeFunc, this)
+            });
+
+            this.rangeFromPicker = new HiveDatepicker(this.fromElements.get(0), {
+                restDays : this.opts.restDays,
+                onSelect : $.proxy(this.fromChkFunc, this)
+            });
+            this.rangeToPicker = new HiveDatepicker(this.toElements.get(0), {
+                restDays : this.opts.restDays,
+                onSelect : $.proxy(this.toChkFunc, this)
+            });
+
+            this.rangeDragPicker = new HiveDatepicker(this.dateElementsDragRange.get(0), {
+                dragRange : true,
+                mousewheelControl : true,
+                onSelect : $.proxy(this.dragRangeChkFunc, this)
             });
         },
         fromChkFunc : function (selectDate) {
             this.customMessage(selectDate);
-            this.toDate.minDate(selectDate);
+            this.rangeToPicker.minDate(selectDate);
             this.fromSelectDate = selectDate;
             this.rangeChkFunc();
         },
         toChkFunc : function (selectDate) {
             this.customMessage(selectDate);
-            this.fromDate.maxDate(selectDate);
+            this.rangeFromPicker.maxDate(selectDate);
             this.toSelectDate = selectDate;
             this.rangeChkFunc();
         },
@@ -182,6 +189,9 @@ h1{margin:50px 0 10px;font-size:20px}
             if (this.fromSelectDate && this.toSelectDate) {
                 if (win.console) win.console.log(this.fromSelectDate + ' ~ ' + this.toSelectDate);
             }
+        },
+        dragRangeChkFunc : function (selectDate) {
+            if (win.console) win.console.log(selectDate.fromDate + ' ~ ' + selectDate.toDate);
         },
         onChkFunc : function (selectDate) {
             this.customMessage(selectDate);

@@ -14,17 +14,17 @@ button{font-size:14px;font-family:"나눔고딕",NanumGothic,"굴림",Gulim,Sans
 button::-moz-focus-inner{padding:0;border:0}
 p{margin-bottom:30px;padding-bottom:10px;border-bottom:2px solid #da0707;font-size:20px}
 
-.js-calendar{text-align:center}
-.js-calendar ul{display:inline-block;vertical-align:top;*display:inline;zoom:1}
-.js-calendar ul li{float:left;margin-left:10px}
-.js-calendar ul li:first-child{margin-left:0}
-.js-calendar ul li span{display:block;color:#000}
-.js-calendar ul li a{display:block;padding:3px;color:#000;text-decoration:none}
-.js-calendar ul li.ck_today{background:#ccc}
-.js-calendar ul li.on{background:orange}
-.js-calendar ul li.sun, .js-calendar ul li.sun a{color:red}
-.js-calendar ul li.sat, .js-calendar ul li.sat a{color:blue}
-.js-calendar ul li.special, .js-calendar ul li.special a{color:red}
+.hive-datepicker-wrap{text-align:center}
+.hive-datepicker-wrap ul{display:inline-block;vertical-align:top;*display:inline;zoom:1}
+.hive-datepicker-wrap ul li{float:left;margin-left:10px}
+.hive-datepicker-wrap ul li:first-child{margin-left:0}
+.hive-datepicker-wrap ul li span{display:block;color:#000}
+.hive-datepicker-wrap ul li a{display:block;padding:3px;color:#000;text-decoration:none}
+.hive-datepicker-wrap ul li.dp-today{background:#ccc}
+.hive-datepicker-wrap ul li.dp-active{background:orange}
+.hive-datepicker-wrap ul li.sun, .hive-datepicker-wrap ul li.sun a{color:red}
+.hive-datepicker-wrap ul li.sat, .hive-datepicker-wrap ul li.sat a{color:blue}
+.hive-datepicker-wrap ul li.dp-special, .hive-datepicker-wrap ul li.dp-special a{color:red}
 /* //temporary css */
 </style>
 </head>
@@ -37,7 +37,7 @@ p{margin-bottom:30px;padding-bottom:10px;border-bottom:2px solid #da0707;font-si
     <hr />
     <!-- container [s] -->
     <div id="container">
-        <div class="js-calendar"></div>
+        <div class="hive-datepicker-wrap"></div>
     </div>
     <!-- container [e] -->
     <hr />
@@ -50,12 +50,14 @@ p{margin-bottom:30px;padding-bottom:10px;border-bottom:2px solid #da0707;font-si
 <script src="js/jquery.hivecalendar.custom.js"></script>
 <script>
 (function (win, $) {
+    win.examProject = win.examProject || {};
+
     win.examProject.dateForm = function () {
         var defParams = {
-            dateElements : '.js-calendar',
+            dateElements : '.hive-datepicker-wrap',
             restDays : [
                 {
-                    year : '2017',
+                    year : '2018',
                     detail : [
                         {
                             month : '1',
@@ -105,7 +107,7 @@ p{margin-bottom:30px;padding-bottom:10px;border-bottom:2px solid #da0707;font-si
             this.selectDate = null;
         },
         setDate : function () {
-            this.onePick = new win.examProject.hiveCalendar(this.dateElements.get(0), {
+            this.onePick = new HiveDatepicker(this.dateElements.get(0), {
                 restDays : this.opts.restDays,
                 onSelect : $.proxy(this.onChkFunc, this)
             });
