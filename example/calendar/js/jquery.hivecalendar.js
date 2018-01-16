@@ -150,9 +150,9 @@
         },
         dragDocBindEvents : function (type) {
             if (type) {
-                $(doc).on(this.changeEvents('mouseup'), $.proxy(this.onDragDocMouseUpFunc, this));
+                $(doc).on(this.changeEvents('mousemove mouseup'), $.proxy(this.onDragDocMouseUpFunc, this));
             } else {
-                $(doc).off(this.changeEvents('mouseup'));
+                $(doc).off(this.changeEvents('mousemove mouseup'));
             }
         },
         onDragFunc : function (e) {
@@ -188,8 +188,12 @@
                 }
             }
         },
-        onDragDocMouseUpFunc : function () {
-            this.enterTarget.triggerHandler(this.changeEvents('mouseup'));
+        onDragDocMouseUpFunc : function (e) {
+            if (e.type === 'mousemove') {
+                e.preventDefault();
+            } else if (e.type === 'mouseup') {
+                this.enterTarget.triggerHandler(this.changeEvents('mouseup'));
+            }
         },
         dragActiveView : function (target) {
             var moveCalendarLink = this.moveCalendarLink,
