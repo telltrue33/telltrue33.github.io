@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<link rel="canonical" href="https://weather-pwa-sample.firebaseapp.com/final/">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Samsung PWA</title>
+<!-- <link rel="stylesheet" type="text/css" href="styles/inline.css"> -->
+
+<!-- TODO add manifest here -->
+<link rel="manifest" href="/manifest.json">
+<!-- Add to home screen for Safari on iOS -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="Samsung PWA">
+<link rel="apple-touch-icon" href="images/icons/icon-152x152.png">
+<meta name="msapplication-TileImage" content="images/icons/icon-144x144.png">
+<meta name="msapplication-TileColor" content="#2F3BA2">
+
+<!--/* common css */-->
+<link rel="stylesheet" type="text/css" href="/apps/samsungp5/components/global/page/page/clientlibs/css/main.css">
+<!--/* template css */-->
+<link rel="stylesheet" type="text/css" href="/apps/samsungp5/components/global/page/page-support/clientlibs/css/page-sds.css">
+<link rel="stylesheet" type="text/css" href="/apps/samsungp5/components/global/page/page-support/clientlibs/css/main.css">
+<!--/* component css */-->
+<link rel="stylesheet" type="text/css" href="../../home/support-kv/clientlibs/css/main.css">
+<link rel="stylesheet" type="text/css" href="../../home/three-persona/clientlibs/css/main.css">
+<link rel="stylesheet" type="text/css" href="../../home/additional-info/clientlibs/css/main.css">
+<link rel="stylesheet" type="text/css" href="/apps/samsungp5/components/global/content/support/common/promotion-banner/clientlibs/css/main.css">
+<link rel="stylesheet" type="text/css" href="/apps/samsungp5/components/global/content/support/common/support-contactus/clientlibs/css/main.css">
+<link rel="stylesheet" href="/apps/samsungp5/components/global/content/support/common/support-find-popup/clientlibs/css/main.css">
+<link rel="stylesheet" href="/apps/samsungp5/components/global/content/support/common/support-help-popup/clientlibs/css/main.css">
+<style>
+html {
+  -webkit-box-flex: 1;
+  -webkit-flex: 1;
+      -ms-flex: 1;
+          flex: 1;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+</style>
+<!--[if lt IE 9]>
+    <script src="/etc/designs/smg/global/ie9/html5.js"></script>
+<![endif]-->
+</head>
+<body>
+
+<div id="wrap">
+    <!--/* header */-->
+    
+    <!--/* content */-->
+    <div id="content" role="main">
+        <!--/* Support Contact Us Float Anchor */-->
+        <a href="#" class="tp-support-contact-btn js-btn-contact">Contact Us</a>
+    
+        <!--/* Support Components */-->
+        <section class="support-kv">
+            <h1 class="support-kv__title">We're here to help</h1>
+            <div class="support-kv__search">
+                <fieldset>
+                    <legend>Search area</legend>
+                    <div class="support-input__wrap js-inptext-wrap s-search">
+                        <label for="search" class="support-input__label">Enter your Model number of Keyword</label>
+                        <input type="text" id="search" class="support-input__input" autocomplete="off">
+                        <button type="submit" class="support-input__search"><span class="s-svg s-ico-search">Search</span></button>
+                    </div>
+                </fieldset>
+                <div class="support-kv__search-result" style="display:none">
+                    <ul class="search__list">
+                    <li class="search__list-item">
+                        <a href="#" class="search__list-product"><div class="search__result-img"><img src="../../home/support-kv/imgs/@keyvisual-search-product.jpg" class="search__result-product" width="56" height="56" alt="Galaxy Note8 Dual Slim"></div><span class="search__result-text">
+                        <mark class="mark-keyword">Galaxy</mark> Note8 Dual Slim (SM-N950FZKDBTU)</span></a>
+                    </li>
+                    <li class="search__list-item">
+                        <a href="#" class="search__list-product"><div class="search__result-img"><img src="../../home/support-kv/imgs/@keyvisual-search-product.jpg" class="search__result-product" width="56" height="56" alt="Galaxy Note8 Dual Slim"></div>
+                        <span class="search__result-text"><mark class="mark-keyword">Galaxy</mark> Note8 Dual Slim (SM-N950FZDDBTU)</span></a>
+                    </li>
+                    <li class="search__list-item">
+                        <a href="#" class="search__list-product"><div class="search__result-img"><img src="../../home/support-kv/imgs/@keyvisual-search-product.jpg" class="search__result-product" width="56" height="56" alt="Galaxy S8"></div>
+                        <span class="search__result-text"><mark class="mark-keyword">Galaxy</mark> S8 (SM-G950FZSABTU)</span></a>
+                    </li>
+                    <li class="search__list-item">
+                        <a href="#" class="search__list-product"><span class="search__result-text">How do I set up repeat notificaions for messages on my 
+                            Samsung <mark class="mark-keyword">Galaxy</mark> smartphone?</span></a>
+                    </li>
+                    <li class="search__list-item">
+                        <a href="#" class="search__list-product"><span class="search__result-text">How do I start my Samsung <mark class="mark-keyword">Galaxy</mark> S5 in Safe Mode?</span></a>
+                    </li>
+                    </ul>
+                </div>
+            </div>
+            <a href="#" class="support-kv__find-number js-btn-find">How to find my model number?</a>
+            <div class="support-kv__popular-box">
+                <strong class="title">Popular searches</strong>
+                <ul class="model-info">
+                <li><a href="#">Galaxy S8</a></li>
+                <li><a href="#">How do I use the Iris Scanner on my smartphone?</a></li>
+                <li><a href="#">How do I transfer data from one device to another?</a></li>
+                </ul>
+            </div>
+            <div class="support-kv__popular-img">
+                <img src="../../home/support-kv/imgs/@keyvisual-bg-pc.png" alt="" class="img-pc">
+                <img src="../../home/support-kv/imgs/@keyvisual-bg-m.png" alt="" class="img-mobile">
+            </div>
+        </section>
+        
+        <section class="three-persona">
+            <div class="topics">
+                <h2 class="three-persona__headline">What help do you need?</h2>
+                <ul class="topics__list">
+                <li>
+                    <a href="#" class="topics__link topics__icotype1" data-select-product="solutions">
+                        <span class="topics__link-text">Help<br>
+                            for your product</span>
+                        <span class="topics__link-more">LEARN MORE
+                            <span class="blind" data-global-text='{
+                                "Expand" : "Click to Expand",
+                                "Collapse" : "Click to Collapse"}'>&nbsp;</span>
+                        </span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="topics__link topics__icotype2" data-select-product="downloads">
+                        <span class="topics__link-text">Manuals &amp; software<br> 
+                            downloads</span>
+                        <span class="topics__link-more">LEARN MORE
+                            <span class="blind" data-global-text='{
+                                "Expand" : "Click to Expand",
+                                "Collapse" : "Click to Collapse"}'>&nbsp;</span>
+                        </span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="topics__link topics__icotype3 notAnchor-class">
+                        <span class="topics__link-text">Face-to-face <br>
+                            support</span>
+                        <span class="topics__link-more">LEARN MORE</span>
+                    </a>
+                </li>
+                </ul>
+            </div>
+            
+            <div class="select-product__wrap">
+                <div class="select-product" data-select-product="solutions">
+                    <h3 class="select-product__headline">Select your product</h3>
+                    <ul class="select-product__list">
+                    <li>
+                        <a href="#" class="select-product__item">
+                            <img src="../../home/three-persona/imgs/mobile-phone.jpg" width="112" height="112" alt="">
+                            <span class="product-name">Mobile phone</span>
+                            <span class="blind" data-global-text='{
+                                "Expand" : "Click to Expand",
+                                "Collapse" : "Click to Collapse"}'>&nbsp;</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="select-product__item">
+                            <img src="../../home/three-persona/imgs/tv-and-av.jpg" width="112" height="112" alt="">
+                            <span class="product-name">TV &amp; AV</span>
+                            <span class="blind" data-global-text='{
+                                "Expand" : "Click to Expand",
+                                "Collapse" : "Click to Collapse"}'>&nbsp;</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="select-product__item">
+                            <img src="../../home/three-persona/imgs/home-appliance.jpg" width="112" height="112" alt="">
+                            <span class="product-name">Home Appliance</span>
+                            <span class="blind" data-global-text='{
+                                "Expand" : "Click to Expand",
+                                "Collapse" : "Click to Collapse"}'>&nbsp;</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="select-product__item">
+                            <img src="../../home/three-persona/imgs/pc-and-office.jpg" width="112" height="112" alt="">
+                            <span class="product-name">PC &amp; Office</span>
+                            <span class="blind" data-global-text='{
+                                "Expand" : "Click to Expand",
+                                "Collapse" : "Click to Collapse"}'>&nbsp;</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="select-product__item">
+                            <img src="../../home/three-persona/imgs/camera-and-camcorder.jpg" width="112" height="112" alt="">
+                            <span class="product-name">Camera &amp; Camcorder</span>
+                            <span class="blind" data-global-text='{
+                                "Expand" : "Click to Expand",
+                                "Collapse" : "Click to Collapse"}'>&nbsp;</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="select-product__item">
+                            <img src="../../home/three-persona/imgs/storage.jpg" width="112" height="112" alt="">
+                            <span class="product-name">Storage</span>
+                            <span class="blind" data-global-text='{
+                                "Expand" : "Click to Expand",
+                                "Collapse" : "Click to Collapse"}'>&nbsp;</span>
+                        </a>
+                    </li>
+                    </ul>
+                    <button type="button" class="select-product__btn-close">Close select product</button>
+                </div>
+                <div class="select-product" data-select-product="downloads">
+                    <h3 class="select-product__headline">Select your product</h3>
+                    <ul class="select-product__list">
+                    <li>
+                        <a href="#" class="select-product__item">
+                            <img src="../../home/three-persona/imgs/mobile-phone.jpg" width="112" height="112" alt="">
+                            <span class="product-name">Mobile phone</span>
+                            <span class="blind" data-global-text='{
+                                "Expand" : "Click to Expand",
+                                "Collapse" : "Click to Collapse"}'>&nbsp;</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="select-product__item">
+                            <img src="../../home/three-persona/imgs/tv-and-av.jpg" width="112" height="112" alt="">
+                            <span class="product-name">TV &amp; AV</span>
+                            <span class="blind" data-global-text='{
+                                "Expand" : "Click to Expand",
+                                "Collapse" : "Click to Collapse"}'>&nbsp;</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="select-product__item">
+                            <img src="../../home/three-persona/imgs/home-appliance.jpg" width="112" height="112" alt="">
+                            <span class="product-name">Home Appliance</span>
+                            <span class="blind" data-global-text='{
+                                "Expand" : "Click to Expand",
+                                "Collapse" : "Click to Collapse"}'>&nbsp;</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="select-product__item">
+                            <img src="../../home/three-persona/imgs/pc-and-office.jpg" width="112" height="112" alt="">
+                            <span class="product-name">PC &amp; Office</span>
+                            <span class="blind" data-global-text='{
+                                "Expand" : "Click to Expand",
+                                "Collapse" : "Click to Collapse"}'>&nbsp;</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="select-product__item">
+                            <img src="../../home/three-persona/imgs/camera-and-camcorder.jpg" width="112" height="112" alt="">
+                            <span class="product-name">Camera &amp; Camcorder</span>
+                            <span class="blind" data-global-text='{
+                                "Expand" : "Click to Expand",
+                                "Collapse" : "Click to Collapse"}'>&nbsp;</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="select-product__item">
+                            <img src="../../home/three-persona/imgs/storage.jpg" width="112" height="112" alt="">
+                            <span class="product-name">Storage</span>
+                            <span class="blind" data-global-text='{
+                                "Expand" : "Click to Expand",
+                                "Collapse" : "Click to Collapse"}'>&nbsp;</span>
+                        </a>
+                    </li>
+                    </ul>
+                    <button type="button" class="select-product__btn-close">Close select product</button>
+                </div>
+            </div>
+
+            <!--/* [D] Device Downloads & Updates Case : Add class .download-type to find-category */-->
+            <div class="find-category download-type">
+                <div class="find-category__step">                       
+                    <h4 class="find-category__title title-active"><a href="#" class="find-category__name">Type</a></h4>
+                    <div class="find-category__listing smg-cm-loading">
+                        <!--/* loading uio */-->
+                        <div class="cm-loading-box"><span class="blind">Now Loading</span></div>
+                        <!--/* // loading uio */-->
+                        <ul class="listing" role="listbox">
+                        <li class="find-category--active" role="option" aria-selected="true"><a href="#" class="s-btn-text s-ico-new-window">Black &amp; White Laser Printers</a></li>
+                        <li role="option" aria-selected="false"><a href="#">Colour Laser Printer</a></li>
+                        <li role="option" aria-selected="false"><a href="#" class="s-btn-text s-ico-new-window">Black &amp; White Multifunction Printers</a></li>
+                        <li role="option" aria-selected="false"><a href="#">Colour Multifunction Printer</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="find-category__step">                       
+                    <h4 class="find-category__title"><a href="#" class="find-category__name">Subtype</a></h4>
+                    <div class="find-category__listing">
+                        <!--/* loading uio */-->
+                        <div class="cm-loading-box"><span class="blind">Now Loading</span></div>
+                        <!--/* // loading uio */-->
+                        <ul class="listing" role="listbox">
+                        <li class="find-category--active" role="option" aria-selected="true"><a href="#">Black &amp; White Laser Printers</a></li>
+                        <li role="option" aria-selected="false"><a href="#">Colour Laser Printer</a></li>
+                        <li role="option" aria-selected="false"><a href="#">Black &amp; White Multifunction Printers</a></li>
+                        <li role="option" aria-selected="false"><a href="#">Colour Multifunction Printer</a></li>
+                        <li role="option" aria-selected="false"><a href="#">Colour Multifunction Printer</a></li>
+                        <li role="option" aria-selected="false"><a href="#">Colour Multifunction Printer</a></li>
+                        <li role="option" aria-selected="false"><a href="#">Colour Multifunction Printer</a></li>
+                        <li role="option" aria-selected="false"><a href="#">Colour Multifunction Printer</a></li>
+                        <li role="option" aria-selected="false"><a href="#">Colour Multifunction Printer</a></li>
+                        <li role="option" aria-selected="false"><a href="#">Colour Multifunction Printer</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="find-category__step find-category__step-sort">
+                    <fieldset>
+                        <legend>search area</legend>
+                        <div class="support-input__wrap js-inptext-wrap s-search">
+                            <label for="findCategoryModel1" class="support-input__label">Enter a model number</label>
+                            <input type="text" id="findCategoryModel1" class="support-input__input" autocomplete="off">
+                            <button type="submit" class="support-input__search"><span class="s-svg s-ico-search">Search</span></button>
+                        </div>
+                    </fieldset>
+                    <!--/* model search layer  */-->
+                    <div class="find-category__search-result">
+                        <ul class="model-search__list">
+                        <li class="model-search__list-item">
+                            <a href="#" class="model-search__list-product"><span class="search__result-text"><mark class="mark-keyword">SM</mark>-J3330FN (<mark class="mark-keyword">SM</mark>-J330FZSNMET)</span></a>
+                        </li>
+                        <li class="model-search__list-item">
+                            <a href="#" class="model-search__list-product"><span class="search__result-text"><mark class="mark-keyword">SM</mark>-J3330FN (<mark class="mark-keyword">SM</mark>-J330FZSNMET)</span></a>
+                        </li>
+                        <li class="model-search__list-item">
+                            <a href="#" class="model-search__list-product"><span class="search__result-text"><mark class="mark-keyword">SM</mark>-J3330FN (<mark class="mark-keyword">SM</mark>-J330FZSNMET)</span></a>
+                        </li>
+                        <li class="model-search__list-item">
+                            <a href="#" class="model-search__list-product"><span class="search__result-text"><mark class="mark-keyword">SM</mark>-J3330FN (<mark class="mark-keyword">SM</mark>-J330FZSNMET)</span></a>
+                        </li>
+                        <li class="model-search__list-item">
+                            <a href="#" class="model-search__list-product"><span class="search__result-text"><mark class="mark-keyword">SM</mark>-J3330FN (<mark class="mark-keyword">SM</mark>-J330FZSNMET)</span></a>
+                        </li>
+                        <li class="model-search__list-item">
+                            <a href="#" class="model-search__list-product"><span class="search__result-text"><mark class="mark-keyword">SM</mark>-J3330FN (<mark class="mark-keyword">SM</mark>-J330FZSNMET)</span></a>
+                        </li>
+                        <li class="model-search__list-item">
+                            <a href="#" class="model-search__list-product"><span class="search__result-text"><mark class="mark-keyword">SM</mark>-J3330FN (<mark class="mark-keyword">SM</mark>-J330FZSNMET)</span></a>
+                        </li>
+                        <li class="model-search__list-item">
+                            <a href="#" class="model-search__list-product"><span class="search__result-text"><mark class="mark-keyword">SM</mark>-J3330FN (<mark class="mark-keyword">SM</mark>-J330FZSNMET)</span></a>
+                        </li>
+                        <li class="model-search__list-item">
+                            <a href="#" class="model-search__list-product"><span class="search__result-text"><mark class="mark-keyword">SM</mark>-J3330FN (<mark class="mark-keyword">SM</mark>-J330FZSNMET)</span></a>
+                        </li>
+                        </ul>
+                    </div>
+                    <a href="#" class="find-category__find-number js-btn-find">How to find my model number?</a>
+                    <div class="find-category__title sort-active">
+                        <a href="#" class="find-category__name"><h4>Sort by<span class="find-category__btn-sort"></span></h4></a>
+                        <ul class="sorting" role="listbox">
+                        <li class="find-category--active" role="option" aria-selected="true"><a href="#">A to Z</a></li>
+                        <li role="option" aria-selected="false"><a href="#">Hits</a></li>
+                        <li role="option" aria-selected="false"><a href="#">Latest</a></li>                       
+                        </ul>
+                    </div>
+                    <div class="find-category__listing">
+                        <!--/* loading uio */-->
+                        <div class="cm-loading-box"><span class="blind">Now Loading</span></div>
+                        <!--/* // loading uio */-->
+                        <ul class="listing" role="listbox">
+                        <li class="find-category--active" role="option" aria-selected="true"><a href="#">Samsung Xpress M2022 Printer</a></li>
+                        <li role="option" aria-selected="false"><a href="#">Samsung Xpress M2022 Printer</a></li>
+                        <li role="option" aria-selected="false"><a href="#">M2070FW Xpress 20PPM Mono Multifunction Laser Printer</a></li>
+                        <li role="option" aria-selected="false"><a href="#">CLX-4195FW 18PPM Wireless Colour Multifunction Printer</a></li>
+                        <li role="option" aria-selected="false"><a href="#">M2070FW Xpress 20PPM Mono Multifunction Laser Printer M2070FW Xpress 20PPM Mono</a></li>
+                        <li role="option" aria-selected="false"><a href="#">Samsung Xpress M2022 Printer</a></li>
+                        <li role="option" aria-selected="false"><a href="#">Samsung Xpress M2022 Printer</a></li>
+                        <li role="option" aria-selected="false"><a href="#">M2070FW Xpress 20PPM Mono Multifunction Laser Printer</a></li>
+                        <li role="option" aria-selected="false"><a href="#">CLX-4195FW 18PPM Wireless Colour Multifunction Printer</a></li>
+                        <li role="option" aria-selected="false"><a href="#">M2070FW Xpress 20PPM Mono Multifunction Laser Printer M2070FW Xpress 20PPM Mono</a></li>
+                        </ul>
+                    </div>                      
+                </div>
+                <div class="find-category__step find-category__result">
+                    <div class="idontknow">
+                        <p class="idont-know">I don't know my model number</p>
+                        <a href="#" class="learn-more"><span>learn more</span></a>
+                    </div>                      
+                    <div class="find-category__product-wrap">
+                        <div class="find-category__product-wrap-inner">
+                            <!--/* [D] no product img : add class 'no-img' / replace image tag to '<span class="blind">No Product Image</span>' */-->
+                            <div class="product-img">
+                                <!--/* <span class="blind">No Product Image</span> */-->
+                                <img src="http://images.samsung.com/is/image/samsung/uk-american-style-rsa1utmg-rsa1utmg1-xeu-001-front-gray" width="184" height="184" alt="dvd-1080av">
+                            </div>
+                            <div class="model-name">
+                                DVD-1080AV DVD-1080AV DVD-1080AV DVD-1080AV
+                                <span class="model-id">SL-M2070FW/SEESL-M2070FW</span>
+                            </div>                      
+                            <a href="#" class="s-btn-encased find-category__btn-select">select</a>
+                        </div>
+                    </div>
+                </div>          
+                <p class="find-category__disclaimer">* For any printer related enquiries please visit the <a href="https://www.support.hp.com" target="_blank" title="Open in a new window">HP website</a>.</p>     
+            </div>
+        </section>
+    
+        <section class="additional-info">
+            <h2 class="additional-info__heading">Find additional info</h2>
+            <div class="additional-info__wrap" style="">
+                <ul class="additional-info__inr">
+                    <li>
+                        <div class="additional-info__lst">
+                            <div class="additional-info__lst-img">
+                                <img src="" data-src-pc="../../home/additional-info/imgs/icon-warranty-pc.png" data-src-mobile="../../home/additional-info/imgs/icon-warranty-mo.png" class="js-img-src" width="48" height="48" alt="">
+                            </div>
+                            <strong class="additional-info__lst-tit">Warranty</strong>
+                            <p class="additional-info__lst-txt">You’ll find the warranty information for your Samsung product here.</p>
+                            <a href="#" class="s-btn-text">Learn More</a>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="additional-info__lst">
+                            <div class="additional-info__lst-img">
+                                <img src="" data-src-pc="../../home/additional-info/imgs/icon-window-pc.png" data-src-mobile="../../home/additional-info/imgs/icon-window-mo.png" class="js-img-src" width="48" height="48" alt="">
+                            </div>
+                            <strong class="additional-info__lst-tit">Windows 10 Update Information</strong>
+                            <a href="#" class="s-btn-text s-type2">Windows 10 Update Information</a>
+                            <a href="#" class="s-btn-text s-type2">Windows 10 S Support Models</a>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="additional-info__lst">
+                            <div class="additional-info__lst-img">
+                                <img src="" data-src-pc="../../home/additional-info/imgs/icon-community-pc.png" data-src-mobile="../../home/additional-info/imgs/icon-community-mo.png" class="js-img-src" width="48" height="48" alt="">
+                            </div>
+                            <strong class="additional-info__lst-tit">The Samsung Community</strong>
+                            <p class="additional-info__lst-txt">A Place to sit back, chat and discover the new world of Samsung</p>
+                            <a href="#" class="s-btn-text">Learn More</a>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="additional-info__lst">
+                            <div class="additional-info__lst-img">
+                                <img src="" data-src-pc="../../home/additional-info/imgs/icon-alert-pc.png" data-src-mobile="../../home/additional-info/imgs/icon-alert-mo.png" class="js-img-src" width="48" height="48" alt="">
+                            </div>
+                            <strong class="additional-info__lst-tit">News &amp; Alerts</strong>
+                            <p class="additional-info__lst-txt">For important product and service announcement</p>
+                            <a href="#" class="s-btn-text">Learn More</a>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="additional-info__lst" style="padding-right:0">
+                            <img src="../../home/additional-info/imgs/@additional-img.jpg" width="353" height="160" alt="" style="width:100%;height:auto">
+                        </div>
+                    </li>
+                    <li>
+                        <div class="additional-info__lst" style="padding-right:0">
+                            <img src="../../home/additional-info/imgs/@additional-img.jpg" width="353" height="160" alt="" style="width:100%;height:auto">
+                        </div>
+                    </li>
+                    <li>
+                        <div class="additional-info__lst" style="padding-right:0">
+                            <img src="../../home/additional-info/imgs/@additional-img.jpg" width="353" height="160" alt="" style="width:100%;height:auto">
+                        </div>
+                    </li>
+                    <li>
+                        <div class="additional-info__lst" style="padding-right:0">
+                            <img src="../../home/additional-info/imgs/@additional-img.jpg" width="353" height="160" alt="" style="width:100%;height:auto">
+                        </div>
+                    </li>
+                    <li>
+                        <div class="additional-info__lst" style="padding-right:0">
+                            <img src="../../home/additional-info/imgs/@additional-img.jpg" width="353" height="160" alt="" style="width:100%;height:auto">
+                        </div>
+                    </li>
+                    <li>
+                        <div class="additional-info__lst" style="padding-right:0">
+                            <img src="../../home/additional-info/imgs/@additional-img.jpg" width="353" height="160" alt="" style="width:100%;height:auto">
+                        </div>
+                    </li>
+                </ul>
+            </div>
+    
+            <!--/* btn more */-->
+            <div class="additional-info-btn">
+                <button type="button" class="s-btn-text s-ico-down" data-global-text='{
+                    "show" : "Show more information",
+                    "less" : "Show less information"
+                }'>SHOW MORE INFORMATION</button>
+            </div>
+            <!--/* btn more */-->
+        </section>
+    
+        <section class="promotion-banner sp-margin-top">
+            <h2 class="blind">Promotion Banner</h2>
+            <div class="promotion-banner__text-wrap">
+                <strong class="promotion-banner__text-wrap-tit">Premium Care</strong>
+                <p class="promotion-banner__text-wrap-txt">Get covered with Samsung care with a team of experts ready to come to you to get it done, no matter what it is and no matter where you are.</p>
+                <a href="#" class="s-btn-text s-white">LEARN MORE</a>
+            </div>
+            <div class="promotion-banner__img-wrap">
+                <img class="js-img-src" src="" data-src-pc="../../common/promotion-banner/imgs/home_note8_promotion_pc.jpg" data-src-mobile="../../common/promotion-banner/imgs/home_note8_promotion_mobile.jpg" width="1440" height="320" alt="">
+            </div>
+        </section>
+    
+        <section class="support-contactus home-type">
+            <h2 class="support-contactus__heading">Contact Us</h2>
+            <div class="support-contactus__wrap">
+                <div class="support-contactus__inner">
+                    <div class="support-contactus__column">
+                        <h3 class="support-contactus__column-tit">
+                            <span class="s-icon s-contact"></span>
+                            <span class="s-txt">Contact Online</span>
+                        </h3>
+                        <div class="support-contactus__box">
+                            <a href="#" class="support-contactus__box-tit">Twitter</a>
+                            <p class="support-contactus__box-desc">We are here to chat, 9am~9pm, 7 days a week.</p>
+                        </div>
+                        <div class="support-contactus__box">
+                            <a href="#" class="support-contactus__box-tit">FaceBook messenger</a>
+                            <p class="support-contactus__box-desc">We are here to chat, 9am~9pm, 7 days a week.</p>
+                        </div>
+                        <div class="support-contactus__box">
+                            <a href="#" class="support-contactus__box-tit">Start chatting</a>
+                            <p class="support-contactus__box-desc">Monday to Friday : 9am~6:30pm<br>Saturday : 10am~5:30pm<br>SmartThings Monday to Friday : 9am~5:30pm</p>
+                        </div>
+                        <div class="support-contactus__box">
+                            <button type="button" class="support-contactus__box-tit js-btn-help">Send us an Email</button>
+                            <p class="support-contactus__box-desc">We’ll repond within 24 hours of your request.</p>
+                        </div>
+                        <div class="support-contactus__box">
+                            <a href="#" class="support-contactus__box-tit">Cyber Service</a>
+                            <p class="support-contactus__box-desc">Help with Hubs, Kits, Sensors and Outlets.</p>
+                        </div>
+                        <div class="support-contactus__box">
+                            <a href="#" class="support-contactus__box-tit" target="_blank" title="Open in a new window">SmartThing Support<span class="s-icon s-ico-newwindow"></span></a>
+                            <p class="support-contactus__box-desc">Help with Hubs, Kits, Sensors and Outlets.</p>
+                        </div>
+                    </div>
+    
+                    <div class="support-contactus__column">
+                        <h3 class="support-contactus__column-tit">
+                            <span class="s-icon s-calls"></span>
+                            <span class="s-txt">Calls</span>
+                        </h3>
+                        <div class="support-contactus__box small-type">
+                            <strong class="support-contactus__box-tit"><a href="tel:0330%20726%207864" class="js-tel-link">0330 726 7864</a>0330 SAMSUNG</strong>
+                            <p class="support-contactus__box-desc">Monday to Saturday : 9am~6pm</p>
+                        </div>
+                        <div class="support-contactus__box small-type">
+                            <strong class="support-contactus__box-tit">B2B and Print Support</strong>
+                            <p class="support-contactus__box-desc">Monday to Friday : 9am~6pm</p>
+                        </div>
+                        <div class="support-contactus__box">
+                            <p class="support-contactus__box-desc">Calls to 0330 numbers cost no more than calls to geographic numbers (01 or 02). Calls from landlines and mobiles are included in free call packages. Call charges are subject to change and this information is provided as a reference only.<br>
+                            Calls maybe recorded for training and quality purposes.<br>For information on how we collect and use your details, please refer to our Privacy policy</p>
+                        </div>
+                        <p class="support-contactus__disclaimer">* For any printer related enquiries please visit the <a href="https://www.support.hp.com" target="_blank" title="Open in a new window">HP website</a>.</p> 
+                    </div>
+    
+                    <div class="support-contactus__column">
+                        <h3 class="support-contactus__column-tit">
+                            <span class="s-icon s-visit"></span>
+                            <span class="s-txt">Visit us</span>
+                        </h3>
+                        <div class="support-contactus__box">
+                            <a href="#" class="support-contactus__box-tit">Samsung Support Centres</a>
+                            <p class="support-contactus__box-desc">Find out a little more about where you can find your nearest Support Centre.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!--/* layer popup */-->
+        <div class="cm-support-layer js-layer-find" style="display:none">
+            <span class="cm-support-layer__dimmed"></span>
+            <div class="cm-support-layer__layer cm-support-find-popup">     
+                
+                <div class="find-model__select-wrap">
+                    <h2 class="find-model__title">How to find my model number?</h2>
+                    
+                    <p class="find-model__desc">Need some help locating your model number? Select your product from the menus below and
+                    we’ll show you where your number is.</p>
+            
+                    <div class="find-model__select">
+                        <ul class="select-list">
+                        <li class="select-list__item">
+                            <em class="select-list__item-title">Type</em>
+                            <div class="support-select select-type1 js-select-wrap">
+                                <a href="#" class="support-select__placeholder"><span>Mobilephone</span></a>
+                                <div class="support-select__options" role="listbox" aria-hidden="true" style="display: none;">
+                                    <ul role="presentation">
+                                    <li role="presentation"><a href="#" role="option">option1</a></li>
+                                    <li role="presentation"><a href="#" role="option">option2</a></li>
+                                    <li role="presentation"><a href="#" role="option">option3</a></li>
+                                    <li role="presentation"><a href="#" role="option">option4</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="select-list__item">
+                            <em class="select-list__item-title">Subtype</em>
+                            <div class="support-select select-type1 js-select-wrap">
+                                <a href="#" class="support-select__placeholder"><span>Phones, Tablets &amp; Wearables</span></a>
+                                <div class="support-select__options" role="listbox" aria-hidden="true" style="display: none;">
+                                    <ul role="presentation">
+                                    <li role="presentation"><a href="#" role="option">option1</a></li>
+                                    <li role="presentation"><a href="#" role="option">option2</a></li>
+                                    <li role="presentation"><a href="#" role="option">option3</a></li>
+                                    <li role="presentation"><a href="#" role="option">option4</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="select-list__item">
+                            <em class="select-list__item-title">Category</em>
+                            <div class="support-select select-type1 js-select-wrap">
+                                <a href="#" class="support-select__placeholder"><span>Smartphone</span></a>
+                                <div class="support-select__options" role="listbox" aria-hidden="true" style="display: none;">
+                                    <ul role="presentation">
+                                    <li role="presentation"><a href="#" role="option">option1</a></li>
+                                    <li role="presentation"><a href="#" role="option">option2</a></li>
+                                    <li role="presentation"><a href="#" role="option">option3</a></li>
+                                    <li role="presentation"><a href="#" role="option">option4</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </li>
+                        </ul>                   
+                    </div>
+                </div>          
+                
+                <div class="find-model__info-wrap find-model__product">
+                    <!--/* loading uio */-->
+                    <div class="cm-loading-box"><span class="blind">Now Loading</span></div>
+                    <!--/* // loading uio */-->
+                    <div class="s-slick">
+                        <div class="find-model__info-item">
+                            <div class="find-model__info-image">
+                                <img src="../../common/support-find-popup/imgs/tbd-find-model.jpg" width="336" height="240" alt="">
+                            </div>
+                            <p class="find-model__info-desc">Once remove your battery then you can find<br> Model name and other information.</p>
+                        </div>
+                        <div class="find-model__info-item smg-cm-loading">
+                            <div class="find-model__info-image">
+                                <img src="http://images.samsung.com/is/image/samsung/my-2207-60604043?$ORIGIN_JPG$" width="336" height="240" alt="">
+                            </div>
+                            <p class="find-model__info-desc">Lorem ipsum dolor sit amet, consectetur adipisicing elit. <br>Ex veritatis voluptatibus sit dignissimos dolorum dolore aut architecto minima, repudiandae quaerat, molestias, similique enim at exercitationem nihil?</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <button type="button" class="cm-support-layer__btn-close"><span class="ico-close">Close popup</span></button>
+            </div>
+        </div>
+    
+        <div class="cm-support-layer cm-support-help js-layer-help" style="display:none">
+            <span class="cm-support-layer__dimmed"></span>
+            <div class="cm-support-layer__layer cm-support-help__layer">
+                <h2 class="cm-support-help__tit">Want help right away?</h2>
+                <p class="cm-support-help__desc">Chat with a Samsung representative to get an<br> immediate response or send us an email and<br> we will get back to you soon</p>
+                <div class="cm-support-help__lst-btn">
+                    <a href="#" class="s-btn-encased">CHAT NOW</a>
+                    <a href="#" class="s-btn-encased">EMAIL</a>
+                </div>
+                <button type="button" class="cm-support-layer__btn-close"><span class="ico-close">Close popup</span></button>
+            </div>
+        </div>
+        <!--/* // layer popup */-->
+        
+        <!--/* // Components */-->
+    </div>
+
+    <!--/* footer */-->
+    <footer id="footer" role="contentinfo" style="height:300px;background-color:#ccc">
+        @footer
+    </footer>
+    <!--/* // footer */-->
+
+    <div class="s-gotop-wrap">
+        <button class="s-btn-gotop">Go To TOP</button>
+    </div>
+</div>
+
+<!-- Uncomment the line below when ready to test with fake data -->
+<script src="scripts/app.js" async></script>
+<!--/* common js */-->
+<script src="/apps/samsungp5/components/global/page/page/clientlibs/js/main.js"></script>
+<!--/* template js */-->
+<script src="/apps/samsungp5/components/global/page/page-support/clientlibs/js/main.js"></script>
+<!--/* additianl-info js */-->
+<script src="../../home/additional-info/clientlibs/devjs/main.js"></script>
+<!--/* three-persona js */-->
+<script src="../../home/three-persona/clientlibs/devjs/main.js"></script>
+<script src="../../common/support-find-popup/clientlibs/devjs/main.js"></script>
+
+</body>
+</html>
