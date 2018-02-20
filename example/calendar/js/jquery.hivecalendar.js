@@ -550,7 +550,7 @@
                     dataObj = {
                         year : _this.opts.moveYear,
                         month : _this.opts.moveMonth,
-                        date : parseInt(target.text()),
+                        date : parseInt(target.text(), 10),
                         fullDate : _this.opts.moveYear + _this.opts.middleText + 
                             _this.opts.monthText[_this.opts.moveMonth - 1] + _this.opts.middleText + 
                             _this.opts.dayText[target.text() - 1]
@@ -659,11 +659,11 @@
                 dateObj = {};
             for (var i = 0, max = formatArrays.length; i < max; i++) {
                 if (formatArrays[i] == 'yy') {
-                    dateObj.year = parseInt(dateArrays[i]);
+                    dateObj.year = parseInt(dateArrays[i], 10);
                 } else if (formatArrays[i] == 'mm') {
-                    dateObj.month = parseInt(dateArrays[i]);
+                    dateObj.month = parseInt(dateArrays[i], 10);
                 } else if (formatArrays[i] == 'dd') {
-                    dateObj.date = parseInt(dateArrays[i]);
+                    dateObj.date = parseInt(dateArrays[i], 10);
                 }
             }
             return dateObj;
