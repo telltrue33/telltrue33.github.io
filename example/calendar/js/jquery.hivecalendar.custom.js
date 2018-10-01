@@ -249,27 +249,27 @@
         onClickDay : function (e) {
             e.preventDefault();
             if (!this.opts.dragRange) {
-            var target = $(e.currentTarget),
-                targetDate = target.data(this.opts.dataLinkDateName);
-            this.opts.choiceYear = targetDate.year;
-            this.opts.choiceMonth = targetDate.month;
-            this.opts.choiceDate = targetDate.date;
-            this.opts.choiceFullDate = this.dateStringBuild(this.opts.choiceYear, this.opts.choiceMonth, this.opts.choiceDate);
-            this.dayClickType = true;
-            if (this.opts.range) {
-                if (this.opts.rangeFromDate && this.opts.rangeToDate) {
-                    this.opts.rangeFromDate = this.opts.rangeToDate = null;
-                }
-                if (!this.opts.rangeFromDate) {
-                    this.opts.rangeFromDate = targetDate.fullDate;
-                    this.createCalendar();
+                var target = $(e.currentTarget),
+                    targetDate = target.data(this.opts.dataLinkDateName);
+                this.opts.choiceYear = targetDate.year;
+                this.opts.choiceMonth = targetDate.month;
+                this.opts.choiceDate = targetDate.date;
+                this.opts.choiceFullDate = this.dateStringBuild(this.opts.choiceYear, this.opts.choiceMonth, this.opts.choiceDate);
+                this.dayClickType = true;
+                if (this.opts.range) {
+                    if (this.opts.rangeFromDate && this.opts.rangeToDate) {
+                        this.opts.rangeFromDate = this.opts.rangeToDate = null;
+                    }
+                    if (!this.opts.rangeFromDate) {
+                        this.opts.rangeFromDate = targetDate.fullDate;
+                        this.createCalendar();
+                    } else {
+                        this.opts.rangeToDate = targetDate.fullDate;
+                        this.createCalendar();
+                        this.rangeEndFunc();
+                    }
                 } else {
-                    this.opts.rangeToDate = targetDate.fullDate;
                     this.createCalendar();
-                    this.rangeEndFunc();
-                }
-            } else {
-                this.createCalendar();
                     this.outCallback('onSelect', this.opts.choiceFullDate, this);
                 }
             }
