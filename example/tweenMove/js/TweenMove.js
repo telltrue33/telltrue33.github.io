@@ -61,7 +61,11 @@ var _hjScope = (typeof(module) !== "undefined" && module.exports && typeof(globa
             }()),
             _target, //when initting a CSSPlugin, we set this variable so that we can access it from within many other functions without having to pass it around as params
             _index, //when initting a CSSPlugin, we set this variable so that we can access it from within many other functions without having to pass it around as params
-
+            _log = function(s) {//for logging messages, but in a way that won't throw errors in old versions of IE.
+                if (_hjScope.console) {
+                    console.log(s);
+                }
+            },
             _computedStyleScope = (typeof(window) !== "undefined" ? window : _doc.defaultView || {getComputedStyle:function() {}}),
             _getComputedStyle = function(e) {
                 return _computedStyleScope.getComputedStyle(e); //to avoid errors in Microsoft Edge, we need to call getComputedStyle() from a specific scope, typically window.
