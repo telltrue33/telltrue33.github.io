@@ -83,6 +83,83 @@ var _hjScope = (typeof(module) !== "undefined" && module.exports && typeof(globa
                     rv = t.currentStyle[p];
                 }
                 return (dflt != null && (!rv || rv === "none" || rv === "auto" || rv === "auto auto")) ? dflt : rv;
+            },
+            _convertToPixels = _internals.convertToPixels = function(t, p, v, sfx, recurse) {
+                if (sfx === "px" || (!sfx && p !== "lineHeight")) { return v; }
+                if (sfx === "auto" || !v) { return 0; }
+                var horiz = _horizExp.test(p),
+                    node = t,
+                    style = _tempDiv.style,
+                    neg = (v < 0),
+                    precise = (v === 1),
+                    pix, cache, time;
+                if (neg) {
+                    v = -v;
+                }
+                if (precise) {
+                    v *= 100;
+                }
+                if (p === "lineHeight" && !sfx) { //special case of when a simple lineHeight (without a unit) is used. Set it to the value, read back the computed value, and then revert.
+                    cache = _getComputedStyle(t).lineHeight;
+                    t.style.lineHeight = v;
+                    pix = parseFloat(_getComputedStyle(t).lineHeight);
+                    t.style.lineHeight = cache;
+                } else if (sfx === "%" && p.indexOf("border") !== -1) {
+                    pix = (v / 100) * (horiz ? t.clientWidth : t.clientHeight);
+                } else {
+                    style.cssText = "border:0 solid red;position:" + _getStyle(t, "position") + ";line-height:0;";
+                    if (sfx === "%" || !node.appendChild || sfx.charAt(0) === "v" || sfx === "rem") {
+                        node = t.parentNode || _doc.body;
+                        if (_getStyle(node, "display").indexOf("flex") !== -1) { //Edge and IE11 have a bug that causes offsetWidth to report as 0 if the container has display:flex and the child is position:relative. Switching to position: absolute solves it.
+                            style.position = "absolute";
+                        }
+                        cache = node._gsCache;
+                        time = TweenLite.ticker.frame;
+                        if (cache && horiz && cache.time === time) { //performance optimization: we record the width of elements along with the ticker frame so that we can quickly get it again on the same tick (seems relatively safe to assume it wouldn't change on the same tick)
+                            return cache.width * v / 100;
+                        }
+                        style[(horiz ? "width" : "height")] = v + sfx;
+                    } else {
+                        style[(horiz ? "borderLeftWidth" : "borderTopWidth")] = v + sfx;
+                    }
+                    node.appendChild(_tempDiv);
+                    pix = parseFloat(_tempDiv[(horiz ? "offsetWidth" : "offsetHeight")]);
+                    node.removeChild(_tempDiv);
+                    if (horiz && sfx === "%" && CSSPlugin.cacheWidths !== false) {
+                        cache = node._gsCache = node._gsCache || {};
+                        cache.time = time;
+                        cache.width = pix / v * 100;
+                    }
+                    if (pix === 0 && !recurse) {
+                        pix = _convertToPixels(t, p, v, sfx, true);
+                    }
+                }
+                if (precise) {
+                    pix /= 100;
+                }
+                return neg ? -pix : pix;
+            },
+            _calculateOffset = _internals.calculateOffset = function(t, p, cs) { //for figuring out "top" or "left" in px when it's "auto". We need to factor in margin with the offsetLeft/offsetTop
+                if (_getStyle(t, "position", cs) !== "absolute") { return 0; }
+                var dim = ((p === "left") ? "Left" : "Top"),
+                    v = _getStyle(t, "margin" + dim, cs);
+                return t["offset" + dim] - (_convertToPixels(t, p, parseFloat(v), v.replace(_suffixExp, "")) || 0);
+            },
+            _getDimension = function(t, p, cs) {
+                if ((t.nodeName + "").toLowerCase() === "svg") { //Chrome no longer supports offsetWidth/offsetHeight on SVG elements.
+                    return (cs || _getComputedStyle(t))[p] || 0;
+                } else if (t.getCTM && _isSVG(t)) {
+                    return t.getBBox()[p] || 0;
+                }
+                var v = parseFloat((p === "width") ? t.offsetWidth : t.offsetHeight),
+                    a = _dimensions[p],
+                    i = a.length;
+                cs = cs || _getComputedStyle(t, null);
+                while (--i > -1) {
+                    v -= parseFloat( _getStyle(t, "padding" + a[i], cs, true) ) || 0;
+                    v -= parseFloat( _getStyle(t, "border" + a[i] + "Width", cs, true) ) || 0;
+                }
+                return v;
             };
 
         var CSSPropTween = _internals.CSSPropTween = function(t, p, s, c, next, type, n, r, pr, b, e) {
