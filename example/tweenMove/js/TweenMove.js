@@ -502,7 +502,7 @@ var _hjScope = (typeof(module) !== "undefined" && module.exports && typeof(globa
         "use strict";
         var _exports = {},
             _doc = window.document,
-            _globals = window.GreenSockGlobals = window.GreenSockGlobals || window,
+            _globals = window.HiveLabGlobals = window.HiveLabGlobals || window,
             existingModule = _globals[moduleName];
         if (existingModule) {
             if (typeof(module) !== "undefined" && module.exports) { //node
@@ -518,7 +518,7 @@ var _hjScope = (typeof(module) !== "undefined" && module.exports && typeof(globa
                 }
                 return p;
             },
-            gs = _namespace("com.greensock"),
+            gs = _namespace("com.hivelab"),
             _tinyNum = 0.00000001,
             _slice = function(a) { //don't use Array.prototype.slice.call(target, 0) because that doesn't work in IE8 with a NodeList that's returned by querySelectorAll()
                 var b = [],
@@ -556,7 +556,7 @@ var _hjScope = (typeof(module) !== "undefined" && module.exports && typeof(globa
                         }
                     }
                     if (missing === 0 && func) {
-                        a = ("com.greensock." + ns).split(".");
+                        a = ("com.hivelab." + ns).split(".");
                         n = a.pop();
                         cl = _namespace(a.join("."))[n] = this.gsClass = func.apply(func, _classes);
 
@@ -573,7 +573,7 @@ var _hjScope = (typeof(module) !== "undefined" && module.exports && typeof(globa
                                     _exports[moduleName][n] = cl;
                                 }
                             } else if (typeof(define) === "function" && define.amd){ //AMD
-                                define((window.GreenSockAMDPath ? window.GreenSockAMDPath + "/" : "") + ns.split(".").pop(), [], function() { return cl; });
+                                define((window.HiveLabAMDPath ? window.HiveLabAMDPath + "/" : "") + ns.split(".").pop(), [], function() { return cl; });
                             }
                         }
                         for (i = 0; i < this.sc.length; i++) {
