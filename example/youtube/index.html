@@ -117,15 +117,19 @@ button::-moz-focus-inner{padding:0;border:0}
             });
         },
         onPlayerReady : function (e) {
-            // this.iframePlayer.playVideo();
+            // console.log(ready);
         },
         onPlayerStateChange : function (e) {
             if ((e.data === YT.PlayerState.PLAYING) && !this.done) {
                 this.done = !this.done;
                 //this.iframePlayer[this.current].playVideo();
+                // $('#player'+this.current)[0].contentWindow.
+                //     postMessage('{"event":"command","func":"playVideo","args":""}', '*');
             }
             if (e.data === YT.PlayerState.ENDED) {
-                this.iframePlayer[this.current].playVideo();
+                // this.iframePlayer[this.current].playVideo();
+                $('#player'+this.current)[0].contentWindow.
+                    postMessage('{"event":"command","func":"playVideo","args":""}', '*');
             }
         },
         onClickFunc : function(e){
@@ -137,7 +141,10 @@ button::-moz-focus-inner{padding:0;border:0}
             this.oldcurrent = this.current;
         },
         boxViewFunc : function () {
-            this.iframePlayer[this.oldcurrent].pauseVideo();
+            // this.iframePlayer[this.oldcurrent].pauseVideo();
+            $('#player'+this.oldcurrent)[0].contentWindow.
+                postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
+
             this.tabObjList.eq(this.oldcurrent).removeClass('on');
             this.bxObjList.eq(this.oldcurrent).hide();
             this.tabObjList.eq(this.current).addClass('on');
@@ -145,7 +152,9 @@ button::-moz-focus-inner{padding:0;border:0}
             if (!this.iframePlayer[this.current]) {
                 this.onYouTubeIframeAPIReady();
             } else {
-                this.iframePlayer[this.current].playVideo();
+                // this.iframePlayer[this.current].playVideo();
+                $('#player'+this.current)[0].contentWindow.
+                    postMessage('{"event":"command","func":"playVideo","args":""}', '*');
             }
         }
     };
