@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>urcb</title>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0">
+</head>
+<body>
+    <a href="#">button</a>
+    <div>
+        <div class="test">test</div>
+        <span>span</span>
+    </div>
+<script src="urObj.js"></script>
+<script>
+(function ($) { 'use strict';
+    $(function () {
+        $('a').on('click clickcustom', function (e) {
+            console.log(e.type);
+        });
+        $('a').trigger('click');
+        $('a').triggerHandler('click');
+        window.setTimeout(function () {
+            console.log('settime');
+            $('a').off('click');
+            $('a').trigger('click');
+            $('a').triggerHandler('click');
+            $('a').trigger('clickcustom');
+            $('a').triggerHandler('clickcustom');
+        }, 500);
+        console.log($('div').length);
+        console.log($('.test').length);
+    });
+})(window.urObj);
+</script>
+</body>
+</html>
