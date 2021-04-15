@@ -130,8 +130,9 @@
                         resize : function () {
                             this.layout();
                             if (!this.stateAttr.loaded) return;
-                            if (this.instance == null) return;
-                            this.drawImage(this.props.current);
+                            if (this.props.current != null) {
+                                this.drawImage(this.props.current);
+                            }
                         },
                         pause : function () {
                             if (this.instance == null) return;

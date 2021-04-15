@@ -221,9 +221,11 @@
                             _this.magicSection.css({
                                 'height' : props['sectionHeight']
                             });
-                            _this.magicArticle.css({
-                                'top' : props['spaceHeight']
-                            });
+                            if (_this.opts.hasCssSticky || _this.motion.scroll.stateAttr.fixedActive) {
+                                _this.magicArticle.css({
+                                    'top' : props['spaceHeight']
+                                });
+                            }
                             if (!_this.opts.hasCssSticky) {
                                 _this.magicArticle.css({
                                     'width' : _this.magicSection.outerWidth(true)
