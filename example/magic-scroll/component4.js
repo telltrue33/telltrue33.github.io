@@ -56,14 +56,33 @@
                         },
                         tweens : {
                             instance : null,
+                            duration : .5,
                             kill : function () {
                                 if (this.instance == null) return;
                                 this.instance.kill();
                                 this.instance = null;
+                            },
+                            build : function (num) {
+                                this.kill();
+                                var m = _this.motion;
+                                var props = Util.def({}, m.props);
+                                this.instance = TweenLite.to(props, this.duration, {
+                                    progress : num,
+                                    onUpdate : function () {
+                                        m.instance.progress(props.progress);
+                                        m.props.progress = props.progress;
+                                    }
+                                });
+                            },
+                            init : function () {
+                                if (this.duration <= 0) {
+                                    this.duration = .0001;
+                                }
                             }
                         },
                         imgs : {},
                         load : function () {
+                            this.tweens.init();
                             var m = this;
                             var fileName = 'https://images.samsung.com/common/galaxy-buds-pro/feature/sg/galaxy-buds-pro-immpersive-seq2-';
                             var fileType = '.jpg';
@@ -99,7 +118,7 @@
                                 }
                                 nImg.src = fileName + idx + fileType;
                             };
-                            m.layout();
+                            this.layout();
                             for (var i = 0, max = maxCount; i <= max; i++) {
                                 load(i);
                             }
@@ -122,7 +141,6 @@
                             this.props.current = num;
                         },
                         drawImage : function (num) {
-                            // console.log(num);
                             var imgs = this.imgs;
                             var active = imgs[num];
                             var oClientRect = Util.getBoundingClientRect(_this.canvasSection[0]);
@@ -156,17 +174,8 @@
                             return this;
                         },
                         progress : function (num) {
-                            var m = this;
                             if (this.instance != null) {
-                                var props = Util.def({}, m.props);
-                                this.tweens.kill();
-                                this.tweens.instance = TweenLite.to(props, .5, {
-                                    progress : num,
-                                    onUpdate : function () {
-                                        m.instance.progress(props.progress);
-                                        m.props.progress = props.progress;
-                                    }
-                                });
+                                this.tweens.build(num);
                             }
                             return this;
                         },

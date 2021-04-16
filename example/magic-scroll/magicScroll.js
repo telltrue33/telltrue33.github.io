@@ -124,7 +124,6 @@
                                 var condition = {
                                     hookOutB : (winTop >= props.triggerMaxOffset)
                                 };
-                                // console.log('IE 에서 아래쪽에서 올라올때 튀는 현상 수정 필요', _this.obj);
                                 if (condition.hookOutB) {
                                     if (!_this.opts.fixedAutoPlay) {
                                         _this.tween.pause().progress(1);
