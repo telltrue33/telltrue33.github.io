@@ -288,6 +288,7 @@
                         build : function () {
                             this.instance = new MagicScroll(_this.obj, {
                                 animations : _this.magictween.animations,
+                                pushFollowers : false,
                                 duration : (function () {
                                     var d = 5;
                                     var v = (d * 100) + '%';

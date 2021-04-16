@@ -269,7 +269,6 @@
                             this.instance = new MagicScroll(_this.obj, {
                                 fixedAutoPlay : true,
                                 animations : _this.magictween.animations,
-                                pushFollowers : false,
                                 duration : (function () {
                                     var d = 5;
                                     var v = (d * 100) + '%';
