@@ -222,12 +222,15 @@
                             var winHeight = Util.winSize().h;
                             var props = _this.opts.props;
                             var breakOpts = _this.breakOpts;
+                            var spaceHeight = props['spaceHeight'];
+                            var sectionHeight = _this.opts.props['sectionHeight'];
+                            var articleHeight = _this.opts.props['articleHeight'];
                             _this.magicSection.css({
-                                'height' : props['sectionHeight']
+                                'height' : sectionHeight
                             });
                             if (_this.opts.hasCssSticky || _this.motion.scroll.stateAttr.fixedActive) {
                                 _this.magicArticle.css({
-                                    'top' : props['spaceHeight']
+                                    'top' : spaceHeight
                                 });
                             }
                             if (!_this.opts.hasCssSticky) {
@@ -240,7 +243,7 @@
                                     if (!breakOpts.pushFollowers) {
                                         _this.magicArticle.css({
                                             'position' : 'fixed',
-                                            'top' : props['spaceHeight'],
+                                            'top' : spaceHeight,
                                             'bottom' : ''
                                         });
                                     } else {
@@ -271,7 +274,7 @@
                             }
                             if (!breakOpts.pushFollowers) {
                                 _this.magicArticle.css({
-                                    'margin-bottom' : (winHeight * -1) + props['spaceHeight']
+                                    'margin-bottom' : (Math.max(winHeight - spaceHeight, articleHeight + spaceHeight)) * -1
                                 });
                             } else {
                                 _this.magicArticle.css({
