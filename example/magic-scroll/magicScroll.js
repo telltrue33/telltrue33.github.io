@@ -52,8 +52,8 @@
                     fixed : 'is-fixed'
                 },
                 hasCssSticky : (function () {
-                    var ie = doc && doc.documentElement && doc.documentMode <= 11;
-                    return !ie;
+                    var not = doc && doc.documentElement && doc.documentMode <= 11;
+                    return !not;
                 })(),
                 on : {
                     in : null,
@@ -112,8 +112,36 @@
                                     'top' : 0
                                 });
                             },
+                            buildNotStickyLayout : function () {
+                                var magicArticle = _this.magicArticle;
+                                Util.def(_this, {
+                                    notstickylayout : {
+                                        out_top : function () {
+                                            magicArticle.css({
+                                                'position' : '',
+                                                'bottom' : ''
+                                            });
+                                        },
+                                        out_bot : function () {
+                                            magicArticle.css({
+                                                'position' : 'fixed',
+                                                'top' : _this.opts.props['spaceHeight'],
+                                                'bottom' : ''
+                                            });
+                                        },
+                                        out_bot_pushFollowers : function () {
+                                            magicArticle.css({
+                                                'position' : 'absolute',
+                                                'top' : '',
+                                                'bottom' : 0
+                                            });
+                                        }
+                                    }
+                                });
+                            },
                             build : function () {
                                 this.initLayout();
+                                this.buildNotStickyLayout();
                             }
                         },
                         load : {
@@ -148,12 +176,10 @@
                                     breakKeyMin = null;
                                 }
                             }
-                            _this.breakOpts = Util.def({}, _this.bOpts);
+                            var breakOpts = Util.def({}, _this.bOpts);
                             if (breakKeyMin != null) {
-                                _this.breakOpts = Util.def(_this.breakOpts, breakpoints[breakKeyMin]);
+                                breakOpts = Util.def(breakOpts, breakpoints[breakKeyMin]);
                             }
-
-                            var breakOpts = _this.breakOpts;
 
                             // spaceHeight
                             _this.opts.props['spaceHeight'] = (function () {
@@ -215,6 +241,7 @@
                                 _this.opts.props['fixedMaxOffset'] = maxOffset - articleHeight - spaceHeight;
                             })();
 
+                            _this.breakOpts = breakOpts;
                             _this.props = _this.opts.props;
                         },
                         layout : function () {
@@ -235,37 +262,19 @@
                             }
                             if (!_this.opts.hasCssSticky) {
                                 if (props.fixedMinOffset > winTop) {
-                                    _this.magicArticle.css({
-                                        'position' : '',
-                                        'bottom' : ''
-                                    });
+                                    _this.notstickylayout.out_top();
                                 } else if (winTop >= props.fixedMaxOffset) {
                                     if (!breakOpts.pushFollowers) {
-                                        _this.magicArticle.css({
-                                            'position' : 'fixed',
-                                            'top' : spaceHeight,
-                                            'bottom' : ''
-                                        });
+                                        _this.notstickylayout.out_bot();
                                     } else {
-                                        _this.magicArticle.css({
-                                            'position' : 'absolute',
-                                            'top' : '',
-                                            'bottom' : 0
-                                        });
+                                        _this.notstickylayout.out_bot_pushFollowers();
                                     }
                                 }
                                 if (!breakOpts.pushFollowers) {
                                     if (props.minOffset > winTop) {
-                                        _this.magicArticle.css({
-                                            'position' : '',
-                                            'bottom' : ''
-                                        });
+                                        _this.notstickylayout.out_top();
                                     } else if (winTop >= props.maxOffset) {
-                                        _this.magicArticle.css({
-                                            'position' : 'absolute',
-                                            'top' : '',
-                                            'bottom' : 0
-                                        });
+                                        _this.notstickylayout.out_bot_pushFollowers();
                                     }
                                 }
                                 _this.magicArticle.css({
@@ -419,16 +428,9 @@
                                         if (!_this.opts.hasCssSticky) {
                                             if (!breakOpts.pushFollowers) {
                                                 if (props.direction == 'FORWARD') {
-                                                    _this.magicArticle.css({
-                                                        'position' : '',
-                                                        'bottom' : ''
-                                                    });
+                                                    _this.notstickylayout.out_top();
                                                 } else if (props.direction == 'REVERSE') {
-                                                    _this.magicArticle.css({
-                                                        'position' : 'fixed',
-                                                        'top' : props['spaceHeight'],
-                                                        'bottom' : ''
-                                                    });
+                                                    _this.notstickylayout.out_bot();
                                                 }
                                             }
                                         }
@@ -454,11 +456,7 @@
                                         this.stateAttr.fixedActive = true;
                                         _this.magicArticle.addClass(classAttr.fixed);
                                         if (!_this.opts.hasCssSticky) {
-                                            _this.magicArticle.css({
-                                                'position' : 'fixed',
-                                                'top' : props['spaceHeight'],
-                                                'bottom' : ''
-                                            });
+                                            _this.notstickylayout.out_bot();
                                         }
                                     }
                                 }
@@ -468,23 +466,12 @@
                                         _this.magicArticle.removeClass(classAttr.fixed);
                                         if (!_this.opts.hasCssSticky) {
                                             if (props.fixedMinOffset > winTop) {
-                                                _this.magicArticle.css({
-                                                    'position' : '',
-                                                    'bottom' : ''
-                                                });
+                                                _this.notstickylayout.out_top();
                                             } else if (winTop >= props.fixedMaxOffset) {
                                                 if (!breakOpts.pushFollowers) {
-                                                    _this.magicArticle.css({
-                                                        'position' : 'fixed',
-                                                        'top' : props['spaceHeight'],
-                                                        'bottom' : ''
-                                                    });
+                                                    _this.notstickylayout.out_bot();
                                                 } else {
-                                                    _this.magicArticle.css({
-                                                        'position' : 'absolute',
-                                                        'top' : '',
-                                                        'bottom' : 0
-                                                    });
+                                                    _this.notstickylayout.out_bot_pushFollowers();
                                                 }
                                             }
                                         }
@@ -496,16 +483,9 @@
                                         if (!_this.opts.hasCssSticky) {
                                             if (!breakOpts.pushFollowers) {
                                                 if (props.minOffset > winTop) {
-                                                    _this.magicArticle.css({
-                                                        'position' : '',
-                                                        'bottom' : ''
-                                                    });
+                                                    _this.notstickylayout.out_top();
                                                 } else if (winTop >= props.maxOffset) {
-                                                    _this.magicArticle.css({
-                                                        'position' : 'absolute',
-                                                        'top' : '',
-                                                        'bottom' : 0
-                                                    });
+                                                    _this.notstickylayout.out_bot_pushFollowers();
                                                 }
                                             }
                                         }
