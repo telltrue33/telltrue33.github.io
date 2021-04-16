@@ -39,7 +39,8 @@
                     destroy : false,
                     scroll : null,
                     prevTop : null,
-                    resize : null
+                    resize : null,
+                    loaded : false
                 },
                 requestAttr : {
                     resize : null
@@ -121,8 +122,9 @@
                                 var props = _this.opts.props;
                                 var winTop = $(win).scrollTop();
                                 var condition = {
-                                    hookOutB : (winTop >= props.maxOffset)
+                                    hookOutB : (winTop >= props.triggerMaxOffset)
                                 };
+                                // console.log('IE 에서 아래쪽에서 올라올때 튀는 현상 수정 필요', _this.obj);
                                 if (condition.hookOutB) {
                                     if (!_this.opts.fixedAutoPlay) {
                                         _this.tween.pause().progress(1);
@@ -217,6 +219,7 @@
                             _this.props = _this.opts.props;
                         },
                         layout : function () {
+                            var winTop = $(win).scrollTop();
                             var props = _this.opts.props;
                             _this.magicSection.css({
                                 'height' : props['sectionHeight']
@@ -225,6 +228,20 @@
                                 _this.magicArticle.css({
                                     'top' : props['spaceHeight']
                                 });
+                            }
+                            if (!_this.opts.hasCssSticky) {
+                                if (props.fixedMinOffset > winTop) {
+                                    _this.magicArticle.css({
+                                        'position' : '',
+                                        'bottom' : ''
+                                    });
+                                } else if (winTop >= props.fixedMaxOffset) {
+                                    _this.magicArticle.css({
+                                        'position' : 'absolute',
+                                        'top' : '',
+                                        'bottom' : 0
+                                    });
+                                }
                             }
                             if (!_this.opts.hasCssSticky) {
                                 _this.magicArticle.css({
@@ -266,14 +283,14 @@
                             return scopeProp;
                         },
                         pause : function () {
-                            if (this.instance == null) return;
+                            if (this.instance == null) return this;
                             this.instance.pause();
-                            return this.instance;
+                            return this;
                         },
                         progress : function (time) {
-                            if (this.instance == null) return;
+                            if (this.instance == null) return this;
                             this.instance.progress(time);
-                            return this.instance;
+                            return this;
                         },
                         build : function () {
                             var a = this;
@@ -466,11 +483,15 @@
             },
             scrollEndFunc : function () {
                 this.opts.stateAttr.scroll = null;
+                if (!this.opts.stateAttr.destroy) {
+                    // this.set.opts();
+                    this.motion.build();
+                }
                 Util.cancelAFrame.call(win, this.opts.requestAttr.scroll);
             },
             scrollAnimateFunc : function () {
                 if (!this.opts.stateAttr.destroy) {
-                    this.set.opts();
+                    // this.set.opts();
                     this.motion.build();
                 }
                 this.opts.requestAttr.scroll = Util.requestAFrame.call(win, this.scrollAnimateFunc.bind(this));
@@ -490,6 +511,10 @@
                     this.set.opts();
                     this.set.layout();
                     this.scrollFunc();
+                    // if (!this.opts.stateAttr.loaded) {
+                    //     this.opts.stateAttr.loaded = true;
+                    //     this.set.load.after();
+                    // }
                 }
                 Util.cancelAFrame.call(win, this.opts.requestAttr.resize);
             },

@@ -134,17 +134,16 @@
                             }
                         },
                         pause : function () {
-                            if (this.instance == null) return;
+                            if (this.instance == null) return this;
                             this.instance.pause();
-                            return this.instance;
+                            return this;
                         },
                         progress : function (num) {
                             if (this.instance != null) {
                                 this.instance.progress(num);
                             }
                             this.props.progress = num;
-                            if (this.instance == null) return;
-                            return this.instance;
+                            return this;
                         },
                         reverse : function () {
                             if (this.stateAttr.direction !== 'REVERSE') {
@@ -219,12 +218,10 @@
                                     }
                                 },
                                 onReverseComplete : function () {
-                                    // _this.motion.pause();
-                                    // _this.motion.progress(0);
+                                    // _this.motion.pause().progress(0);
                                 },
                                 onComplete : function (props) {
-                                    // _this.motion.pause();
-                                    // _this.motion.progress(1);
+                                    // _this.motion.pause().progress(1);
                                     // console.log(1, 'onComplete', props);
                                 }
                             },
@@ -260,8 +257,7 @@
                                 onReverseComplete : function () {
                                 },
                                 onComplete : function (props) {
-                                    // _this.motion.pause();
-                                    // _this.motion.progress(1);
+                                    // _this.motion.pause().progress(1);
                                     // console.log(3, 'onComplete', props);
                                 }
                             }
