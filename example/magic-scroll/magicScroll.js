@@ -26,21 +26,21 @@
                 })(),
                 triggerHook : 0,
                 overlapSpace : false,
+                pushFollowers : true,
                 spaceHeight : function () {
                     return 0;
                 },
                 animations : [],
                 fixedAutoPlay : false,
                 customEvent : '.Component' + (new Date()).getTime() + Math.random(),
-                breakKey : ['duration','triggerHook','spaceHeight','overlapSpace'],
+                breakKey : ['duration','triggerHook','spaceHeight','overlapSpace','pushFollowers'],
                 breakpoints : {},
                 props : {},
                 stateAttr : {
                     destroy : false,
                     scroll : null,
                     prevTop : null,
-                    resize : null,
-                    loaded : false
+                    resize : null
                 },
                 requestAttr : {
                     resize : null
@@ -219,7 +219,9 @@
                         },
                         layout : function () {
                             var winTop = $(win).scrollTop();
+                            var winHeight = Util.winSize().h;
                             var props = _this.opts.props;
+                            var breakOpts = _this.breakOpts;
                             _this.magicSection.css({
                                 'height' : props['sectionHeight']
                             });
@@ -235,16 +237,45 @@
                                         'bottom' : ''
                                     });
                                 } else if (winTop >= props.fixedMaxOffset) {
-                                    _this.magicArticle.css({
-                                        'position' : 'absolute',
-                                        'top' : '',
-                                        'bottom' : 0
-                                    });
+                                    if (!breakOpts.pushFollowers) {
+                                        _this.magicArticle.css({
+                                            'position' : 'fixed',
+                                            'top' : props['spaceHeight'],
+                                            'bottom' : ''
+                                        });
+                                    } else {
+                                        _this.magicArticle.css({
+                                            'position' : 'absolute',
+                                            'top' : '',
+                                            'bottom' : 0
+                                        });
+                                    }
                                 }
-                            }
-                            if (!_this.opts.hasCssSticky) {
+                                if (!breakOpts.pushFollowers) {
+                                    if (props.minOffset > winTop) {
+                                        _this.magicArticle.css({
+                                            'position' : '',
+                                            'bottom' : ''
+                                        });
+                                    } else if (winTop >= props.maxOffset) {
+                                        _this.magicArticle.css({
+                                            'position' : 'absolute',
+                                            'top' : '',
+                                            'bottom' : 0
+                                        });
+                                    }
+                                }
                                 _this.magicArticle.css({
                                     'width' : _this.magicSection.outerWidth(true)
+                                });
+                            }
+                            if (!breakOpts.pushFollowers) {
+                                _this.magicArticle.css({
+                                    'margin-bottom' : (winHeight * -1) + props['spaceHeight']
+                                });
+                            } else {
+                                _this.magicArticle.css({
+                                    'margin-bottom' : ''
                                 });
                             }
                         },
@@ -373,6 +404,7 @@
                             },
                             build : function () {
                                 var winTop = $(win).scrollTop();
+                                var breakOpts = _this.breakOpts;
                                 var condition = {
                                     in : (props.minOffset <= winTop && winTop < props.maxOffset),
                                     hookIn : (props.triggerMinOffset <= winTop && winTop < props.triggerMaxOffset),
@@ -381,6 +413,22 @@
                                 if (condition.in) {
                                     if (!this.stateAttr.active) {
                                         this.stateAttr.active = true;
+                                        if (!_this.opts.hasCssSticky) {
+                                            if (!breakOpts.pushFollowers) {
+                                                if (props.direction == 'FORWARD') {
+                                                    _this.magicArticle.css({
+                                                        'position' : '',
+                                                        'bottom' : ''
+                                                    });
+                                                } else if (props.direction == 'REVERSE') {
+                                                    _this.magicArticle.css({
+                                                        'position' : 'fixed',
+                                                        'top' : props['spaceHeight'],
+                                                        'bottom' : ''
+                                                    });
+                                                }
+                                            }
+                                        }
                                         _this.outCallback('in');
                                     }
                                 }
@@ -405,7 +453,7 @@
                                         if (!_this.opts.hasCssSticky) {
                                             _this.magicArticle.css({
                                                 'position' : 'fixed',
-                                                'top' : _this.opts.props['spaceHeight'],
+                                                'top' : props['spaceHeight'],
                                                 'bottom' : ''
                                             });
                                         }
@@ -422,11 +470,19 @@
                                                     'bottom' : ''
                                                 });
                                             } else if (winTop >= props.fixedMaxOffset) {
-                                                _this.magicArticle.css({
-                                                    'position' : 'absolute',
-                                                    'top' : '',
-                                                    'bottom' : 0
-                                                });
+                                                if (!breakOpts.pushFollowers) {
+                                                    _this.magicArticle.css({
+                                                        'position' : 'fixed',
+                                                        'top' : props['spaceHeight'],
+                                                        'bottom' : ''
+                                                    });
+                                                } else {
+                                                    _this.magicArticle.css({
+                                                        'position' : 'absolute',
+                                                        'top' : '',
+                                                        'bottom' : 0
+                                                    });
+                                                }
                                             }
                                         }
                                     }
@@ -434,6 +490,22 @@
                                 if (!condition.in) {
                                     if (this.stateAttr.active) {
                                         this.stateAttr.active = false;
+                                        if (!_this.opts.hasCssSticky) {
+                                            if (!breakOpts.pushFollowers) {
+                                                if (props.minOffset > winTop) {
+                                                    _this.magicArticle.css({
+                                                        'position' : '',
+                                                        'bottom' : ''
+                                                    });
+                                                } else if (winTop >= props.maxOffset) {
+                                                    _this.magicArticle.css({
+                                                        'position' : 'absolute',
+                                                        'top' : '',
+                                                        'bottom' : 0
+                                                    });
+                                                }
+                                            }
+                                        }
                                         _this.outCallback('out');
                                     }
                                 }
@@ -510,10 +582,6 @@
                     this.set.opts();
                     this.set.layout();
                     this.scrollFunc();
-                    // if (!this.opts.stateAttr.loaded) {
-                    //     this.opts.stateAttr.loaded = true;
-                    //     this.set.load.after();
-                    // }
                 }
                 Util.cancelAFrame.call(win, this.opts.requestAttr.resize);
             },
