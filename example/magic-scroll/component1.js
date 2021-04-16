@@ -53,7 +53,7 @@
                             min : 0,
                             max : 115,
                             current : null,
-                            progress : null
+                            progress : 0
                         },
                         imgs : {},
                         load : function () {
@@ -83,7 +83,7 @@
                                 }
                                 nImg.src = fileName + idx + fileType;
                             };
-                            m.layout();
+                            this.layout();
                             for (var i = 0, max = maxCount; i <= max; i++) {
                                 load(i);
                             }
@@ -100,9 +100,7 @@
                         },
                         draw : function (num) {
                             if (this.stateAttr.loaded) {
-                                if (this.props.current != num) {
-                                    this.drawImage(num);
-                                }
+                                this.drawImage(num);
                             }
                             this.props.current = num;
                         },

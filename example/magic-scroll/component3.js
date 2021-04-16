@@ -52,7 +52,7 @@
                             min : 0,
                             max : 115,
                             current : null,
-                            progress : null
+                            progress : 0
                         },
                         tweens : {
                             instance : null,
@@ -134,9 +134,7 @@
                         },
                         draw : function (num) {
                             if (this.stateAttr.loaded) {
-                                if (this.props.current != num) {
-                                    this.drawImage(num);
-                                }
+                                this.drawImage(num);
                             }
                             this.props.current = num;
                         },
@@ -174,7 +172,6 @@
                             return this;
                         },
                         progress : function (num) {
-                            var m = this;
                             if (this.instance != null) {
                                 this.tweens.build(num);
                             }

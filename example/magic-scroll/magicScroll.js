@@ -483,14 +483,14 @@
             scrollEndFunc : function () {
                 this.opts.stateAttr.scroll = null;
                 if (!this.opts.stateAttr.destroy) {
-                    // this.set.opts();
+                    this.set.opts();
                     this.motion.build();
                 }
                 Util.cancelAFrame.call(win, this.opts.requestAttr.scroll);
             },
             scrollAnimateFunc : function () {
                 if (!this.opts.stateAttr.destroy) {
-                    // this.set.opts();
+                    this.set.opts();
                     this.motion.build();
                 }
                 this.opts.requestAttr.scroll = Util.requestAFrame.call(win, this.scrollAnimateFunc.bind(this));
