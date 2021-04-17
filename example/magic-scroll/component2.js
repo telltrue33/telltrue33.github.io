@@ -215,11 +215,8 @@
                                         _this.motion.reverse();
                                     }
                                 },
-                                onReverseComplete : function () {
-                                    // _this.motion.pause().progress(0);
-                                },
                                 onComplete : function (props) {
-                                    // _this.motion.pause().progress(1);
+                                    _this.motion.build();
                                     // console.log(1, 'onComplete', props);
                                 }
                             },
@@ -252,10 +249,8 @@
                                         _this.motion.build();
                                     }
                                 },
-                                onReverseComplete : function () {
-                                },
                                 onComplete : function (props) {
-                                    // _this.motion.pause().progress(1);
+                                    _this.motion.reverse();
                                     // console.log(3, 'onComplete', props);
                                 }
                             }
