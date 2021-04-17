@@ -52,7 +52,12 @@
                     fixed : 'is-fixed'
                 },
                 hasCssSticky : (function () {
-                    var not = doc && doc.documentElement && doc.documentMode <= 11;
+                    var cloneDiv = doc.createElement('div');
+                    doc.body.appendChild(cloneDiv);
+                    cloneDiv.style.position = 'sticky';
+                    var positionVal = win.getComputedStyle(cloneDiv, null).getPropertyValue('position');
+                    doc.body.removeChild(cloneDiv);
+                    var not = positionVal != 'sticky';
                     return !not;
                 })(),
                 on : {
