@@ -255,7 +255,7 @@
                             _this.magicSection.css({
                                 'height' : sectionHeight
                             });
-                            if (_this.opts.hasCssSticky || _this.motion.scroll.stateAttr.fixedActive) {
+                            if (_this.opts.hasCssSticky || _this.motion.scroll.stateAttr.fixedActive == 'in') {
                                 _this.magicArticle.css({
                                     'top' : spaceHeight
                                 });
@@ -408,9 +408,9 @@
                         },
                         scroll : {
                             stateAttr : {
-                                active : false,
-                                hookActive : false,
-                                fixedActive : false
+                                active : null,
+                                hookActive : null,
+                                fixedActive : null
                             },
                             destroy : function () {
                             },
@@ -423,8 +423,8 @@
                                     fixedIn : (props.fixedMinOffset <= winTop && winTop < props.fixedMaxOffset)
                                 };
                                 if (condition.in) {
-                                    if (!this.stateAttr.active) {
-                                        this.stateAttr.active = true;
+                                    if (this.stateAttr.active != 'in') {
+                                        this.stateAttr.active = 'in';
                                         if (!_this.opts.hasCssSticky) {
                                             if (!breakOpts.pushFollowers) {
                                                 if (props.direction == 'FORWARD') {
@@ -438,22 +438,22 @@
                                     }
                                 }
                                 if (condition.hookIn) {
-                                    if (!this.stateAttr.hookActive) {
-                                        this.stateAttr.hookActive = true;
+                                    if (this.stateAttr.hookActive != 'in') {
+                                        this.stateAttr.hookActive = 'in';
                                         _this.outCallback('hookIn');
                                     }
                                     _this.motion.progress.update(true);
                                 }
                                 if (!condition.hookIn) {
-                                    if (this.stateAttr.hookActive) {
-                                        this.stateAttr.hookActive = false;
+                                    if (this.stateAttr.hookActive != 'out') {
+                                        this.stateAttr.hookActive = 'out';
                                         _this.motion.progress.update(false);
                                         _this.outCallback('hookOut');
                                     }
                                 }
                                 if (condition.fixedIn) {
-                                    if (!this.stateAttr.fixedActive) {
-                                        this.stateAttr.fixedActive = true;
+                                    if (this.stateAttr.fixedActive != 'in') {
+                                        this.stateAttr.fixedActive = 'in';
                                         _this.magicArticle.addClass(classAttr.fixed);
                                         if (!_this.opts.hasCssSticky) {
                                             _this.notstickylayout.out_bot();
@@ -461,8 +461,8 @@
                                     }
                                 }
                                 if (!condition.fixedIn) {
-                                    if (this.stateAttr.fixedActive) {
-                                        this.stateAttr.fixedActive = false;
+                                    if (this.stateAttr.fixedActive != 'out') {
+                                        this.stateAttr.fixedActive = 'out';
                                         _this.magicArticle.removeClass(classAttr.fixed);
                                         if (!_this.opts.hasCssSticky) {
                                             if (props.fixedMinOffset > winTop) {
@@ -478,8 +478,8 @@
                                     }
                                 }
                                 if (!condition.in) {
-                                    if (this.stateAttr.active) {
-                                        this.stateAttr.active = false;
+                                    if (this.stateAttr.active != 'out') {
+                                        this.stateAttr.active = 'out';
                                         if (!_this.opts.hasCssSticky) {
                                             if (!breakOpts.pushFollowers) {
                                                 if (props.minOffset > winTop) {
