@@ -6,6 +6,14 @@
         var win = window,
             doc = win.document,
             $ = win.jqLite,
+            positionSticky = (function () {
+                var cloneDiv = doc.createElement('div');
+                doc.body.appendChild(cloneDiv);
+                cloneDiv.style.position = 'sticky';
+                var pVal = win.getComputedStyle(cloneDiv, null).getPropertyValue('position');
+                doc.body.removeChild(cloneDiv);
+                return pVal == 'sticky';
+            })(),
             Util = Utils;
         function Component (container, args) {
             if (!(this instanceof Component)) {
@@ -51,15 +59,7 @@
                 classAttr : {
                     fixed : 'is-fixed'
                 },
-                hasCssSticky : (function () {
-                    var cloneDiv = doc.createElement('div');
-                    doc.body.appendChild(cloneDiv);
-                    cloneDiv.style.position = 'sticky';
-                    var positionVal = win.getComputedStyle(cloneDiv, null).getPropertyValue('position');
-                    doc.body.removeChild(cloneDiv);
-                    var not = positionVal != 'sticky';
-                    return !not;
-                })(),
+                hasCssSticky : positionSticky,
                 on : {
                     in : null,
                     out : null,
