@@ -50,6 +50,7 @@
                 })(),
                 triggerHook : 0,
                 overlapSpace : false,
+                initFollowers : true,
                 pushFollowers : true,
                 spaceHeight : function () {
                     return 0;
@@ -57,7 +58,7 @@
                 animations : [],
                 fixedAutoPlay : false,
                 customEvent : '.Component' + (new Date()).getTime() + Math.random(),
-                breakKey : ['duration','triggerHook','spaceHeight','overlapSpace','pushFollowers'],
+                breakKey : ['duration','triggerHook','spaceHeight','overlapSpace','initFollowers','pushFollowers'],
                 breakpoints : {},
                 props : {},
                 stateAttr : {
@@ -133,10 +134,10 @@
                                     'top' : 0
                                 });
                             },
-                            buildNotStickyLayout : function () {
+                            buildFixedLayout : function () {
                                 var magicArticle = _this.magicArticle;
                                 Util.def(_this, {
-                                    notstickylayout : {
+                                    fixedlayout : {
                                         out_top : function () {
                                             magicArticle.css({
                                                 'position' : '',
@@ -156,13 +157,20 @@
                                                 'top' : '',
                                                 'bottom' : 0
                                             });
+                                        },
+                                        out_not_initFollowers : function () {
+                                            magicArticle.css({
+                                                'position' : '',
+                                                'top' : _this.opts.props['spaceHeight'],
+                                                'bottom' : ''
+                                            });
                                         }
                                     }
                                 });
                             },
                             build : function () {
                                 this.initLayout();
-                                this.buildNotStickyLayout();
+                                this.buildFixedLayout();
                             }
                         },
                         load : {
@@ -229,7 +237,6 @@
 
                             // offset
                             (function () {
-                                var winHeight = Util.winSize().h;
                                 var offset = _this.magicSection.offset();
                                 var height = _this.magicSection.outerHeight(true);
                                 var offset = offset.top;
@@ -281,23 +288,36 @@
                                     'top' : spaceHeight
                                 });
                             }
-                            if (!_this.opts.hasCssSticky) {
-                                if (props.fixedMinOffset > winTop) {
-                                    _this.notstickylayout.out_top();
-                                } else if (winTop >= props.fixedMaxOffset) {
+                            if (breakOpts.initFollowers) {
+                                if (!_this.opts.hasCssSticky) {
+                                    if (props.fixedMinOffset > winTop) {
+                                        _this.fixedlayout.out_top();
+                                    } else if (winTop >= props.fixedMaxOffset) {
+                                        if (!breakOpts.pushFollowers) {
+                                            _this.fixedlayout.out_bot();
+                                        } else {
+                                            _this.fixedlayout.out_bot_pushFollowers();
+                                        }
+                                    }
                                     if (!breakOpts.pushFollowers) {
-                                        _this.notstickylayout.out_bot();
-                                    } else {
-                                        _this.notstickylayout.out_bot_pushFollowers();
+                                        if (props.minOffset > winTop) {
+                                            _this.fixedlayout.out_top();
+                                        } else if (winTop >= props.maxOffset) {
+                                            _this.fixedlayout.out_bot_pushFollowers();
+                                        }
                                     }
                                 }
-                                if (!breakOpts.pushFollowers) {
-                                    if (props.minOffset > winTop) {
-                                        _this.notstickylayout.out_top();
-                                    } else if (winTop >= props.maxOffset) {
-                                        _this.notstickylayout.out_bot_pushFollowers();
+                            } else {
+                                if (!(props.fixedMinOffset <= winTop && winTop < props.fixedMaxOffset)) {
+                                    if (breakOpts.pushFollowers) {
+                                        _this.fixedlayout.out_bot_pushFollowers();
                                     }
                                 }
+                                if (!(props.minOffset <= winTop && winTop < props.maxOffset)) {
+                                    _this.fixedlayout.out_not_initFollowers();
+                                }
+                            }
+                            if (!_this.opts.hasCssSticky || !breakOpts.initFollowers) {
                                 _this.magicArticle.css({
                                     'width' : _this.magicSection.outerWidth(true)
                                 });
@@ -446,12 +466,24 @@
                                 if (condition.in) {
                                     if (this.stateAttr.active != 'in') {
                                         this.stateAttr.active = 'in';
-                                        if (!_this.opts.hasCssSticky) {
-                                            if (!breakOpts.pushFollowers) {
-                                                if (props.direction == 'FORWARD') {
-                                                    _this.notstickylayout.out_top();
-                                                } else if (props.direction == 'REVERSE') {
-                                                    _this.notstickylayout.out_bot();
+                                        if (breakOpts.initFollowers) {
+                                            if (!_this.opts.hasCssSticky) {
+                                                if (!breakOpts.pushFollowers) {
+                                                    if (props.direction == 'FORWARD') {
+                                                        _this.fixedlayout.out_top();
+                                                    } else if (props.direction == 'REVERSE') {
+                                                        _this.fixedlayout.out_bot();
+                                                    }
+                                                }
+                                            }
+                                        } else {
+                                            if (props.direction == 'FORWARD') {
+                                                _this.fixedlayout.out_bot();
+                                            } else if (props.direction == 'REVERSE') {
+                                                if (breakOpts.pushFollowers) {
+                                                    _this.fixedlayout.out_bot_pushFollowers();
+                                                } else {
+                                                    _this.fixedlayout.out_bot();
                                                 }
                                             }
                                         }
@@ -476,8 +508,12 @@
                                     if (this.stateAttr.fixedActive != 'in') {
                                         this.stateAttr.fixedActive = 'in';
                                         _this.magicArticle.addClass(classAttr.fixed);
-                                        if (!_this.opts.hasCssSticky) {
-                                            _this.notstickylayout.out_bot();
+                                        if (breakOpts.initFollowers) {
+                                            if (!_this.opts.hasCssSticky) {
+                                                _this.fixedlayout.out_bot();
+                                            }
+                                        } else {
+                                            _this.fixedlayout.out_bot();
                                         }
                                     }
                                 }
@@ -485,15 +521,25 @@
                                     if (this.stateAttr.fixedActive != 'out') {
                                         this.stateAttr.fixedActive = 'out';
                                         _this.magicArticle.removeClass(classAttr.fixed);
-                                        if (!_this.opts.hasCssSticky) {
-                                            if (props.fixedMinOffset > winTop) {
-                                                _this.notstickylayout.out_top();
-                                            } else if (winTop >= props.fixedMaxOffset) {
-                                                if (!breakOpts.pushFollowers) {
-                                                    _this.notstickylayout.out_bot();
-                                                } else {
-                                                    _this.notstickylayout.out_bot_pushFollowers();
+                                        if (breakOpts.initFollowers) {
+                                            if (!_this.opts.hasCssSticky) {
+                                                if (props.fixedMinOffset > winTop) {
+                                                    _this.fixedlayout.out_top();
+                                                } else if (winTop >= props.fixedMaxOffset) {
+                                                    if (!breakOpts.pushFollowers) {
+                                                        _this.fixedlayout.out_bot();
+                                                    } else {
+                                                        _this.fixedlayout.out_bot_pushFollowers();
+                                                    }
                                                 }
+                                            }
+                                        } else {
+                                            if (props.direction == 'FORWARD') {
+                                                if (breakOpts.pushFollowers) {
+                                                    _this.fixedlayout.out_bot_pushFollowers();
+                                                }
+                                            } else if (props.direction == 'REVERSE') {
+                                                _this.fixedlayout.out_bot();
                                             }
                                         }
                                     }
@@ -501,14 +547,18 @@
                                 if (!condition.in) {
                                     if (this.stateAttr.active != 'out') {
                                         this.stateAttr.active = 'out';
-                                        if (!_this.opts.hasCssSticky) {
-                                            if (!breakOpts.pushFollowers) {
-                                                if (props.minOffset > winTop) {
-                                                    _this.notstickylayout.out_top();
-                                                } else if (winTop >= props.maxOffset) {
-                                                    _this.notstickylayout.out_bot_pushFollowers();
+                                        if (breakOpts.initFollowers) {
+                                            if (!_this.opts.hasCssSticky) {
+                                                if (!breakOpts.pushFollowers) {
+                                                    if (props.minOffset > winTop) {
+                                                        _this.fixedlayout.out_top();
+                                                    } else if (winTop >= props.maxOffset) {
+                                                        _this.fixedlayout.out_bot_pushFollowers();
+                                                    }
                                                 }
                                             }
+                                        } else {
+                                            _this.fixedlayout.out_not_initFollowers();
                                         }
                                         _this.outCallback('out');
                                     }
