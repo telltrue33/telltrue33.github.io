@@ -15,6 +15,22 @@
                 return pVal == 'sticky';
             })(),
             Util = Utils;
+        // var testDiv = doc.createElement('div');
+        // doc.body.appendChild(testDiv);
+        // var testDivStyle = {
+        //     'position' : 'fixed',
+        //     'left' : 0,
+        //     'top' : 0,
+        //     'z-index' : 100,
+        //     'line-height' : 1.5,
+        //     'background' : 'red',
+        //     'color' : '#fff'
+        // };
+        // testDiv.innerHTML = 'test';
+        // testDiv.setAttribute('id', 'test');
+        // for (var tKey in testDivStyle) {
+        //     testDiv.style[tKey] = testDivStyle[tKey];
+        // }
         function Component (container, args) {
             if (!(this instanceof Component)) {
                 return new Component(container, args);

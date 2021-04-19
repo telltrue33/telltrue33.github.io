@@ -17,7 +17,8 @@
                 canvasSection : '.canvas-section',
                 canvasObj : '.canvas-article',
                 stateAttr : {
-                    destroy : false
+                    destroy : false,
+                    isOrientationchange : false
                 },
                 customEvent : '.Component' + (new Date()).getTime() + Math.random()
             };
@@ -285,7 +286,14 @@
                             this.instance.destroy();
                             this.instance = null;
                         },
+                        getSize : {
+                            winHeight : Util.winSize().h,
+                            resize : function () {
+                                this.winHeight = Util.winSize().h
+                            }
+                        },
                         build : function () {
+                            var m = this;
                             this.instance = new MagicScroll(_this.obj, {
                                 animations : _this.magictween.animations,
                                 duration : (function () {
@@ -297,7 +305,7 @@
                                     return v;
                                 })(),
                                 spaceHeight : function () {
-                                    var winHeight = Util.winSize().h;
+                                    var winHeight = m.getSize.winHeight;
                                     var stickyHeight = _this.stickySection.outerHeight(true);
                                     var canvasHeight = _this.canvasSection.outerHeight(true);
                                     var maxSize = (winHeight - canvasHeight) / 2;
@@ -356,7 +364,10 @@
                     $(win).off(this.changeEvents('resize orientationchange'));
                 }
             },
-            resizeFunc : function () {
+            resizeFunc : function (e) {
+                if (e != isUndefined && e.type == 'orientationchange') {
+                    this.opts.stateAttr.isOrientationchange = true;
+                }
                 this.winWidth = Util.winSize().w;
                 if (this.opts.resizeStart == null) {
                     this.opts.resizeStart = this.winWidth;
@@ -368,6 +379,7 @@
             resizeEndFunc : function () {
                 this.opts.resizeStart = null;
                 this.setLayout();
+                this.opts.stateAttr.isOrientationchange = false;
                 Util.cancelAFrame.call(win, this.resizeRequestFrame);
             },
             resizeAnimateFunc : function () {
@@ -376,6 +388,9 @@
             },
             setLayout : function () {
                 if (!this.opts.stateAttr.destroy) {
+                    if (this.opts.stateAttr.isOrientationchange) {
+                        this.magictween.getSize.resize();
+                    }
                     this.motion.resize();
                 }
             },
