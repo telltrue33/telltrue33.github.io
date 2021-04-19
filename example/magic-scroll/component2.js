@@ -276,7 +276,7 @@
                                     var d = 5;
                                     var v = (d * 100) + '%';
                                     if (Util.isDevice) {
-                                        v = (Util.winSize().h * d) + 'px';
+                                        v = (m.getSize.winHeight * d) + 'px';
                                     }
                                     return v;
                                 })(),
@@ -294,7 +294,7 @@
                                             var d = 3;
                                             var v = (d * 100) + '%';
                                             if (Util.isDevice) {
-                                                v = (Util.winSize().h * d) + 'px';
+                                                v = (m.getSize.winHeight * d) + 'px';
                                             }
                                             return v;
                                         })(),

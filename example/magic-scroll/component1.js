@@ -17,7 +17,8 @@
                 canvasSection : '.canvas-section',
                 canvasObj : '.canvas-article',
                 stateAttr : {
-                    destroy : false
+                    destroy : false,
+                    isOrientationchange : false
                 },
                 customEvent : '.Component' + (new Date()).getTime() + Math.random()
             };
@@ -88,8 +89,14 @@
                                 load(i);
                             }
                         },
+                        getSize : {
+                            winHeight : Util.winSize().h,
+                            resize : function () {
+                                this.winHeight = Util.winSize().h
+                            }
+                        },
                         layout : function () {
-                            var winHeight = Util.winSize().h;
+                            var winHeight = this.getSize.winHeight;
                             var stickyHeight = _this.stickySection.outerHeight(true);
                             var oClientRect = Util.getBoundingClientRect(_this.canvasSection[0]);
                             var sectionW = oClientRect.width;
@@ -261,7 +268,14 @@
                             this.instance.destroy();
                             this.instance = null;
                         },
+                        getSize : {
+                            winHeight : Util.winSize().h,
+                            resize : function () {
+                                this.winHeight = Util.winSize().h
+                            }
+                        },
                         build : function () {
+                            var m = this;
                             this.instance = new MagicScroll(_this.obj, {
                                 fixedAutoPlay : true,
                                 animations : _this.magictween.animations,
@@ -269,7 +283,7 @@
                                     var d = 5;
                                     var v = (d * 100) + '%';
                                     if (Util.isDevice) {
-                                        v = (Util.winSize().h * d) + 'px';
+                                        v = (m.getSize.winHeight * d) + 'px';
                                     }
                                     return v;
                                 })(),
@@ -282,7 +296,7 @@
                                             var d = 3;
                                             var v = (d * 100) + '%';
                                             if (Util.isDevice) {
-                                                v = (Util.winSize().h * d) + 'px';
+                                                v = (m.getSize.winHeight * d) + 'px';
                                             }
                                             return v;
                                         })(),
@@ -328,7 +342,10 @@
                     $(win).off(this.changeEvents('resize orientationchange'));
                 }
             },
-            resizeFunc : function () {
+            resizeFunc : function (e) {
+                if (e != isUndefined && e.type == 'orientationchange') {
+                    this.opts.stateAttr.isOrientationchange = true;
+                }
                 this.winWidth = Util.winSize().w;
                 if (this.opts.resizeStart == null) {
                     this.opts.resizeStart = this.winWidth;
@@ -340,6 +357,7 @@
             resizeEndFunc : function () {
                 this.opts.resizeStart = null;
                 this.setLayout();
+                this.opts.stateAttr.isOrientationchange = false;
                 Util.cancelAFrame.call(win, this.resizeRequestFrame);
             },
             resizeAnimateFunc : function () {
@@ -348,6 +366,10 @@
             },
             setLayout : function () {
                 if (!this.opts.stateAttr.destroy) {
+                    if (this.opts.stateAttr.isOrientationchange) {
+                        this.motion.getSize.resize();
+                        this.magictween.getSize.resize();
+                    }
                     this.motion.resize();
                 }
             },
