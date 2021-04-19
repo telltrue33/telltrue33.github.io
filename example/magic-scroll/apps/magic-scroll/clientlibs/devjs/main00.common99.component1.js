@@ -366,7 +366,12 @@
             },
             setLayout : function () {
                 if (!this.opts.stateAttr.destroy) {
-                    if (this.opts.stateAttr.isOrientationchange) {
+                    if (Util.isDevice) {
+                        if (this.opts.stateAttr.isOrientationchange) {
+                            this.motion.getSize.resize();
+                            this.magictween.getSize.resize();
+                        }
+                    } else {
                         this.motion.getSize.resize();
                         this.magictween.getSize.resize();
                     }
