@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Magic Scroll</title>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0">
+<style>
+* {
+    margin: 0;
+    padding: 0;
+}
+.sticky-section {
+    height: 10vw;
+}
+.sticky-area {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 30;
+    width: 100%;
+    height: 10vw;
+    border: 1px solid red;
+    text-align: center;
+    box-sizing: border-box;
+}
+.test-wrap {
+	width: 200px;
+	height: 600px;
+	background: blue;
+}
+.test-item {
+    width: 100%;
+    height: 100%;
+    border: 1px solid red;
+    box-sizing: border-box;
+}
+.canvas-section {
+    position: relative;
+    height: 100vh;
+    text-align: center;
+    font-size: 0;
+    line-height: 0;
+}
+.canvas-section:after {
+    display: inline-block;
+    width: 0px;
+    height: 100%;
+    vertical-align: middle;
+    content: '';
+}
+.canvas-section canvas {
+    vertical-align: middle;
+}
+</style>
+</head>
+<body>
+<div id="wrap">
+<!--/* header */-->
+    <div class="sticky-section">
+        <div class="sticky-area">sticky section</div>
+    </div>
+    <div style="height:1000px;background:#000"></div>
+    <!--/* content */-->
+    <div id="content" role="main">
+        <div class="test-section">
+            <div class="sw-section">
+                <div class="canvas-section">
+                    <canvas class="canvas-article"></canvas>
+                </div>
+            </div>
+        </div>
+        <div style="height:1000px;background:#000"></div>
+        <div class="test-section2">
+            <div class="sw-section">
+                <div class="canvas-section">
+                    <canvas class="canvas-article"></canvas>
+                </div>
+            </div>
+        </div>
+        <div style="height:1000px;background:#000"></div>
+        <div class="test-section3">
+            <div class="sw-section">
+                <div class="canvas-section">
+                    <canvas class="canvas-article"></canvas>
+                </div>
+            </div>
+        </div>
+        <div style="position:relative;z-index:10;height:1000px;background:#000"></div>
+        <div class="test-section4">
+            <div class="sw-section">
+                <div class="canvas-section">
+                    <canvas class="canvas-article"></canvas>
+                </div>
+            </div>
+        </div>
+        <div style="position:relative;z-index:10;height:1000px;background:#000"></div>
+        <div class="test-section5">
+            <div class="sw-section">
+                <div class="canvas-section">
+                    <canvas class="canvas-article"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div style="position:relative;z-index:10;height:2000px;background:#000"></div>
+<!--/* footer */-->
+</div>
+
+<!--/* template js */-->
+<script data-rawcode src="../common/clientlibs/js/main.min.js"></script>
+<!--/* component js */-->
+<script data-rawcode src="./clientlibs/js/main.min.js"></script>
+</body>
+</html>

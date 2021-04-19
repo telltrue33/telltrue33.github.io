@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>test</title>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0">
+<style>
+* {
+    margin: 0;
+    padding: 0;
+}
+.sticky-section {
+    height: 10vw;
+}
+.sticky-area {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 30;
+    width: 100%;
+    height: 10vw;
+    background: red;
+    text-align: center;
+}
+.test-wrap {
+	width: 200px;
+	height: 600px;
+	background: blue;
+}
+.test-item {
+    width: 100%;
+    height: 100%;
+    border: 1px solid red;
+    box-sizing: border-box;
+}
+.canvas-section {
+    position: relative;
+    height: 100vh;
+    text-align: center;
+    font-size: 0;
+    line-height: 0;
+}
+.canvas-section:after {
+    display: inline-block;
+    width: 0px;
+    height: 100%;
+    vertical-align: middle;
+    content: '';
+}
+.canvas-section canvas {
+    vertical-align: middle;
+}
+</style>
+</head>
+<body>
+<div id="wrap">
+<!--/* header */-->
+    <div class="sticky-section">
+        <div class="sticky-area">sticky section</div>
+    </div>
+    <div style="height:1000px;background:#000"></div>
+    <!--/* content */-->
+    <div id="content" role="main">
+        <div class="test" style="height:5000px;background:red">
+        </div>
+    </div>
+    <div style="height:5000px;background:#000"></div>
+<!--/* footer */-->
+</div>
+<script src="jqLite-1.12.4.min.js"></script>
+<script src="TweenMax.2.1.3.js"></script>
+<script src="utils.js"></script>
+<script src="magicScroll.js"></script>
+<script src="component1.js"></script>
+<script src="component2.js"></script>
+<script src="component3.js"></script>
+<script src="component4.js"></script>
+<script>
+jqLite(function () {
+    var winTop = jqLite(window).scrollTop();
+    console.log(winTop);
+});
+</script>
+</body>
+</html>

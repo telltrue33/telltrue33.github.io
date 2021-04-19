@@ -1,0 +1,6 @@
+{
+  "paths": [
+    "apps/common/clientlibs/",
+    "apps/magic-scroll/clientlibs/"
+  ]
+}
