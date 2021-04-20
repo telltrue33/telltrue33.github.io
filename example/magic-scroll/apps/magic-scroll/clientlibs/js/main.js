@@ -388,6 +388,7 @@
                         build : function () {
                             var m = this;
                             this.instance = new MagicScroll(_this.obj, {
+                                init : false,
                                 fixedAutoPlay : true,
                                 animations : _this.magictween.animations,
                                 duration : (function () {
@@ -422,12 +423,19 @@
                                     hookIn : function () {
                                     },
                                     hookOut : function () {
+                                        var scopeDir = _this.magictween.instance.motion.scroll.scope.hookOut;
+                                        if (scopeDir == 'TOP') {
+                                            _this.motion.reverse();
+                                        } else if (scopeDir == 'BOTTOM') {
+                                            _this.motion.reverse();
+                                        }
                                     },
                                     update : function () {
                                         if (_this.magictween.instance == null) return;
                                     }
                                 }
                             });
+                            this.instance.init();
                         }
                     }
                 });
@@ -796,6 +804,7 @@
                         build : function () {
                             var m = this;
                             this.instance = new MagicScroll(_this.obj, {
+                                init : false,
                                 fixedAutoPlay : true,
                                 animations : _this.magictween.animations,
                                 duration : (function () {
@@ -835,12 +844,19 @@
                                     hookIn : function () {
                                     },
                                     hookOut : function () {
+                                        var scopeDir = _this.magictween.instance.motion.scroll.scope.hookOut;
+                                        if (scopeDir == 'TOP') {
+                                            _this.motion.reverse();
+                                        } else if (scopeDir == 'BOTTOM') {
+                                            _this.motion.reverse();
+                                        }
                                     },
                                     update : function () {
                                         if (_this.magictween.instance == null) return;
                                     }
                                 }
                             });
+                            this.instance.init();
                         }
                     }
                 });

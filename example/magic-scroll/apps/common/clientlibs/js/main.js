@@ -504,6 +504,10 @@
                                 hookActive : null,
                                 fixedActive : null
                             },
+                            scope : {
+                                out : null,
+                                hookOut : null
+                            },
                             destroy : function () {
                             },
                             build : function () {
@@ -551,6 +555,11 @@
                                 if (!condition.hookIn) {
                                     if (this.stateAttr.hookActive != 'out') {
                                         this.stateAttr.hookActive = 'out';
+                                        if (props.triggerMinOffset > winTop) {
+                                            this.scope.hookOut = 'TOP';
+                                        } else if (winTop >= props.triggerMaxOffset) {
+                                            this.scope.hookOut = 'BOTTOM';
+                                        }
                                         _this.motion.progress.update(false);
                                         _this.outCallback('hookOut');
                                     }
@@ -598,6 +607,11 @@
                                 if (!condition.in) {
                                     if (this.stateAttr.active != 'out') {
                                         this.stateAttr.active = 'out';
+                                        if (props.minOffset > winTop) {
+                                            this.scope.out = 'TOP';
+                                        } else if (winTop >= props.maxOffset) {
+                                            this.scope.out = 'BOTTOM';
+                                        }
                                         if (breakOpts.initFollowers) {
                                             if (!_this.opts.hasCssSticky) {
                                                 if (!breakOpts.pushFollowers) {

@@ -277,6 +277,7 @@
                         build : function () {
                             var m = this;
                             this.instance = new MagicScroll(_this.obj, {
+                                init : false,
                                 fixedAutoPlay : true,
                                 animations : _this.magictween.animations,
                                 duration : (function () {
@@ -308,13 +309,23 @@
                                         // console.log('in');
                                     },
                                     out : function () {
-                                        // console.log('out');
+                                        // var scopeDir = _this.magictween.instance.motion.scroll.scope.out;
+                                        // if (scopeDir == 'TOP') {
+                                        //     console.log('out Top');
+                                        // } else if (scopeDir == 'BOTTOM') {
+                                        //     console.log('out Bottom');
+                                        // }
                                     },
                                     hookIn : function () {
                                         // console.log('hook in');
                                     },
                                     hookOut : function () {
-                                        // console.log('hook out');
+                                        var scopeDir = _this.magictween.instance.motion.scroll.scope.hookOut;
+                                        if (scopeDir == 'TOP') {
+                                            _this.motion.reverse();
+                                        } else if (scopeDir == 'BOTTOM') {
+                                            _this.motion.reverse();
+                                        }
                                     },
                                     update : function () {
                                         if (_this.magictween.instance == null) return;
@@ -322,6 +333,7 @@
                                     }
                                 }
                             });
+                            this.instance.init();
                         }
                     }
                 });
