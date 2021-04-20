@@ -355,7 +355,7 @@
                             _this.magicSection.css({
                                 'height' : sectionHeight
                             });
-                            if (_this.opts.hasCssSticky || _this.motion.scroll.stateAttr.fixedActive == 'in') {
+                            if (_this.opts.hasCssSticky) {
                                 _this.magicArticle.css({
                                     'top' : spaceHeight
                                 });
@@ -380,8 +380,8 @@
                                     }
                                 }
                             } else {
-                                if (!(props.fixedMinOffset <= winTop && winTop < props.fixedMaxOffset)) {
-                                    if (breakOpts.pushFollowers) {
+                                if (breakOpts.pushFollowers) {
+                                    if (winTop >= props.fixedMaxOffset) {
                                         _this.fixedlayout.out_bot_pushFollowers();
                                     }
                                 }
@@ -615,12 +615,10 @@
                                                 }
                                             }
                                         } else {
-                                            if (props.direction == 'FORWARD') {
-                                                if (breakOpts.pushFollowers) {
+                                            if (breakOpts.pushFollowers) {
+                                                if (winTop >= props.fixedMaxOffset) {
                                                     _this.fixedlayout.out_bot_pushFollowers();
                                                 }
-                                            } else if (props.direction == 'REVERSE') {
-                                                _this.fixedlayout.out_bot();
                                             }
                                         }
                                     }
