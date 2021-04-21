@@ -154,7 +154,10 @@
                     out : null,
                     hookIn : null,
                     hookOut : null,
-                    init : null
+                    init : null,
+                    beforeUpdate : null,
+                    afterUpdate : null,
+                    update : null
                 }
             };
             this.opts = Util.def(defParams, (args || {}));
@@ -507,6 +510,30 @@
                 Util.def(this, {
                     motion : {
                         progress : {
+                            beforeUpdate : function (type) {
+                                var winTop = $(win).scrollTop();
+                                if (type) {
+                                    var t = props.triggerMinOffset - props.minOffset;
+                                    var d = winTop - props.minOffset;
+                                    var p = d / t;
+                                } else {
+                                    var p = (props.minOffset <= winTop) ? 1 : 0;
+                                }
+                                _this.opts.props['beforeProgress'] = p;
+                                _this.outCallback('beforeUpdate');
+                            },
+                            afterUpdate : function (type) {
+                                var winTop = $(win).scrollTop();
+                                if (type) {
+                                    var t = props.maxOffset - props.triggerMaxOffset;
+                                    var d = winTop - props.triggerMaxOffset;
+                                    var p = d / t;
+                                } else {
+                                    var p = (props.triggerMaxOffset <= winTop) ? 1 : 0;
+                                }
+                                _this.opts.props['afterProgress'] = p;
+                                _this.outCallback('afterUpdate');
+                            },
                             update : function (type) {
                                 var winTop = $(win).scrollTop();
                                 if (type) {
@@ -568,13 +595,6 @@
                                         _this.outCallback('in');
                                     }
                                 }
-                                if (condition.hookIn) {
-                                    if (this.stateAttr.hookActive != 'in') {
-                                        this.stateAttr.hookActive = 'in';
-                                        _this.outCallback('hookIn');
-                                    }
-                                    _this.motion.progress.update(true);
-                                }
                                 if (!condition.hookIn) {
                                     if (this.stateAttr.hookActive != 'out') {
                                         this.stateAttr.hookActive = 'out';
@@ -586,6 +606,23 @@
                                         _this.motion.progress.update(false);
                                         _this.outCallback('hookOut');
                                     }
+                                }
+                                if (condition.in) {
+                                    if (props.minOffset <= winTop && winTop < props.triggerMinOffset) {
+                                        _this.motion.progress.beforeUpdate(true);
+                                    }
+                                }
+                                if (condition.hookIn) {
+                                    if (this.stateAttr.hookActive != 'in') {
+                                        this.stateAttr.hookActive = 'in';
+                                        if (props.direction == 'FORWARD') {
+                                            _this.motion.progress.beforeUpdate(false);
+                                        } else if (props.direction == 'REVERSE') {
+                                            _this.motion.progress.afterUpdate(false);
+                                        }
+                                        _this.outCallback('hookIn');
+                                    }
+                                    _this.motion.progress.update(true);
                                 }
                                 if (condition.fixedIn) {
                                     if (this.stateAttr.fixedActive != 'in') {
@@ -625,13 +662,20 @@
                                         }
                                     }
                                 }
+                                if (condition.in) {
+                                    if (props.triggerMaxOffset <= winTop && winTop < props.maxOffset) {
+                                        _this.motion.progress.afterUpdate(true);
+                                    }
+                                }
                                 if (!condition.in) {
                                     if (this.stateAttr.active != 'out') {
                                         this.stateAttr.active = 'out';
                                         if (props.minOffset > winTop) {
                                             this.scope.out = 'TOP';
+                                            _this.motion.progress.beforeUpdate(false);
                                         } else if (winTop >= props.maxOffset) {
                                             this.scope.out = 'BOTTOM';
+                                            _this.motion.progress.afterUpdate(false);
                                         }
                                         if (breakOpts.initFollowers) {
                                             if (!_this.opts.hasCssSticky) {
