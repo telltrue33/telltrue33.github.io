@@ -126,6 +126,7 @@
                     resize : null
                 },
                 timeAttr : {
+                    scrollEnd : null,
                     resizeEnd : null
                 },
                 classAttr : {
