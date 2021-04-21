@@ -448,51 +448,53 @@
                             return this;
                         },
                         build : function () {
-                            var a = this;
                             var animations = _this.opts.animations;
-                            var timeline = new TimelineMax();
-                            timeline.pause();
-                            var build = function (i) {
-                                var animation = animations[i];
-                                var empty = function (type) {
-                                    var o = {};
-                                    o.progress = type == 'start' ? 0 : 1;
-                                    return o;
+                            if (animations.length) {
+                                var a = this;
+                                var timeline = new TimelineMax();
+                                timeline.pause();
+                                var build = function (i) {
+                                    var animation = animations[i];
+                                    var empty = function (type) {
+                                        var o = {};
+                                        o.progress = type == 'start' ? 0 : 1;
+                                        return o;
+                                    };
+                                    var from = animation.hasOwnProperty('from') ? animation.from : empty('start');
+                                    var to = animation.hasOwnProperty('to') ? animation.to : empty('end');
+                                    var duration = animation.hasOwnProperty('duration') ? animation.duration : 0;
+                                    var hasStart = animation.hasOwnProperty('onStart');
+                                    var hasUpdate = animation.hasOwnProperty('onUpdate');
+                                    var hasComplete = animation.hasOwnProperty('onComplete');
+                                    var hasReverseComplete = animation.hasOwnProperty('onReverseComplete');
+                                    timeline.to(from, duration, Util.def(to, {
+                                        onUpdate : function () {
+                                            if (hasUpdate) {
+                                                animation.onUpdate(a.delTweenID(from));
+                                            }
+                                        },
+                                        onStart : function () {
+                                            if (hasStart) {
+                                                animation.onStart(a.delTweenID(from));
+                                            }
+                                        },
+                                        onComplete : function () {
+                                            if (hasComplete) {
+                                                animation.onComplete(a.delTweenID(from));
+                                            }
+                                        },
+                                        onReverseComplete : function () {
+                                            if (hasReverseComplete) {
+                                                animation.onReverseComplete(a.delTweenID(from));
+                                            }
+                                        }
+                                    }));
                                 };
-                                var from = animation.hasOwnProperty('from') ? animation.from : empty('start');
-                                var to = animation.hasOwnProperty('to') ? animation.to : empty('end');
-                                var duration = animation.hasOwnProperty('duration') ? animation.duration : 0;
-                                var hasStart = animation.hasOwnProperty('onStart');
-                                var hasUpdate = animation.hasOwnProperty('onUpdate');
-                                var hasComplete = animation.hasOwnProperty('onComplete');
-                                var hasReverseComplete = animation.hasOwnProperty('onReverseComplete');
-                                timeline.to(from, duration, Util.def(to, {
-                                    onUpdate : function () {
-                                        if (hasUpdate) {
-                                            animation.onUpdate(a.delTweenID(from));
-                                        }
-                                    },
-                                    onStart : function () {
-                                        if (hasStart) {
-                                            animation.onStart(a.delTweenID(from));
-                                        }
-                                    },
-                                    onComplete : function () {
-                                        if (hasComplete) {
-                                            animation.onComplete(a.delTweenID(from));
-                                        }
-                                    },
-                                    onReverseComplete : function () {
-                                        if (hasReverseComplete) {
-                                            animation.onReverseComplete(a.delTweenID(from));
-                                        }
-                                    }
-                                }));
-                            };
-                            for (var i = 0, max = animations.length; i < max; i++) {
-                                build.call(a, i);
+                                for (var i = 0, max = animations.length; i < max; i++) {
+                                    build.call(a, i);
+                                }
+                                this.instance = timeline;
                             }
-                            this.instance = timeline;
                         }
                     }
                 });
