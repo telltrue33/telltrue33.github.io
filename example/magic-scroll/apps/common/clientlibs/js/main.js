@@ -139,6 +139,7 @@
                     hookIn : null,
                     hookOut : null,
                     init : null,
+                    allUpdate : null,
                     beforeUpdate : null,
                     afterUpdate : null,
                     update : null
@@ -489,6 +490,18 @@
                 Util.def(this, {
                     motion : {
                         progress : {
+                            allUpdate : function (type) {
+                                var winTop = $(win).scrollTop();
+                                if (type) {
+                                    var t = props.maxOffset - props.minOffset;
+                                    var d = winTop - props.minOffset;
+                                    var p = d / t;
+                                } else {
+                                    var p = (props.minOffset <= winTop) ? 1 : 0;
+                                }
+                                _this.opts.props['allProgress'] = p;
+                                _this.outCallback('allUpdate');
+                            },
                             beforeUpdate : function (type) {
                                 var winTop = $(win).scrollTop();
                                 if (type) {
@@ -587,6 +600,7 @@
                                     }
                                 }
                                 if (condition.in) {
+                                    _this.motion.progress.allUpdate(true);
                                     if (props.minOffset <= winTop && winTop < props.triggerMinOffset) {
                                         _this.motion.progress.beforeUpdate(true);
                                     }
@@ -669,6 +683,7 @@
                                         } else {
                                             _this.fixedlayout.out_not_initFollowers();
                                         }
+                                        _this.motion.progress.allUpdate(false);
                                         _this.outCallback('out');
                                     }
                                 }

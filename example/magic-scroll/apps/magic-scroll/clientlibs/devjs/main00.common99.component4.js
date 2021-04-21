@@ -340,15 +340,19 @@
                                     },
                                     update : function () {
                                         if (_this.magictween.instance == null) return;
-                                        console.log('progress', _this.magictween.instance.props.progress);
+                                        // console.log('progress', _this.magictween.instance.props.progress);
                                     },
                                     beforeUpdate : function () {
                                         if (_this.magictween.instance == null) return;
-                                        console.log('beforeUpdate', _this.magictween.instance.props.beforeProgress);
+                                        // console.log('beforeUpdate', _this.magictween.instance.props.beforeProgress);
                                     },
                                     afterUpdate : function () {
                                         if (_this.magictween.instance == null) return;
-                                        console.log('afterUpdate', _this.magictween.instance.props.afterProgress);
+                                        // console.log('afterUpdate', _this.magictween.instance.props.afterProgress);
+                                    },
+                                    allUpdate : function () {
+                                        if (_this.magictween.instance == null) return;
+                                        console.log('allUpdate', _this.magictween.instance.props.allProgress);
                                     }
                                 }
                             });
