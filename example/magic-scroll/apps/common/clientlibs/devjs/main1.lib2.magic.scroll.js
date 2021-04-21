@@ -5,7 +5,7 @@
     var Component = (function (isUndefined) {
         var win = window,
             doc = win.document,
-            $ = win.jqLite,
+            $ = win.jqLite || win.jQuery,
             positionSticky = (function () {
                 var cloneDiv = doc.createElement('div');
                 doc.body.appendChild(cloneDiv);
@@ -49,29 +49,12 @@
                     return to;
                 },
                 winSize : (function () {
-                    var isWinSafari = (function () {
-                        var appNetscape = (navigator.appName === "Netscape"),
-                            appVersionMac = (navigator.appVersion.indexOf("Mac") !== -1),
-                            userAgentSafari = (navigator.userAgent.indexOf("Safari") !== -1),
-                            userAgentChrome = (navigator.userAgent.indexOf("Chrome") !== -1);
-                        return (appNetscape && !appVersionMac && userAgentSafari && !userAgentChrome);
-                    })();
-                    if (isWinSafari) {
-                        return function () {
-                            var win_wh = {
-                                w : $(win).width(),
-                                h : $(win).height()
-                            };
-                            return win_wh;
-                        }
-                    } else {
-                        return function () {
-                            var win_wh = {
-                                w : win.innerWidth || doc.documentElement.clientWidth || doc.body.clientWidth,
-                                h : win.innerHeight || doc.documentElement.clientHeight || doc.body.clientHeight
-                            };
-                            return win_wh;
-                        }
+                    return function () {
+                        var win_wh = {
+                            w : win.innerWidth || doc.documentElement.clientWidth || doc.body.clientWidth,
+                            h : win.innerHeight || doc.documentElement.clientHeight || doc.body.clientHeight
+                        };
+                        return win_wh;
                     }
                 })(),
                 requestAFrame : (function () {
