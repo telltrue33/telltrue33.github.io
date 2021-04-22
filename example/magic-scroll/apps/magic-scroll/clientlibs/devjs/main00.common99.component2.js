@@ -376,7 +376,7 @@
             },
             setLayout : function () {
                 if (!this.opts.stateAttr.destroy) {
-                    if (Util.isDevice) {
+                    if (Util.isOrientationchange) {
                         if (this.opts.stateAttr.isOrientationchange) {
                             this.magictween.getSize.resize();
                         }

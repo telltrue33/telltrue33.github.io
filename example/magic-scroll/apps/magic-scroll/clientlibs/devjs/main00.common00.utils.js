@@ -11,6 +11,10 @@
                     var isDevice = ('ontouchstart' in win || (win.DocumentTouch && doc instanceof win.DocumentTouch));
                     return isDevice;
                 })(),
+                isOrientationchange : (function () {
+                    var isO = ('onorientationchange' in win);
+                    return isO;
+                })(),
                 isObject : function (o) {
                     return typeof o === 'object' && o !== null && o.constructor && o.constructor === Object;
                 },
