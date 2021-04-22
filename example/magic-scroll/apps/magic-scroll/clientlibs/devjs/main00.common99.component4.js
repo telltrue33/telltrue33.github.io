@@ -408,7 +408,7 @@
 }));
 
 (function (global, factory) {
-    var $ = win.jQuery || win.jqLite;
+    var $ = window.jQuery || window.jqLite;
     $(function () {
         factory();
     });
