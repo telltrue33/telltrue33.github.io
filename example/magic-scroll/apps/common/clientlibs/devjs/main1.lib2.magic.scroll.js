@@ -19,6 +19,10 @@
                     var isDevice = ('ontouchstart' in win || (win.DocumentTouch && doc instanceof win.DocumentTouch));
                     return isDevice;
                 })(),
+                isOrientationchange : (function () {
+                    var isO = ('onorientationchange' in win);
+                    return isO;
+                })(),
                 isObject : function (o) {
                     return typeof o === 'object' && o !== null && o.constructor && o.constructor === Object;
                 },
@@ -120,7 +124,8 @@
                     destroy : false,
                     scroll : null,
                     prevTop : null,
-                    resize : null
+                    resize : null,
+                    isOrientationchange : false
                 },
                 requestAttr : {
                     resize : null
@@ -249,7 +254,14 @@
                                 _this.outCallback('init');
                             }
                         },
+                        getSize : {
+                            winHeight : Util.winSize().h,
+                            resize : function () {
+                                this.winHeight = Util.winSize().h
+                            }
+                        },
                         opts : function () {
+                            var s = this;
                             var winWidth = Util.winSize().w;
                             var winHeight = Util.winSize().h;
 
@@ -278,7 +290,7 @@
 
                             // sectionHeight
                             _this.opts.props['sectionHeight'] = (function () {
-                                var pwinH = winHeight / 100;
+                                var pwinH = s.getSize.winHeight / 100;
                                 var duration = breakOpts.duration;
                                 var dVal = parseFloat(duration);
                                 var isPercent = duration.indexOf('%') >= 0;
@@ -750,7 +762,10 @@
                 }
                 this.opts.requestAttr.scroll = Util.requestAFrame.call(win, this.scrollAnimateFunc.bind(this));
             },
-            resizeFunc : function () {
+            resizeFunc : function (e) {
+                if (e != isUndefined && e.type == 'orientationchange') {
+                    this.opts.stateAttr.isOrientationchange = true;
+                }
                 this.winWidth = Util.winSize().w;
                 if (this.opts.stateAttr.resize == null) {
                     this.opts.stateAttr.resize = this.winWidth;
@@ -762,14 +777,29 @@
             resizeEndFunc : function () {
                 this.opts.stateAttr.resize = null;
                 if (!this.opts.stateAttr.destroy) {
+                    if (Util.isOrientationchange) {
+                        if (this.opts.stateAttr.isOrientationchange) {
+                            this.set.getSize.resize();
+                        }
+                    } else {
+                        this.set.getSize.resize();
+                    }
                     this.set.opts();
                     this.set.layout();
                     this.scrollFunc();
                 }
+                this.opts.stateAttr.isOrientationchange = false;
                 Util.cancelAFrame.call(win, this.opts.requestAttr.resize);
             },
             resizeAnimateFunc : function () {
                 if (!this.opts.stateAttr.destroy) {
+                    if (Util.isOrientationchange) {
+                        if (this.opts.stateAttr.isOrientationchange) {
+                            this.set.getSize.resize();
+                        }
+                    } else {
+                        this.set.getSize.resize();
+                    }
                     this.set.opts();
                     this.set.layout();
                     this.scrollFunc();

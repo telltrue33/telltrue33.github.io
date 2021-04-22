@@ -297,14 +297,7 @@
                             this.instance = new MagicScroll(_this.obj, {
                                 animations : _this.magictween.animations,
                                 pushFollowers : false,
-                                duration : (function () {
-                                    var d = 5;
-                                    var v = (d * 100) + '%';
-                                    if (Util.isDevice) {
-                                        v = (m.getSize.winHeight * d) + 'px';
-                                    }
-                                    return v;
-                                })(),
+                                duration : '500%',
                                 spaceHeight : function () {
                                     var winHeight = m.getSize.winHeight;
                                     var stickyHeight = _this.stickySection.outerHeight(true);
@@ -315,14 +308,7 @@
                                 },
                                 breakpoints : {
                                     768 : {
-                                        duration : (function () {
-                                            var d = 3;
-                                            var v = (d * 100) + '%';
-                                            if (Util.isDevice) {
-                                                v = (m.getSize.winHeight * d) + 'px';
-                                            }
-                                            return v;
-                                        })(),
+                                        duration : '300%',
                                         triggerHook : 0.5
                                     }
                                 },
