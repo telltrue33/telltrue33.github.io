@@ -5,7 +5,7 @@
     var Component = (function (isUndefined) {
         var win = window,
             doc = win.document,
-            $ = win.jqLite || win.jQuery,
+            $ = win.jQuery || win.jqLite,
             positionSticky = (function () {
                 var cloneDiv = doc.createElement('div');
                 doc.body.appendChild(cloneDiv);

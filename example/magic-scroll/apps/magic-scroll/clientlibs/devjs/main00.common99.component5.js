@@ -5,7 +5,7 @@
     var Component = (function (isUndefined) {
         var win = window,
             doc = win.document,
-            $ = win.jqLite,
+            $ = win.jQuery || win.jqLite,
             Util = win.MsComponent.util;
         function Component (container, args) {
             if (!(this instanceof Component)) {
@@ -399,13 +399,14 @@
 }));
 
 (function (global, factory) {
-    jqLite(function () {
+    var $ = win.jQuery || win.jqLite;
+    $(function () {
         factory();
     });
 }(this, function () {
     var Call = (function (isUndefined) {
         var win = window,
-            $ = win.jqLite,
+            $ = win.jQuery || win.jqLite,
             Util = win.MsComponent.util;
         function Call (args) {
             var defParams = {
