@@ -772,7 +772,7 @@
                     this.resizeAnimateFunc();
                 }
                 win.clearTimeout(this.opts.timeAttr.resizeEnd);
-                this.opts.timeAttr.resizeEnd = win.setTimeout(this.resizeEndFunc.bind(this), 180);
+                this.opts.timeAttr.resizeEnd = win.setTimeout(this.resizeEndFunc.bind(this), 280);
             },
             resizeEndFunc : function () {
                 this.opts.stateAttr.resize = null;

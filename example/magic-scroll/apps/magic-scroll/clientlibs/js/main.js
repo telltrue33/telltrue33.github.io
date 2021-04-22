@@ -456,7 +456,7 @@
                     this.resizeAnimateFunc();
                 }
                 win.clearTimeout(this.resizeEndTime);
-                this.resizeEndTime = win.setTimeout(this.resizeEndFunc.bind(this), 150);
+                this.resizeEndTime = win.setTimeout(this.resizeEndFunc.bind(this), 250);
             },
             resizeEndFunc : function () {
                 this.opts.resizeStart = null;
@@ -863,7 +863,7 @@
                     this.resizeAnimateFunc();
                 }
                 win.clearTimeout(this.resizeEndTime);
-                this.resizeEndTime = win.setTimeout(this.resizeEndFunc.bind(this), 150);
+                this.resizeEndTime = win.setTimeout(this.resizeEndFunc.bind(this), 250);
             },
             resizeEndFunc : function () {
                 this.opts.resizeStart = null;
@@ -1285,7 +1285,7 @@
                     this.resizeAnimateFunc();
                 }
                 win.clearTimeout(this.resizeEndTime);
-                this.resizeEndTime = win.setTimeout(this.resizeEndFunc.bind(this), 150);
+                this.resizeEndTime = win.setTimeout(this.resizeEndFunc.bind(this), 250);
             },
             resizeEndFunc : function () {
                 this.opts.resizeStart = null;
@@ -1716,7 +1716,7 @@
                     this.resizeAnimateFunc();
                 }
                 win.clearTimeout(this.resizeEndTime);
-                this.resizeEndTime = win.setTimeout(this.resizeEndFunc.bind(this), 150);
+                this.resizeEndTime = win.setTimeout(this.resizeEndFunc.bind(this), 250);
             },
             resizeEndFunc : function () {
                 this.opts.resizeStart = null;
@@ -2139,7 +2139,7 @@
                     this.resizeAnimateFunc();
                 }
                 win.clearTimeout(this.resizeEndTime);
-                this.resizeEndTime = win.setTimeout(this.resizeEndFunc.bind(this), 150);
+                this.resizeEndTime = win.setTimeout(this.resizeEndFunc.bind(this), 250);
             },
             resizeEndFunc : function () {
                 this.opts.resizeStart = null;
