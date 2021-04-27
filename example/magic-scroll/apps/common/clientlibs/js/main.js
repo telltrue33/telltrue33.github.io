@@ -83,14 +83,7 @@
                 obj : container,
                 magicSection : '.magic-section',
                 magicArticle : '.magic-article',
-                duration : (function () {
-                    var d = 2;
-                    var v = (d * 100) + '%';
-                    if (Util.isDevice) {
-                        v = (Util.winSize().h * d) + 'px';
-                    }
-                    return v;
-                })(),
+                duration : null,
                 triggerHook : 0,
                 overlapSpace : false,
                 initFollowers : true,
@@ -271,15 +264,21 @@
                             })();
 
                             _this.opts.props['sectionHeight'] = (function () {
-                                var pwinH = s.getSize.winHeight / 100;
-                                var duration = breakOpts.duration;
-                                var dVal = parseFloat(duration);
-                                var isPercent = duration.indexOf('%') >= 0;
-                                var r = pwinH * dVal;
-                                if (!isPercent) {
-                                    r = dVal;
+                                var h;
+                                if (breakOpts.duration == null) {
+                                    h = _this.obj.outerHeight(true);
+                                } else {
+                                    var pwinH = s.getSize.winHeight / 100;
+                                    var duration = breakOpts.duration;
+                                    var dVal = parseFloat(duration);
+                                    var isPercent = duration.indexOf('%') >= 0;
+                                    var r = pwinH * dVal;
+                                    if (!isPercent) {
+                                        r = dVal;
+                                    }
+                                    h = r - _this.opts.props['spaceHeight'];
                                 }
-                                return r - _this.opts.props['spaceHeight'];
+                                return h;
                             })();
 
                             _this.opts.props['articleHeight'] = (function () {
@@ -331,12 +330,14 @@
                             var spaceHeight = props['spaceHeight'];
                             var sectionHeight = _this.opts.props['sectionHeight'];
                             var articleHeight = _this.opts.props['articleHeight'];
+                            var hVal = (breakOpts.duration == null) ? '' : sectionHeight;
+                            var tVal = (breakOpts.duration == null) ? '' : spaceHeight;
                             _this.magicSection.css({
-                                'height' : sectionHeight
+                                'height' : hVal
                             });
                             if (_this.opts.hasCssSticky) {
                                 _this.magicArticle.css({
-                                    'top' : spaceHeight
+                                    'top' : tVal
                                 });
                             }
                             if (breakOpts.initFollowers) {
