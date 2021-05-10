@@ -199,29 +199,9 @@
                                         state : null,
                                         current : null,
                                         view : function () {
-                                            if (this.state == 'out_top') {
-                                                if (this.current !== this.state) {
-                                                    this.current = this.state;
-                                                    this.out_top();
-                                                }
-                                            }
-                                            if (this.state == 'out_bot') {
-                                                if (this.current !== this.state) {
-                                                    this.current = this.state;
-                                                    this.out_bot();
-                                                }
-                                            }
-                                            if (this.state == 'out_bot_pushFollowers') {
-                                                if (this.current !== this.state) {
-                                                    this.current = this.state;
-                                                    this.out_bot_pushFollowers();
-                                                }
-                                            }
-                                            if (this.state == 'out_not_initFollowers') {
-                                                if (this.current !== this.state) {
-                                                    this.current = this.state;
-                                                    this.out_not_initFollowers();
-                                                }
+                                            if (this.current !== this.state) {
+                                                this.current = this.state;
+                                                this[this.state]();
                                             }
                                         },
                                         out_top : function () {
