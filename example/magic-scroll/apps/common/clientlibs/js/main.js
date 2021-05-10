@@ -298,19 +298,19 @@
                             })();
 
                             _this.opts.props['sectionHeight'] = (function () {
-                                var h;
-                                if (breakOpts.duration == null) {
-                                    h = _this.obj.outerHeight(true);
-                                } else {
+                                var h = _this.obj.outerHeight(true);
+                                if (breakOpts.duration != null) {
                                     var pwinH = s.getSize.winHeight / 100;
                                     var duration = breakOpts.duration;
                                     var dVal = parseFloat(duration);
                                     var isPercent = duration.indexOf('%') >= 0;
                                     var r = pwinH * dVal;
+                                    var minH = h;
                                     if (!isPercent) {
                                         r = dVal;
                                     }
                                     h = r - _this.opts.props['spaceHeight'];
+                                    h = h < minH ? minH : h;
                                 }
                                 return h;
                             })();
