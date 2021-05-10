@@ -639,10 +639,14 @@
                                         this.scope.out = 'TOP';
                                         _this.opts.props['beforeProgress'] = 0;
                                         _this.opts.props['afterProgress'] = 0;
+                                        _this.opts.props['allProgress'] = 0;
+                                        _this.opts.props['progress'] = 0;
                                     } else if (winTop >= props.maxOffset) {
                                         this.scope.out = 'BOTTOM';
                                         _this.opts.props['beforeProgress'] = 1;
                                         _this.opts.props['afterProgress'] = 1;
+                                        _this.opts.props['allProgress'] = 1;
+                                        _this.opts.props['progress'] = 1;
                                     }
                                     if (!breakOpts.initFollowers) {
                                         _this.fixedlayout.state = 'out_not_initFollowers';
