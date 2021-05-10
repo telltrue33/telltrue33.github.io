@@ -269,6 +269,14 @@
                         },
                         build : function () {
                             var m = this;
+                            var outFunc = function () {
+                                var scopeDir = _this.magictween.instance.motion.scroll.scope.hookOut;
+                                if (scopeDir == 'TOP') {
+                                    _this.motion.reverse();
+                                } else if (scopeDir == 'BOTTOM') {
+                                    _this.motion.reverse();
+                                }
+                            };
                             this.instance = new MagicScroll(_this.obj, {
                                 init : false,
                                 fixedAutoPlay : true,
@@ -289,6 +297,12 @@
                                     }
                                 },
                                 on : {
+                                    init : function () {
+                                        // IE 에서 새로고침시 scrollTop 버그를 위한 setTimeout
+                                        win.setTimeout(function () {
+                                            outFunc();
+                                        }, 150);
+                                    },
                                     in : function () {
                                         // console.log('in');
                                     },
@@ -304,12 +318,7 @@
                                         // console.log('hook in');
                                     },
                                     hookOut : function () {
-                                        var scopeDir = _this.magictween.instance.motion.scroll.scope.hookOut;
-                                        if (scopeDir == 'TOP') {
-                                            _this.motion.reverse();
-                                        } else if (scopeDir == 'BOTTOM') {
-                                            _this.motion.reverse();
-                                        }
+                                        outFunc();
                                     },
                                     update : function () {
                                         if (_this.magictween.instance == null) return;

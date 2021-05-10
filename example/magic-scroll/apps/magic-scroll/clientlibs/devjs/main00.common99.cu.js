@@ -277,6 +277,14 @@
                         },
                         build : function () {
                             var m = this;
+                            var beforeUpdateFunc = function () {
+                                if (_this.magictween.instance == null) return;
+                                var progress = _this.magictween.instance.props.beforeProgress;
+                                _this.motion.parallax.progress(progress);
+                                if (progress > .5) {
+                                    _this.motion.cu.play();
+                                }
+                            };
                             this.instance = new MagicScroll(_this.obj, {
                                 init : false,
                                 duration : '250%',
@@ -295,10 +303,17 @@
                                     }
                                 },
                                 on : {
+                                    init : function () {
+                                        // IE 에서 새로고침시 scrollTop 버그를 위한 setTimeout
+                                        win.setTimeout(function () {
+                                            beforeUpdateFunc();
+                                        }, 150);
+                                    },
                                     in : function () {
                                         // console.log('in');
                                     },
                                     out : function () {
+                                        if (_this.magictween.instance == null) return;
                                         var scopeDir = _this.magictween.instance.motion.scroll.scope.out;
                                         if (scopeDir == 'TOP') {
                                             _this.motion.cu.reverse();
@@ -320,16 +335,11 @@
                                         // }
                                     },
                                     update : function () {
-                                        if (_this.magictween.instance == null) return;
+                                        // if (_this.magictween.instance == null) return;
                                         // console.log('progress', _this.magictween.instance.props.progress);
                                     },
                                     beforeUpdate : function () {
-                                        if (_this.magictween.instance == null) return;
-                                        var progress = _this.magictween.instance.props.beforeProgress;
-                                        _this.motion.parallax.progress(progress);
-                                        if (progress > .5) {
-                                            _this.motion.cu.play();
-                                        }
+                                        beforeUpdateFunc();
                                     }
                                 }
                             });

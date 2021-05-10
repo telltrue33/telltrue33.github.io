@@ -196,6 +196,34 @@
                                 var magicArticle = _this.magicArticle;
                                 Util.def(_this, {
                                     fixedlayout : {
+                                        state : null,
+                                        current : null,
+                                        view : function () {
+                                            if (this.state == 'out_top') {
+                                                if (this.current !== this.state) {
+                                                    this.current = this.state;
+                                                    this.out_top();
+                                                }
+                                            }
+                                            if (this.state == 'out_bot') {
+                                                if (this.current !== this.state) {
+                                                    this.current = this.state;
+                                                    this.out_bot();
+                                                }
+                                            }
+                                            if (this.state == 'out_bot_pushFollowers') {
+                                                if (this.current !== this.state) {
+                                                    this.current = this.state;
+                                                    this.out_bot_pushFollowers();
+                                                }
+                                            }
+                                            if (this.state == 'out_not_initFollowers') {
+                                                if (this.current !== this.state) {
+                                                    this.current = this.state;
+                                                    this.out_not_initFollowers();
+                                                }
+                                            }
+                                        },
                                         out_top : function () {
                                             magicArticle.css({
                                                 'position' : '',
@@ -273,6 +301,12 @@
                             var breakOpts = Util.def({}, _this.bOpts);
                             if (breakKeyMin != null) {
                                 breakOpts = Util.def(breakOpts, breakpoints[breakKeyMin]);
+                            }
+
+                            if (breakOpts.duration == null) {
+                                if (!breakOpts.pushFollowers || !breakOpts.initFollowers) {
+                                    breakOpts.duration = '100%';
+                                }
                             }
 
                             // spaceHeight
@@ -354,41 +388,12 @@
                             var hVal = (breakOpts.duration == null) ? '' : sectionHeight;
                             var tVal = (breakOpts.duration == null) ? '' : spaceHeight;
                             _this.magicSection.css({
-                                'height' : hVal
+                                'height' : _this.opts.hasCssSticky ? hVal : sectionHeight
                             });
                             if (_this.opts.hasCssSticky) {
                                 _this.magicArticle.css({
                                     'top' : tVal
                                 });
-                            }
-                            if (breakOpts.initFollowers) {
-                                if (!_this.opts.hasCssSticky) {
-                                    if (props.fixedMinOffset > winTop) {
-                                        _this.fixedlayout.out_top();
-                                    } else if (winTop >= props.fixedMaxOffset) {
-                                        if (!breakOpts.pushFollowers) {
-                                            _this.fixedlayout.out_bot();
-                                        } else {
-                                            _this.fixedlayout.out_bot_pushFollowers();
-                                        }
-                                    }
-                                    if (!breakOpts.pushFollowers) {
-                                        if (props.minOffset > winTop) {
-                                            _this.fixedlayout.out_top();
-                                        } else if (winTop >= props.maxOffset) {
-                                            _this.fixedlayout.out_bot_pushFollowers();
-                                        }
-                                    }
-                                }
-                            } else {
-                                if (breakOpts.pushFollowers) {
-                                    if (winTop >= props.fixedMaxOffset) {
-                                        _this.fixedlayout.out_bot_pushFollowers();
-                                    }
-                                }
-                                if (!(props.minOffset <= winTop && winTop < props.maxOffset)) {
-                                    _this.fixedlayout.out_not_initFollowers();
-                                }
                             }
                             if (!_this.opts.hasCssSticky || !breakOpts.initFollowers) {
                                 _this.magicArticle.css({
@@ -529,6 +534,7 @@
                                 } else {
                                     var p = (props.minOffset <= winTop) ? 1 : 0;
                                 }
+                                _this.opts.props['afterProgress'] = 0;
                                 _this.opts.props['beforeProgress'] = p;
                                 _this.outCallback('beforeUpdate');
                             },
@@ -541,6 +547,7 @@
                                 } else {
                                     var p = (props.triggerMaxOffset <= winTop) ? 1 : 0;
                                 }
+                                _this.opts.props['beforeProgress'] = 1;
                                 _this.opts.props['afterProgress'] = p;
                                 _this.outCallback('afterUpdate');
                             },
@@ -553,6 +560,8 @@
                                 } else {
                                     var p = (props.triggerMinOffset <= winTop) ? 1 : 0;
                                 }
+                                _this.opts.props['beforeProgress'] = 1;
+                                _this.opts.props['afterProgress'] = 0;
                                 _this.opts.props['progress'] = p;
                                 _this.tween.progress(p);
                                 _this.outCallback('update');
@@ -579,40 +588,97 @@
                                     fixedIn : (props.fixedMinOffset <= winTop && winTop < props.fixedMaxOffset)
                                 };
                                 if (condition.in) {
-                                    if (this.stateAttr.active != 'in') {
-                                        this.stateAttr.active = 'in';
+                                    if (!_this.opts.hasCssSticky) {
                                         if (breakOpts.initFollowers) {
-                                            if (!_this.opts.hasCssSticky) {
-                                                if (!breakOpts.pushFollowers) {
-                                                    if (props.direction == 'FORWARD') {
-                                                        _this.fixedlayout.out_top();
-                                                    } else if (props.direction == 'REVERSE') {
-                                                        _this.fixedlayout.out_bot();
-                                                    }
-                                                }
-                                            }
-                                        } else {
-                                            if (props.direction == 'FORWARD') {
-                                                _this.fixedlayout.out_bot();
-                                            } else if (props.direction == 'REVERSE') {
-                                                if (breakOpts.pushFollowers) {
-                                                    _this.fixedlayout.out_bot_pushFollowers();
-                                                } else {
-                                                    _this.fixedlayout.out_bot();
+                                            if (!breakOpts.pushFollowers) {
+                                                if (props.direction == 'FORWARD') {
+                                                    _this.fixedlayout.state = 'out_top';
+                                                } else if (props.direction == 'REVERSE') {
+                                                    _this.fixedlayout.state = 'out_bot';
                                                 }
                                             }
                                         }
+                                    }
+                                    if (!breakOpts.initFollowers) {
+                                        _this.fixedlayout.state = 'out_bot';
+                                    }
+                                }
+                                if (!condition.hookIn) {
+                                    if (props.triggerMinOffset > winTop) {
+                                        this.scope.hookOut = 'TOP';
+                                    } else if (winTop >= props.triggerMaxOffset) {
+                                        this.scope.hookOut = 'BOTTOM';
+                                    }
+                                }
+                                if (condition.fixedIn) {
+                                    if (!_this.opts.hasCssSticky) {
+                                        if (breakOpts.initFollowers) {
+                                            _this.fixedlayout.state = 'out_bot';
+                                        }
+                                    }
+                                    _this.magicArticle.addClass(classAttr.fixed);
+                                    if (!breakOpts.initFollowers) {
+                                        _this.fixedlayout.state = 'out_bot';
+                                    }
+                                }
+                                if (!condition.fixedIn) {
+                                    if (!_this.opts.hasCssSticky) {
+                                        if (breakOpts.initFollowers) {
+                                            if (props.fixedMinOffset > winTop) {
+                                                _this.fixedlayout.state = 'out_top';
+                                            } else if (winTop >= props.fixedMaxOffset) {
+                                                if (!breakOpts.pushFollowers) {
+                                                    _this.fixedlayout.state = 'out_bot';
+                                                } else {
+                                                    _this.fixedlayout.state = 'out_bot_pushFollowers';
+                                                }
+                                            }
+                                        }
+                                    }
+                                    _this.magicArticle.removeClass(classAttr.fixed);
+                                    if (!breakOpts.initFollowers) {
+                                        if (breakOpts.pushFollowers) {
+                                            if (winTop >= props.fixedMaxOffset) {
+                                                _this.fixedlayout.state = 'out_bot_pushFollowers';
+                                            }
+                                        }
+                                    }
+                                }
+                                if (!condition.in) {
+                                    if (!_this.opts.hasCssSticky) {
+                                        if (breakOpts.initFollowers) {
+                                            if (!breakOpts.pushFollowers) {
+                                                if (props.minOffset > winTop) {
+                                                    _this.fixedlayout.state = 'out_top';
+                                                } else if (winTop >= props.maxOffset) {
+                                                    _this.fixedlayout.state = 'out_bot_pushFollowers';
+                                                }
+                                            }
+                                        }
+                                    }
+                                    if (props.minOffset > winTop) {
+                                        this.scope.out = 'TOP';
+                                        _this.opts.props['beforeProgress'] = 0;
+                                        _this.opts.props['afterProgress'] = 0;
+                                    } else if (winTop >= props.maxOffset) {
+                                        this.scope.out = 'BOTTOM';
+                                        _this.opts.props['beforeProgress'] = 1;
+                                        _this.opts.props['afterProgress'] = 1;
+                                    }
+                                    if (!breakOpts.initFollowers) {
+                                        _this.fixedlayout.state = 'out_not_initFollowers';
+                                    }
+                                }
+                                _this.fixedlayout.view();
+                                if (condition.in) {
+                                    if (this.stateAttr.active != 'in') {
+                                        this.stateAttr.active = 'in';
                                         _this.outCallback('in');
                                     }
                                 }
                                 if (!condition.hookIn) {
                                     if (this.stateAttr.hookActive != 'out') {
                                         this.stateAttr.hookActive = 'out';
-                                        if (props.triggerMinOffset > winTop) {
-                                            this.scope.hookOut = 'TOP';
-                                        } else if (winTop >= props.triggerMaxOffset) {
-                                            this.scope.hookOut = 'BOTTOM';
-                                        }
                                         _this.motion.progress.update(false);
                                         _this.outCallback('hookOut');
                                     }
@@ -638,39 +704,11 @@
                                 if (condition.fixedIn) {
                                     if (this.stateAttr.fixedActive != 'in') {
                                         this.stateAttr.fixedActive = 'in';
-                                        _this.magicArticle.addClass(classAttr.fixed);
-                                        if (breakOpts.initFollowers) {
-                                            if (!_this.opts.hasCssSticky) {
-                                                _this.fixedlayout.out_bot();
-                                            }
-                                        } else {
-                                            _this.fixedlayout.out_bot();
-                                        }
                                     }
                                 }
                                 if (!condition.fixedIn) {
                                     if (this.stateAttr.fixedActive != 'out') {
                                         this.stateAttr.fixedActive = 'out';
-                                        _this.magicArticle.removeClass(classAttr.fixed);
-                                        if (breakOpts.initFollowers) {
-                                            if (!_this.opts.hasCssSticky) {
-                                                if (props.fixedMinOffset > winTop) {
-                                                    _this.fixedlayout.out_top();
-                                                } else if (winTop >= props.fixedMaxOffset) {
-                                                    if (!breakOpts.pushFollowers) {
-                                                        _this.fixedlayout.out_bot();
-                                                    } else {
-                                                        _this.fixedlayout.out_bot_pushFollowers();
-                                                    }
-                                                }
-                                            }
-                                        } else {
-                                            if (breakOpts.pushFollowers) {
-                                                if (winTop >= props.fixedMaxOffset) {
-                                                    _this.fixedlayout.out_bot_pushFollowers();
-                                                }
-                                            }
-                                        }
                                     }
                                 }
                                 if (condition.in) {
@@ -682,24 +720,9 @@
                                     if (this.stateAttr.active != 'out') {
                                         this.stateAttr.active = 'out';
                                         if (props.minOffset > winTop) {
-                                            this.scope.out = 'TOP';
                                             _this.motion.progress.beforeUpdate(false);
                                         } else if (winTop >= props.maxOffset) {
-                                            this.scope.out = 'BOTTOM';
                                             _this.motion.progress.afterUpdate(false);
-                                        }
-                                        if (breakOpts.initFollowers) {
-                                            if (!_this.opts.hasCssSticky) {
-                                                if (!breakOpts.pushFollowers) {
-                                                    if (props.minOffset > winTop) {
-                                                        _this.fixedlayout.out_top();
-                                                    } else if (winTop >= props.maxOffset) {
-                                                        _this.fixedlayout.out_bot_pushFollowers();
-                                                    }
-                                                }
-                                            }
-                                        } else {
-                                            _this.fixedlayout.out_not_initFollowers();
                                         }
                                         _this.motion.progress.allUpdate(false);
                                         _this.outCallback('out');
