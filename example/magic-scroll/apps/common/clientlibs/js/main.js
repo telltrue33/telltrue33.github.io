@@ -736,18 +736,18 @@
             },
             scrollEndFunc : function () {
                 this.opts.stateAttr.scroll = null;
-                if (!this.opts.stateAttr.destroy) {
-                    this.set.opts();
-                    this.motion.build();
-                }
+                this.scrollAct();
                 Util.cancelAFrame.call(win, this.opts.requestAttr.scroll);
             },
             scrollAnimateFunc : function () {
+                this.scrollAct();
+                this.opts.requestAttr.scroll = Util.requestAFrame.call(win, this.scrollAnimateFunc.bind(this));
+            },
+            scrollAct : function () {
                 if (!this.opts.stateAttr.destroy) {
                     this.set.opts();
                     this.motion.build();
                 }
-                this.opts.requestAttr.scroll = Util.requestAFrame.call(win, this.scrollAnimateFunc.bind(this));
             },
             resizeFunc : function (e) {
                 if (e != isUndefined && e.type == 'orientationchange') {
@@ -763,22 +763,15 @@
             },
             resizeEndFunc : function () {
                 this.opts.stateAttr.resize = null;
-                if (!this.opts.stateAttr.destroy) {
-                    if (Util.isOrientationchange) {
-                        if (this.opts.stateAttr.isOrientationchange) {
-                            this.set.getSize.resize();
-                        }
-                    } else {
-                        this.set.getSize.resize();
-                    }
-                    this.set.opts();
-                    this.set.layout();
-                    this.scrollFunc();
-                }
+                this.resizeAct();
                 this.opts.stateAttr.isOrientationchange = false;
                 Util.cancelAFrame.call(win, this.opts.requestAttr.resize);
             },
             resizeAnimateFunc : function () {
+                this.resizeAct();
+                this.opts.requestAttr.resize = Util.requestAFrame.call(win, this.resizeAnimateFunc.bind(this));
+            },
+            resizeAct : function () {
                 if (!this.opts.stateAttr.destroy) {
                     if (Util.isOrientationchange) {
                         if (this.opts.stateAttr.isOrientationchange) {
@@ -791,7 +784,6 @@
                     this.set.layout();
                     this.scrollFunc();
                 }
-                this.opts.requestAttr.resize = Util.requestAFrame.call(win, this.resizeAnimateFunc.bind(this));
             },
             destroy : function () {
                 this.opts.stateAttr.destroy = true;
