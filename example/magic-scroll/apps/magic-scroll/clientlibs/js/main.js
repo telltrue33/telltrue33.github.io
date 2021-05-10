@@ -372,7 +372,7 @@
                                     init : function () {
                                         win.setTimeout(function () {
                                             outFunc();
-                                        }, 150);
+                                        }, 350);
                                     },
                                     in : function () {
                                     },
@@ -788,7 +788,7 @@
                                     init : function () {
                                         win.setTimeout(function () {
                                             outFunc();
-                                        }, 150);
+                                        }, 350);
                                     },
                                     in : function () {
                                     },
@@ -2493,7 +2493,7 @@
                                     init : function () {
                                         win.setTimeout(function () {
                                             beforeUpdateFunc();
-                                        }, 150);
+                                        }, 350);
                                     },
                                     in : function () {
                                     },

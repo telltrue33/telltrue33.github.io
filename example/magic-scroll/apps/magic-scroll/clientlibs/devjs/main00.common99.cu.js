@@ -307,7 +307,7 @@
                                         // IE 에서 새로고침시 scrollTop 버그를 위한 setTimeout
                                         win.setTimeout(function () {
                                             beforeUpdateFunc();
-                                        }, 150);
+                                        }, 350);
                                     },
                                     in : function () {
                                         // console.log('in');
