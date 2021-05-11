@@ -273,12 +273,12 @@
                                 }
                             }
 
-                            _this.opts.props['spaceHeight'] = (function () {
+                            var spaceHeight = (function () {
                                 var r = Math.floor(breakOpts.spaceHeight(), 10);
                                 return r;
                             })();
 
-                            _this.opts.props['sectionHeight'] = (function () {
+                            var sectionHeight = (function () {
                                 var h = _this.obj.outerHeight(true);
                                 if (breakOpts.duration != null) {
                                     var pwinH = s.getSize.winHeight / 100;
@@ -289,13 +289,13 @@
                                     if (!isPercent) {
                                         r = dVal;
                                     }
-                                    var sH = r - _this.opts.props['spaceHeight'];
+                                    var sH = r - spaceHeight;
                                     h = Math.max(h,sH);
                                 }
                                 return h;
                             })();
 
-                            _this.opts.props['articleHeight'] = (function () {
+                            var articleHeight = (function () {
                                 var r = _this.magicArticle.outerHeight(true);
                                 return r;
                             })();
@@ -306,8 +306,6 @@
                                 var offset = offset.top;
                                 var minOffset =  Math.ceil(offset - winHeight, 10);
                                 var maxOffset = Math.ceil(offset + height, 10);
-                                var spaceHeight = _this.opts.props['spaceHeight'];
-                                var articleHeight = _this.opts.props['articleHeight'];
                                 var triggerHeight = (function () {
                                     var vh = (1 - breakOpts.triggerHook);
                                     vh = vh < 0 ? 0 : vh > 1 ? 1 : vh;
@@ -333,17 +331,19 @@
                                 _this.opts.props['fixedMaxOffset'] = maxOffset - articleHeight - spaceHeight;
                             })();
 
+                            _this.opts.props['spaceHeight'] = spaceHeight;
+                            _this.opts.props['sectionHeight'] = sectionHeight;
+                            _this.opts.props['articleHeight'] = articleHeight;
                             _this.breakOpts = breakOpts;
                             _this.props = _this.opts.props;
                         },
                         layout : function () {
-                            var winTop = $(win).scrollTop();
                             var winHeight = Util.winSize().h;
                             var props = _this.opts.props;
                             var breakOpts = _this.breakOpts;
                             var spaceHeight = props['spaceHeight'];
-                            var sectionHeight = _this.opts.props['sectionHeight'];
-                            var articleHeight = _this.opts.props['articleHeight'];
+                            var sectionHeight = props['sectionHeight'];
+                            var articleHeight = props['articleHeight'];
                             var hVal = (breakOpts.duration == null) ? '' : sectionHeight;
                             var tVal = (breakOpts.duration == null) ? '' : spaceHeight;
                             _this.magicSection.css({
