@@ -267,7 +267,8 @@
                             }
 
                             if (breakOpts.duration == null) {
-                                if (!breakOpts.pushFollowers || !breakOpts.initFollowers) {
+                                var animations = _this.opts.animations;
+                                if (!breakOpts.pushFollowers || !breakOpts.initFollowers || animations.length) {
                                     breakOpts.duration = '100%';
                                 }
                             }
