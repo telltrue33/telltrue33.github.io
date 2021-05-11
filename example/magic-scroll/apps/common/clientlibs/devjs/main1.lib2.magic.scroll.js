@@ -204,6 +204,7 @@
                                                 this[this.state]();
                                             }
                                         },
+                                        hasTops : ['out_bot','out_not_initFollowers'],
                                         out_top : function () {
                                             magicArticle.css({
                                                 'position' : '',
@@ -365,14 +366,20 @@
                             var spaceHeight = props['spaceHeight'];
                             var sectionHeight = props['sectionHeight'];
                             var articleHeight = props['articleHeight'];
-                            var notStickyTopState = ['out_bot','out_not_initFollowers'];
-                            var notStickyTopCondition = !hasCssSticky && (notStickyTopState.indexOf(_this.fixedlayout.state) >= 0);
                             var hVal = (breakOpts.duration == null) ? '' : sectionHeight;
                             var tVal = (breakOpts.duration == null) ? '' : spaceHeight;
+                            var hasTopC =  (function () {
+                                var c = hasCssSticky;
+                                if (!hasCssSticky) {
+                                    var fl = _this.fixedlayout;
+                                    c = fl.hasTops.indexOf(fl.state) >= 0;
+                                }
+                                return c;
+                            })();
                             _this.magicSection.css({
                                 'height' : hasCssSticky ? hVal : sectionHeight
                             });
-                            if (hasCssSticky || notStickyTopCondition) {
+                            if (hasTopC) {
                                 _this.magicArticle.css({
                                     'top' : tVal
                                 });
