@@ -304,12 +304,11 @@
                                     var dVal = parseFloat(duration);
                                     var isPercent = duration.indexOf('%') >= 0;
                                     var r = pwinH * dVal;
-                                    var minH = h;
                                     if (!isPercent) {
                                         r = dVal;
                                     }
-                                    h = r - _this.opts.props['spaceHeight'];
-                                    h = h < minH ? minH : h;
+                                    var sH = r - _this.opts.props['spaceHeight'];
+                                    h = Math.max(h,sH);
                                 }
                                 return h;
                             })();
