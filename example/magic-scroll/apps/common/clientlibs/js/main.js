@@ -301,9 +301,8 @@
                             })();
 
                             (function () {
-                                var offset = _this.magicSection.offset();
                                 var height = _this.magicSection.outerHeight(true);
-                                var offset = offset.top;
+                                var offset = _this.magicSection.offset().top;
                                 var minOffset =  Math.ceil(offset - winHeight, 10);
                                 var maxOffset = Math.ceil(offset + height, 10);
                                 var triggerHeight = (function () {
