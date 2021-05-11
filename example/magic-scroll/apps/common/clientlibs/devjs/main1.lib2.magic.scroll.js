@@ -359,22 +359,25 @@
                         },
                         layout : function () {
                             var winHeight = Util.winSize().h;
+                            var hasCssSticky = _this.opts.hasCssSticky;
                             var props = _this.opts.props;
                             var breakOpts = _this.breakOpts;
                             var spaceHeight = props['spaceHeight'];
                             var sectionHeight = props['sectionHeight'];
                             var articleHeight = props['articleHeight'];
+                            var notStickyTopState = ['out_bot','out_not_initFollowers'];
+                            var notStickyTopCondition = !hasCssSticky && (notStickyTopState.indexOf(_this.fixedlayout.state) >= 0);
                             var hVal = (breakOpts.duration == null) ? '' : sectionHeight;
                             var tVal = (breakOpts.duration == null) ? '' : spaceHeight;
                             _this.magicSection.css({
-                                'height' : _this.opts.hasCssSticky ? hVal : sectionHeight
+                                'height' : hasCssSticky ? hVal : sectionHeight
                             });
-                            if (_this.opts.hasCssSticky) {
+                            if (hasCssSticky || notStickyTopCondition) {
                                 _this.magicArticle.css({
                                     'top' : tVal
                                 });
                             }
-                            if (!_this.opts.hasCssSticky || !breakOpts.initFollowers) {
+                            if (!hasCssSticky || !breakOpts.initFollowers) {
                                 _this.magicArticle.css({
                                     'width' : _this.magicSection.outerWidth(true)
                                 });
@@ -560,6 +563,7 @@
                             },
                             build : function () {
                                 var winTop = $(win).scrollTop();
+                                var hasCssSticky = _this.opts.hasCssSticky;
                                 var breakOpts = _this.breakOpts;
                                 var condition = {
                                     in : (props.minOffset <= winTop && winTop < props.maxOffset),
@@ -567,7 +571,7 @@
                                     fixedIn : (props.fixedMinOffset <= winTop && winTop < props.fixedMaxOffset)
                                 };
                                 if (condition.in) {
-                                    if (!_this.opts.hasCssSticky) {
+                                    if (!hasCssSticky) {
                                         if (breakOpts.initFollowers) {
                                             if (!breakOpts.pushFollowers) {
                                                 if (props.direction == 'FORWARD') {
@@ -590,7 +594,7 @@
                                     }
                                 }
                                 if (condition.fixedIn) {
-                                    if (!_this.opts.hasCssSticky) {
+                                    if (!hasCssSticky) {
                                         if (breakOpts.initFollowers) {
                                             _this.fixedlayout.state = 'out_bot';
                                         }
@@ -601,7 +605,7 @@
                                     }
                                 }
                                 if (!condition.fixedIn) {
-                                    if (!_this.opts.hasCssSticky) {
+                                    if (!hasCssSticky) {
                                         if (breakOpts.initFollowers) {
                                             if (props.fixedMinOffset > winTop) {
                                                 _this.fixedlayout.state = 'out_top';
@@ -624,7 +628,7 @@
                                     }
                                 }
                                 if (!condition.in) {
-                                    if (!_this.opts.hasCssSticky) {
+                                    if (!hasCssSticky) {
                                         if (breakOpts.initFollowers) {
                                             if (!breakOpts.pushFollowers) {
                                                 if (props.minOffset > winTop) {
