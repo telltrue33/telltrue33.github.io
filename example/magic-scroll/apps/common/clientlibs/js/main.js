@@ -346,23 +346,28 @@
                             var sectionHeight = props['sectionHeight'];
                             var articleHeight = props['articleHeight'];
                             var hVal = (breakOpts.duration == null) ? '' : sectionHeight;
-                            var tVal = (breakOpts.duration == null) ? '' : spaceHeight;
-                            var hasTopC =  (function () {
+                            var tVal = (function () {
+                                var t = (breakOpts.duration == null) ? '' : spaceHeight;
+                                var fl = _this.fixedlayout;
                                 var c = hasCssSticky;
-                                if (!hasCssSticky) {
-                                    var fl = _this.fixedlayout;
+                                if (hasCssSticky) {
+                                    if (!breakOpts.initFollowers) {
+                                        c = fl.hasTops.indexOf(fl.state) >= 0;
+                                    }
+                                } else {
                                     c = fl.hasTops.indexOf(fl.state) >= 0;
                                 }
-                                return c;
+                                if (!c) {
+                                    t = '';
+                                }
+                                return t;
                             })();
                             _this.magicSection.css({
                                 'height' : hasCssSticky ? hVal : sectionHeight
                             });
-                            if (hasTopC) {
-                                _this.magicArticle.css({
-                                    'top' : tVal
-                                });
-                            }
+                            _this.magicArticle.css({
+                                'top' : tVal
+                            });
                             if (!hasCssSticky || !breakOpts.initFollowers) {
                                 _this.magicArticle.css({
                                     'width' : _this.magicSection.outerWidth(true)
