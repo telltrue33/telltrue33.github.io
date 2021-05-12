@@ -366,7 +366,13 @@
                             var spaceHeight = props['spaceHeight'];
                             var sectionHeight = props['sectionHeight'];
                             var articleHeight = props['articleHeight'];
-                            var hVal = (breakOpts.duration == null) ? '' : sectionHeight;
+                            var hVal = (function () {
+                                var h = (breakOpts.duration == null) ? '' : sectionHeight;
+                                if (!hasCssSticky) {
+                                    h = sectionHeight;
+                                }
+                                return h;
+                            })();
                             var tVal = (function () {
                                 var t = (breakOpts.duration == null) ? '' : spaceHeight;
                                 var fl = _this.fixedlayout;
@@ -384,7 +390,7 @@
                                 return t;
                             })();
                             _this.magicSection.css({
-                                'height' : hasCssSticky ? hVal : sectionHeight
+                                'height' : hVal
                             });
                             _this.magicArticle.css({
                                 'top' : tVal
