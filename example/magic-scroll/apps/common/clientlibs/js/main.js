@@ -143,6 +143,7 @@
                 this.resizeFunc();
                 this.bindEvents(true);
                 this.set.load.after();
+                this.set.device.bug();
             },
             buildSet : function () {
                 var _this = this;
@@ -240,10 +241,35 @@
                                 _this.outCallback('init');
                             }
                         },
+                        device : {
+                            timeAttr : {
+                                orientation : null
+                            },
+                            request : {
+                                orientation : null
+                            },
+                            orientation : function () {
+                                _this.refresh();
+                                this.request.orientation = Util.requestAFrame.call(win, this.orientation.bind(this));
+                            },
+                            kill : function () {
+                                var d = this;
+                                win.clearTimeout(this.timeAttr.orientation);
+                                Util.cancelAFrame.call(win, d.request.orientation);
+                            },
+                            bug : function () {
+                                var d = this;
+                                this.orientation();
+                                win.clearTimeout(this.timeAttr.orientation);
+                                this.timeAttr.orientation = win.setTimeout(function () {
+                                    Util.cancelAFrame.call(win, d.request.orientation);
+                                }, 500);
+                            }
+                        },
                         getSize : {
                             winHeight : Util.winSize().h,
                             resize : function () {
-                                this.winHeight = Util.winSize().h
+                                this.winHeight = Util.winSize().h;
                             }
                         },
                         opts : function () {
@@ -390,6 +416,7 @@
                             }
                         },
                         destroy : function () {
+                            this.device.kill();
                             if (_this.obj.parent().is(_this.opts.magicArticle)) {
                                 _this.obj.unwrap();
                             }
@@ -766,7 +793,9 @@
             },
             scrollAct : function () {
                 if (!this.opts.stateAttr.destroy) {
-                    this.set.opts();
+                    if (this.opts.stateAttr.resize == null) {
+                        this.set.opts();
+                    }
                     this.motion.build();
                 }
             },
@@ -805,6 +834,12 @@
                     this.set.layout();
                     this.scrollFunc();
                 }
+            },
+            refresh : function () {
+                this.set.getSize.resize();
+                this.set.opts();
+                this.set.layout();
+                this.scrollAct();
             },
             destroy : function () {
                 this.opts.stateAttr.destroy = true;

@@ -278,12 +278,40 @@
                         destroy : function () {
                             if (this.instance == null) return;
                             this.instance.destroy();
+                            this.device.kill();
                             this.instance = null;
                         },
                         getSize : {
                             winHeight : Util.winSize().h,
                             resize : function () {
                                 this.winHeight = Util.winSize().h
+                            }
+                        },
+                        device : {
+                            timeAttr : {
+                                orientation : null
+                            },
+                            request : {
+                                orientation : null
+                            },
+                            orientation : function () {
+                                var m = _this.magictween;
+                                m.getSize.resize();
+                                this.request.orientation = Util.requestAFrame.call(win, this.orientation.bind(this));
+                            },
+                            kill : function () {
+                                var d = this;
+                                win.clearTimeout(this.timeAttr.orientation);
+                                Util.cancelAFrame.call(win, d.request.orientation);
+                            },
+                            bug : function () {
+                                // android : destroy after build bug
+                                var d = this;
+                                this.orientation();
+                                win.clearTimeout(this.timeAttr.orientation);
+                                this.timeAttr.orientation = win.setTimeout(function () {
+                                    Util.cancelAFrame.call(win, d.request.orientation);
+                                }, 500);
                             }
                         },
                         build : function () {
@@ -356,6 +384,7 @@
                                 }
                             });
                             this.instance.init();
+                            this.device.bug();
                         }
                     }
                 });
@@ -401,10 +430,10 @@
             setLayout : function () {
                 if (!this.opts.stateAttr.destroy) {
                     if (Util.isOrientationchange) {
+                        if (this.opts.stateAttr.isOrientationchange) {
+                            this.magictween.getSize.resize();
+                        }
                         if (Util.orientation() != 'landscape') {
-                            if (this.opts.stateAttr.isOrientationchange) {
-                                this.magictween.getSize.resize();
-                            }
                             this.motion.build();
                             this.magictween.build();
                         } else {
