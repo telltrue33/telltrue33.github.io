@@ -118,7 +118,7 @@
                     scroll : null,
                     prevTop : null,
                     resize : null,
-                    isOrientationchange : false
+                    isOrientationchange : true
                 },
                 requestAttr : {
                     resize : null
@@ -159,7 +159,6 @@
                 this.resizeFunc();
                 this.bindEvents(true);
                 this.set.load.after();
-                this.set.device.bug();
             },
             buildSet : function () {
                 var _this = this;
@@ -255,32 +254,6 @@
                                     }
                                 }
                                 _this.outCallback('init');
-                            }
-                        },
-                        device : {
-                            timeAttr : {
-                                orientation : null
-                            },
-                            request : {
-                                orientation : null
-                            },
-                            orientation : function () {
-                                _this.refresh();
-                                this.request.orientation = Util.requestAFrame.call(win, this.orientation.bind(this));
-                            },
-                            kill : function () {
-                                var d = this;
-                                win.clearTimeout(this.timeAttr.orientation);
-                                Util.cancelAFrame.call(win, d.request.orientation);
-                            },
-                            bug : function () {
-                                // android : destroy after build bug
-                                var d = this;
-                                this.orientation();
-                                win.clearTimeout(this.timeAttr.orientation);
-                                this.timeAttr.orientation = win.setTimeout(function () {
-                                    Util.cancelAFrame.call(win, d.request.orientation);
-                                }, 500);
                             }
                         },
                         getSize : {
@@ -438,7 +411,6 @@
                             }
                         },
                         destroy : function () {
-                            this.device.kill();
                             if (_this.obj.parent().is(_this.opts.magicArticle)) {
                                 _this.obj.unwrap();
                             }
