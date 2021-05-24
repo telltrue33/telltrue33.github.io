@@ -2,7 +2,7 @@
     global = global;
     global.MsComponent = factory();
 }(this, function () { 'use strict';
-    var Common = (function () {
+    var Common = (function (isUndefined) {
         var win = window,
             doc = win.document;
         return {
@@ -15,6 +15,16 @@
                     var isO = ('onorientationchange' in win);
                     return isO;
                 })(),
+                orientation : function () {
+                    var isPortrait = true;
+                    if (win.orientation != isUndefined) {
+                        isPortrait = ((win.orientation % 180) == 0) ? true : false;
+                    } else {
+                        var elem = doc.documentElement;
+                        isPortrait = elem && elem.clientWidth / elem.clientHeight < 1.1;
+                    }
+                    return isPortrait ? "portrait" : "landscape";
+                },
                 isObject : function (o) {
                     return typeof o === 'object' && o !== null && o.constructor && o.constructor === Object;
                 },
@@ -2463,6 +2473,7 @@
                             }
                         },
                         build : function () {
+                            if (this.instance !== null) return;
                             var m = this;
                             var beforeUpdateFunc = function () {
                                 if (_this.magictween.instance == null) return;
@@ -2564,8 +2575,13 @@
             setLayout : function () {
                 if (!this.opts.stateAttr.destroy) {
                     if (Util.isOrientationchange) {
-                        if (this.opts.stateAttr.isOrientationchange) {
-                            this.magictween.getSize.resize();
+                        if (Util.orientation() != 'landscape') {
+                            if (this.opts.stateAttr.isOrientationchange) {
+                                this.magictween.getSize.resize();
+                            }
+                            this.magictween.build();
+                        } else {
+                            this.magictween.destroy();
                         }
                     } else {
                         this.magictween.getSize.resize();

@@ -2,7 +2,7 @@
     global = global;
     global.MsComponent = factory();
 }(this, function () { 'use strict';
-    var Common = (function () {
+    var Common = (function (isUndefined) {
         var win = window,
             doc = win.document;
         return {
@@ -15,6 +15,16 @@
                     var isO = ('onorientationchange' in win);
                     return isO;
                 })(),
+                orientation : function () {
+                    var isPortrait = true;
+                    if (win.orientation != isUndefined) {
+                        isPortrait = ((win.orientation % 180) == 0) ? true : false;
+                    } else {
+                        var elem = doc.documentElement;
+                        isPortrait = elem && elem.clientWidth / elem.clientHeight < 1.1;
+                    }
+                    return isPortrait ? "portrait" : "landscape";
+                },
                 isObject : function (o) {
                     return typeof o === 'object' && o !== null && o.constructor && o.constructor === Object;
                 },

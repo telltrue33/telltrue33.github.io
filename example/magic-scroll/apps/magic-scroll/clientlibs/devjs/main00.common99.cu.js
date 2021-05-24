@@ -276,6 +276,7 @@
                             }
                         },
                         build : function () {
+                            if (this.instance !== null) return;
                             var m = this;
                             var beforeUpdateFunc = function () {
                                 if (_this.magictween.instance == null) return;
@@ -389,8 +390,13 @@
             setLayout : function () {
                 if (!this.opts.stateAttr.destroy) {
                     if (Util.isOrientationchange) {
-                        if (this.opts.stateAttr.isOrientationchange) {
-                            this.magictween.getSize.resize();
+                        if (Util.orientation() != 'landscape') {
+                            if (this.opts.stateAttr.isOrientationchange) {
+                                this.magictween.getSize.resize();
+                            }
+                            this.magictween.build();
+                        } else {
+                            this.magictween.destroy();
                         }
                     } else {
                         this.magictween.getSize.resize();
