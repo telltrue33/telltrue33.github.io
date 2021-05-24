@@ -2308,6 +2308,14 @@
                             destroy : function () {
                                 if (this.instance == null) return;
                                 this.instance.kill();
+                                TweenLite.set(_this.c1, {
+                                    x : ''
+                                });
+                                TweenLite.set(_this.c2, {
+                                    x : ''
+                                });
+                                _this.c1.css('transform', '');
+                                _this.c2.css('transform', '');
                                 this.instance = null;
                             },
                             initLayout : function () {
@@ -2318,34 +2326,33 @@
                                 this.draw(o);
                             },
                             build : function () {
+                                if (this.instance !== null) return;
                                 var m = _this.motion;
                                 var p = this;
                                 var props = this.props;
-                                if (this.instance == null) {
-                                    this.tweens.init();
-                                    this.initLayout();
-                                    var vals = {
-                                        v1 : props['1'].min,
-                                        v2 : props['2'].min
-                                    };
-                                    var timeline = new TimelineMax();
-                                    timeline.pause();
-                                    timeline.to(vals, .5, {
-                                        ease : Power0.easeNone,
-                                        v1 : props['1'].max,
-                                        v2 : props['2'].max,
-                                        onUpdate : function () {
-                                            var v1 = Math.round(m.delTweenID(vals).v1);
-                                            var v2 = Math.round(m.delTweenID(vals).v2);
-                                            var o = {
-                                                v1 : v1,
-                                                v2 : v2
-                                            };
-                                            p.draw(o);
-                                        }
-                                    });
-                                    this.instance = timeline;
-                                }
+                                this.tweens.init();
+                                this.initLayout();
+                                var vals = {
+                                    v1 : props['1'].min,
+                                    v2 : props['2'].min
+                                };
+                                var timeline = new TimelineMax();
+                                timeline.pause();
+                                timeline.to(vals, .5, {
+                                    ease : Power0.easeNone,
+                                    v1 : props['1'].max,
+                                    v2 : props['2'].max,
+                                    onUpdate : function () {
+                                        var v1 = Math.round(m.delTweenID(vals).v1);
+                                        var v2 = Math.round(m.delTweenID(vals).v2);
+                                        var o = {
+                                            v1 : v1,
+                                            v2 : v2
+                                        };
+                                        p.draw(o);
+                                    }
+                                });
+                                this.instance = timeline;
                             }
                         },
                         parallax : {
@@ -2372,7 +2379,9 @@
                                     this.instance = TweenLite.to(props, this.duration, {
                                         progress : num,
                                         onUpdate : function () {
-                                            p.instance.progress(props.progress);
+                                            if (p.instance !== null) {
+                                                p.instance.progress(props.progress);
+                                            }
                                             p.props.progress = props.progress;
                                         }
                                     });
@@ -2394,14 +2403,17 @@
                                 return this;
                             },
                             progress : function (num) {
-                                if (this.instance != null) {
-                                    this.tweens.build(num);
-                                }
+                                if (this.instance == null) return this;
+                                this.tweens.build(num);
                                 return this;
                             },
                             destroy : function () {
                                 if (this.instance == null) return;
                                 this.instance.kill();
+                                TweenLite.set(_this.cu, {
+                                    y : ''
+                                });
+                                _this.cu.css('transform', '');
                                 this.instance = null;
                             },
                             initLayout : function () {
@@ -2411,30 +2423,29 @@
                                 this.draw(o);
                             },
                             build : function () {
+                                if (this.instance !== null) return;
                                 var m = _this.motion;
                                 var p = this;
                                 var props = this.props;
-                                if (this.instance == null) {
-                                    this.tweens.init();
-                                    this.initLayout();
-                                    var vals = {
-                                        v1 : props['1'].min
-                                    };
-                                    var timeline = new TimelineMax();
-                                    timeline.pause();
-                                    timeline.to(vals, 1, {
-                                        ease : Power0.easeNone,
-                                        v1 : props['1'].max,
-                                        onUpdate : function () {
-                                            var v1 = Math.round(m.delTweenID(vals).v1);
-                                            var o = {
-                                                v1 : v1
-                                            };
-                                            p.draw(o);
-                                        }
-                                    });
-                                    this.instance = timeline;
-                                }
+                                this.tweens.init();
+                                this.initLayout();
+                                var vals = {
+                                    v1 : props['1'].min
+                                };
+                                var timeline = new TimelineMax();
+                                timeline.pause();
+                                timeline.to(vals, 1, {
+                                    ease : Power0.easeNone,
+                                    v1 : props['1'].max,
+                                    onUpdate : function () {
+                                        var v1 = Math.round(m.delTweenID(vals).v1);
+                                        var o = {
+                                            v1 : v1
+                                        };
+                                        p.draw(o);
+                                    }
+                                });
+                                this.instance = timeline;
                             }
                         },
                         delTweenID : function (prop) {
@@ -2579,9 +2590,11 @@
                             if (this.opts.stateAttr.isOrientationchange) {
                                 this.magictween.getSize.resize();
                             }
+                            this.motion.build();
                             this.magictween.build();
                         } else {
                             this.magictween.destroy();
+                            this.motion.destroy();
                         }
                     } else {
                         this.magictween.getSize.resize();
