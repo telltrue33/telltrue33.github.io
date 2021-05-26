@@ -600,50 +600,53 @@
                                     hookIn : (props.triggerMinOffset <= winTop && winTop < props.triggerMaxOffset),
                                     fixedIn : (props.fixedMinOffset <= winTop && winTop < props.fixedMaxOffset)
                                 };
+                                var fl = _this.fixedlayout;
+                                var scope = this.scope;
+                                var stateAttr = this.stateAttr;
                                 if (condition.in) {
                                     if (!hasCssSticky) {
                                         if (breakOpts.initFollowers) {
                                             if (!breakOpts.pushFollowers) {
                                                 if (props.direction == 'FORWARD') {
-                                                    _this.fixedlayout.state = 'out_top';
+                                                    fl.state = 'out_top';
                                                 } else if (props.direction == 'REVERSE') {
-                                                    _this.fixedlayout.state = 'out_bot';
+                                                    fl.state = 'out_bot';
                                                 }
                                             }
                                         }
                                     }
                                     if (!breakOpts.initFollowers) {
-                                        _this.fixedlayout.state = 'out_bot';
+                                        fl.state = 'out_bot';
                                     }
                                 }
                                 if (!condition.hookIn) {
                                     if (props.triggerMinOffset > winTop) {
-                                        this.scope.hookOut = 'TOP';
+                                        scope.hookOut = 'TOP';
                                     } else if (winTop >= props.triggerMaxOffset) {
-                                        this.scope.hookOut = 'BOTTOM';
+                                        scope.hookOut = 'BOTTOM';
                                     }
                                 }
                                 if (condition.fixedIn) {
                                     if (!hasCssSticky) {
                                         if (breakOpts.initFollowers) {
-                                            _this.fixedlayout.state = 'out_bot';
+                                            fl.state = 'out_bot';
                                         }
                                     }
                                     _this.magicArticle.addClass(classAttr.fixed);
                                     if (!breakOpts.initFollowers) {
-                                        _this.fixedlayout.state = 'out_bot';
+                                        fl.state = 'out_bot';
                                     }
                                 }
                                 if (!condition.fixedIn) {
                                     if (!hasCssSticky) {
                                         if (breakOpts.initFollowers) {
                                             if (props.fixedMinOffset > winTop) {
-                                                _this.fixedlayout.state = 'out_top';
+                                                fl.state = 'out_top';
                                             } else if (winTop >= props.fixedMaxOffset) {
                                                 if (!breakOpts.pushFollowers) {
-                                                    _this.fixedlayout.state = 'out_bot';
+                                                    fl.state = 'out_bot';
                                                 } else {
-                                                    _this.fixedlayout.state = 'out_bot_pushFollowers';
+                                                    fl.state = 'out_bot_pushFollowers';
                                                 }
                                             }
                                         }
@@ -652,7 +655,7 @@
                                     if (!breakOpts.initFollowers) {
                                         if (breakOpts.pushFollowers) {
                                             if (winTop >= props.fixedMaxOffset) {
-                                                _this.fixedlayout.state = 'out_bot_pushFollowers';
+                                                fl.state = 'out_bot_pushFollowers';
                                             }
                                         }
                                     }
@@ -662,40 +665,40 @@
                                         if (breakOpts.initFollowers) {
                                             if (!breakOpts.pushFollowers) {
                                                 if (props.minOffset > winTop) {
-                                                    _this.fixedlayout.state = 'out_top';
+                                                    fl.state = 'out_top';
                                                 } else if (winTop >= props.maxOffset) {
-                                                    _this.fixedlayout.state = 'out_bot_pushFollowers';
+                                                    fl.state = 'out_bot_pushFollowers';
                                                 }
                                             }
                                         }
                                     }
                                     if (props.minOffset > winTop) {
-                                        this.scope.out = 'TOP';
+                                        scope.out = 'TOP';
                                         _this.opts.props['beforeProgress'] = 0;
                                         _this.opts.props['afterProgress'] = 0;
                                         _this.opts.props['allProgress'] = 0;
                                         _this.opts.props['progress'] = 0;
                                     } else if (winTop >= props.maxOffset) {
-                                        this.scope.out = 'BOTTOM';
+                                        scope.out = 'BOTTOM';
                                         _this.opts.props['beforeProgress'] = 1;
                                         _this.opts.props['afterProgress'] = 1;
                                         _this.opts.props['allProgress'] = 1;
                                         _this.opts.props['progress'] = 1;
                                     }
                                     if (!breakOpts.initFollowers) {
-                                        _this.fixedlayout.state = 'out_not_initFollowers';
+                                        fl.state = 'out_not_initFollowers';
                                     }
                                 }
-                                _this.fixedlayout.view();
+                                fl.view();
                                 if (condition.in) {
-                                    if (this.stateAttr.active != 'in') {
-                                        this.stateAttr.active = 'in';
+                                    if (stateAttr.active != 'in') {
+                                        scope.active = 'in';
                                         _this.outCallback('in');
                                     }
                                 }
                                 if (!condition.hookIn) {
-                                    if (this.stateAttr.hookActive != 'out') {
-                                        this.stateAttr.hookActive = 'out';
+                                    if (scope.hookActive != 'out') {
+                                        scope.hookActive = 'out';
                                         _this.motion.progress.update(false);
                                         _this.outCallback('hookOut');
                                     }
@@ -707,8 +710,8 @@
                                     }
                                 }
                                 if (condition.hookIn) {
-                                    if (this.stateAttr.hookActive != 'in') {
-                                        this.stateAttr.hookActive = 'in';
+                                    if (scope.hookActive != 'in') {
+                                        scope.hookActive = 'in';
                                         if (props.direction == 'FORWARD') {
                                             _this.motion.progress.beforeUpdate(false);
                                         } else if (props.direction == 'REVERSE') {
@@ -719,13 +722,13 @@
                                     _this.motion.progress.update(true);
                                 }
                                 if (condition.fixedIn) {
-                                    if (this.stateAttr.fixedActive != 'in') {
-                                        this.stateAttr.fixedActive = 'in';
+                                    if (scope.fixedActive != 'in') {
+                                        scope.fixedActive = 'in';
                                     }
                                 }
                                 if (!condition.fixedIn) {
-                                    if (this.stateAttr.fixedActive != 'out') {
-                                        this.stateAttr.fixedActive = 'out';
+                                    if (scope.fixedActive != 'out') {
+                                        scope.fixedActive = 'out';
                                     }
                                 }
                                 if (condition.in) {
@@ -734,8 +737,8 @@
                                     }
                                 }
                                 if (!condition.in) {
-                                    if (this.stateAttr.active != 'out') {
-                                        this.stateAttr.active = 'out';
+                                    if (scope.active != 'out') {
+                                        scope.active = 'out';
                                         if (props.minOffset > winTop) {
                                             _this.motion.progress.beforeUpdate(false);
                                         } else if (winTop >= props.maxOffset) {
