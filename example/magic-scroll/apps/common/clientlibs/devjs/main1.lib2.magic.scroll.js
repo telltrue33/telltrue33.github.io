@@ -19,6 +19,10 @@
                     var isDevice = ('ontouchstart' in win || (win.DocumentTouch && doc instanceof win.DocumentTouch));
                     return isDevice;
                 })(),
+                isIOS : (function () {
+                    var isIOS = (/iPad|iPhone|iPod/.test(navigator.userAgent));
+                    return isIOS;
+                })(),
                 isOrientationchange : (function () {
                     var isO = ('onorientationchange' in win);
                     return isO;
@@ -127,6 +131,14 @@
                     scrollEnd : null,
                     resizeEnd : null
                 },
+                scrollEndTime : 60,
+                resizeEndTime : (function () {
+                    var android = false;
+                    if (Util.isDevice && !Util.isIOS) {
+                        android = true;
+                    }
+                    return android ? 500 : 280;
+                })(),
                 classAttr : {
                     fixed : 'is-fixed'
                 },
@@ -762,6 +774,7 @@
                 }
             },
             scrollFunc : function () {
+                var endTime = this.opts.scrollEndTime;
                 this.winTop = $(win).scrollTop();
                 if (this.opts.stateAttr.prevTop > this.winTop) {
                     this.opts.props['direction'] = 'REVERSE';
@@ -774,7 +787,7 @@
                     this.scrollAnimateFunc();
                 }
                 win.clearTimeout(this.opts.timeAttr.scrollEnd);
-                this.opts.timeAttr.scrollEnd = win.setTimeout(this.scrollEndFunc.bind(this), 60);
+                this.opts.timeAttr.scrollEnd = win.setTimeout(this.scrollEndFunc.bind(this), endTime);
             },
             scrollEndFunc : function () {
                 this.opts.stateAttr.scroll = null;
@@ -794,6 +807,7 @@
                 }
             },
             resizeFunc : function (e) {
+                var endTime = this.opts.resizeEndTime;
                 if (e != isUndefined && e.type == 'orientationchange') {
                     this.opts.stateAttr.isOrientationchange = true;
                 }
@@ -803,7 +817,7 @@
                     this.resizeAnimateFunc();
                 }
                 win.clearTimeout(this.opts.timeAttr.resizeEnd);
-                this.opts.timeAttr.resizeEnd = win.setTimeout(this.resizeEndFunc.bind(this), 280);
+                this.opts.timeAttr.resizeEnd = win.setTimeout(this.resizeEndFunc.bind(this), endTime);
             },
             resizeEndFunc : function () {
                 this.opts.stateAttr.resize = null;
