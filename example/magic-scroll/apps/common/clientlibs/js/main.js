@@ -95,10 +95,11 @@
                 spaceHeight : function () {
                     return 0;
                 },
+                spaceTop : null,
                 animations : [],
                 fixedAutoPlay : false,
                 customEvent : '.Component' + (new Date()).getTime() + Math.random(),
-                breakKey : ['duration','triggerHook','spaceHeight','overlapSpace','initFollowers','pushFollowers'],
+                breakKey : ['duration','triggerHook','spaceHeight','spaceTop','overlapSpace','initFollowers','pushFollowers'],
                 breakpoints : {},
                 props : {},
                 stateAttr : {
@@ -210,7 +211,7 @@
                                         out_bot : function () {
                                             magicArticle.css({
                                                 'position' : 'fixed',
-                                                'top' : _this.opts.props['spaceHeight'],
+                                                'top' : _this.opts.props['spaceTop'],
                                                 'bottom' : ''
                                             });
                                         },
@@ -224,7 +225,7 @@
                                         out_not_initFollowers : function () {
                                             magicArticle.css({
                                                 'position' : '',
-                                                'top' : _this.opts.props['spaceHeight'],
+                                                'top' : _this.opts.props['spaceTop'],
                                                 'bottom' : ''
                                             });
                                         }
@@ -291,6 +292,14 @@
                                 return r;
                             })();
 
+                            var spaceTop = (function () {
+                                var r = spaceHeight;
+                                if (breakOpts.spaceTop !== null) {
+                                    r = Math.floor(breakOpts.spaceTop(), 10);
+                                }
+                                return r;
+                            })();
+
                             var sectionHeight = (function () {
                                 var h = _this.obj.outerHeight(true);
                                 if (breakOpts.duration != null) {
@@ -344,6 +353,7 @@
                             })();
 
                             _this.opts.props['spaceHeight'] = spaceHeight;
+                            _this.opts.props['spaceTop'] = spaceTop;
                             _this.opts.props['sectionHeight'] = sectionHeight;
                             _this.opts.props['articleHeight'] = articleHeight;
                             _this.breakOpts = breakOpts;
@@ -355,6 +365,7 @@
                             var props = _this.opts.props;
                             var breakOpts = _this.breakOpts;
                             var spaceHeight = props['spaceHeight'];
+                            var spaceTop = props['spaceTop'];
                             var sectionHeight = props['sectionHeight'];
                             var articleHeight = props['articleHeight'];
                             var hVal = (function () {
@@ -365,7 +376,7 @@
                                 return h;
                             })();
                             var tVal = (function () {
-                                var t = (breakOpts.duration == null) ? '' : spaceHeight;
+                                var t = (breakOpts.duration == null) ? '' : spaceTop;
                                 var fl = _this.fixedlayout;
                                 var c = hasCssSticky;
                                 if (hasCssSticky) {

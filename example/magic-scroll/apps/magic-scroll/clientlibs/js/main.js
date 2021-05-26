@@ -2432,6 +2432,14 @@
                                     var r = (maxSize < stickyHeight) ? stickyHeight : maxSize;
                                     return r;
                                 },
+                                spaceTop : function () {
+                                    var winHeight = Util.winSize().h;
+                                    var stickyHeight = _this.stickySection.outerHeight(true);
+                                    var objHeight = _this.obj.outerHeight(true);
+                                    var maxSize = (winHeight - objHeight) / 2;
+                                    var r = (maxSize < stickyHeight) ? stickyHeight : maxSize;
+                                    return r;
+                                },
                                 breakpoints : {
                                     768 : {
                                         duration : '300%',
