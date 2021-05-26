@@ -682,13 +682,13 @@
                                 fl.view();
                                 if (condition.in) {
                                     if (stateAttr.active != 'in') {
-                                        scope.active = 'in';
+                                        stateAttr.active = 'in';
                                         _this.outCallback('in');
                                     }
                                 }
                                 if (!condition.hookIn) {
-                                    if (scope.hookActive != 'out') {
-                                        scope.hookActive = 'out';
+                                    if (stateAttr.hookActive != 'out') {
+                                        stateAttr.hookActive = 'out';
                                         _this.motion.progress.update(false);
                                         _this.outCallback('hookOut');
                                     }
@@ -700,8 +700,8 @@
                                     }
                                 }
                                 if (condition.hookIn) {
-                                    if (scope.hookActive != 'in') {
-                                        scope.hookActive = 'in';
+                                    if (stateAttr.hookActive != 'in') {
+                                        stateAttr.hookActive = 'in';
                                         if (props.direction == 'FORWARD') {
                                             _this.motion.progress.beforeUpdate(false);
                                         } else if (props.direction == 'REVERSE') {
@@ -712,13 +712,13 @@
                                     _this.motion.progress.update(true);
                                 }
                                 if (condition.fixedIn) {
-                                    if (scope.fixedActive != 'in') {
-                                        scope.fixedActive = 'in';
+                                    if (stateAttr.fixedActive != 'in') {
+                                        stateAttr.fixedActive = 'in';
                                     }
                                 }
                                 if (!condition.fixedIn) {
-                                    if (scope.fixedActive != 'out') {
-                                        scope.fixedActive = 'out';
+                                    if (stateAttr.fixedActive != 'out') {
+                                        stateAttr.fixedActive = 'out';
                                     }
                                 }
                                 if (condition.in) {
@@ -727,8 +727,8 @@
                                     }
                                 }
                                 if (!condition.in) {
-                                    if (scope.active != 'out') {
-                                        scope.active = 'out';
+                                    if (stateAttr.active != 'out') {
+                                        stateAttr.active = 'out';
                                         if (props.minOffset > winTop) {
                                             _this.motion.progress.beforeUpdate(false);
                                         } else if (winTop >= props.maxOffset) {
