@@ -196,12 +196,23 @@
                                         state : null,
                                         current : null,
                                         view : function () {
-                                            if (this.current !== this.state) {
-                                                this.current = this.state;
-                                                this[this.state]();
+                                            var state = this.state;
+                                            if (this.current !== state) {
+                                                this.current = state;
+                                                if (state == null) {
+                                                    state = 'reset';
+                                                }
+                                                this[state]();
                                             }
                                         },
                                         hasTops : ['out_bot','out_not_initFollowers'],
+                                        reset : function () {
+                                            magicArticle.css({
+                                                'position' : 'sticky',
+                                                'width' : '',
+                                                'bottom' : ''
+                                            });
+                                        },
                                         out_top : function () {
                                             magicArticle.css({
                                                 'position' : '',
@@ -593,6 +604,7 @@
                                 var fl = _this.fixedlayout;
                                 var scope = this.scope;
                                 var stateAttr = this.stateAttr;
+                                fl.state = null;
                                 if (condition.in) {
                                     if (!hasCssSticky) {
                                         if (breakOpts.initFollowers) {
@@ -677,6 +689,11 @@
                                     }
                                     if (!breakOpts.initFollowers) {
                                         fl.state = 'out_not_initFollowers';
+                                        if (!breakOpts.pushFollowers) {
+                                            if (winTop >= props.maxOffset) {
+                                                fl.state = 'out_bot_pushFollowers';
+                                            }
+                                        }
                                     }
                                 }
                                 fl.view();
@@ -837,7 +854,13 @@
                 }
             },
             refresh : function () {
-                this.set.getSize.resize();
+                if (Util.isOrientationchange) {
+                    if (this.opts.stateAttr.isOrientationchange) {
+                        this.set.getSize.resize();
+                    }
+                } else {
+                    this.set.getSize.resize();
+                }
                 this.set.opts();
                 this.set.layout();
                 this.scrollAct();
