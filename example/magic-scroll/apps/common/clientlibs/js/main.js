@@ -197,12 +197,15 @@
                                         current : null,
                                         view : function () {
                                             var state = this.state;
+                                            var breakOpts = _this.breakOpts;
                                             if (this.current !== state) {
                                                 this.current = state;
                                                 if (state == null) {
                                                     state = 'reset';
                                                 }
-                                                this[state]();
+                                                if (breakOpts.duration != null) {
+                                                    this[state]();
+                                                }
                                             }
                                         },
                                         hasTops : ['out_bot','out_not_initFollowers'],
