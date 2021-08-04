@@ -55,7 +55,7 @@
     "require-dir": "0.3.0",
     "string.prototype.endswith": "0.2.0",
     "swig": "1.4.2",
-    "xmldom": "0.1.19"
+    "xmldom": "0.6.0"
   },
   "dependencies": {
     "gulp-remove-empty-lines": "0.1.0",
