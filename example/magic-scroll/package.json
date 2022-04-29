@@ -13,7 +13,7 @@
     "graceful-fs": "4.2.3"
   },
   "devDependencies": {
-    "async": "1.4.2",
+    "async": "2.6.4",
     "autoprefixer": "6.3.5",
     "file": "0.2.2",
     "fs": "0.0.2",
