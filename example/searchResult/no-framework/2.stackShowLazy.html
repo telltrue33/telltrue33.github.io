@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>no-framework :: stackShowLazy</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0">
+    <meta name="referrer" content="no-referrer"/>
+    <link rel="stylesheet" type="text/css" href="css/main.css">
+</head>
+
+<body>
+    <div id="wrap">
+        <div id="header">header</div>
+        <div id="container">
+            <div class="result">
+                <div data-sticky="sticky">
+                    <div class="search" id="searchWrap">
+                        <div class="search-form">
+                            <div class="search-form__wrap">
+                                <input type="text" class="search__input" value="" title="검색어 입력" autocomplete="off" id="query">
+                            </div>
+                            <a href="#" class="search__btn" id="queryBtn" role="button"><span class="blind">검색</span></a>
+                        </div>
+                        <div class="search-word" id="wordWrap">
+                            <ul class="search-word__list" id="wordList"></ul>
+                            <diV class="search-word__del"><a href="#" id="wordRemoveBtn" role="button">최근 검색어 삭제</a></diV>
+                        </div>
+                    </div>
+                </div>
+                <div class="search-tool__wrap">
+                    <ul class="search-sort__list" id="sortList">
+                        <li class="active" data-sort="accuracy"><a href="#" role="button">정확도순</a></li>
+                        <li data-sort="recency"><a href="#" role="button">최신순</a></li>
+                    </ul>
+                    <ul class="search-colview__list" id="colviewList">
+                        <li data-colview="1"><a href="#" role="button"><span class="blind">1열로 보기</span></a></li>
+                        <li class="active" data-colview="2"><a href="#" role="button"><span class="blind">2열로 보기</span></a></li>
+                    </ul>
+                </div>
+                <div class="result__list col2" id="resultList">
+                    <div data-scroll-inner>
+                        <div data-scroll-position></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="footer">footer</div>
+    </div>
+    <script src="js/jquery.min.js"></script>
+    <script src="js/library.js"></script>
+    <script>
+        (function (isUndefined) {
+            'use strict';
+            $(function () {
+                var result = {
+                    size: 10,
+                    init: function () {
+                        this.setElements();
+                        this.initOpts();
+                        this.buildSticky();
+                        this.buildAwaitLoader();
+                        this.buildLazyLoad();
+                        this.buildScrolling();
+                        this.buildSearchWord();
+                        this.bindEvents();
+                    },
+                    setElements: function () {
+                        this.$searchWrap = $('#searchWrap');
+                        this.$queryInp = $('#query');
+                        this.$queryBtn = $('#queryBtn');
+                        this.$sortList = $('#sortList');
+                        this.$colviewList = $('#colviewList');
+                        this.$resultList = $('#resultList');
+                        this.$wordWrap = $('#wordWrap');
+                        this.$wordList = $('#wordList');
+                        this.$wordRemoveBtn = $('#wordRemoveBtn');
+                    },
+                    initOpts: function () {
+                        this.searchDatas = {};
+                        this.currentPage = 1;
+                        this.currentValue = '';
+                        this.currentSort = this.$sortList.find('.active').attr('data-sort');
+                    },
+                    buildSticky: function () {
+                        var _this = this;
+                        Util.def(this, {
+                            sticky: {
+                                instance: null,
+                                destroy: function () {
+                                    if (this.instance == null) return;
+                                    this.instance.destroy();
+                                    this.instance = null;
+                                },
+                                build: function () {
+                                    this.instance = new Sticky($('[data-sticky="sticky"]'));
+                                }
+                            }
+                        });
+                        this.sticky.build();
+                    },
+                    buildAwaitLoader: function () {
+                        var _this = this;
+                        Util.def(this, {
+                            awaitloader: {
+                                instance: null,
+                                destroy: function () {
+                                    if (this.instance == null) return;
+                                    this.instance.destroy();
+                                    this.instance = null;
+                                },
+                                build: function () {
+                                    this.instance = new AwaitLoader(_this.$resultList);
+                                }
+                            }
+                        });
+                    },
+                    buildLazyLoad: function () {
+                        var _this = this;
+                        Util.def(this, {
+                            lazyload: {
+                                run: function ($target) {
+                                    var $jsPictures = $target.find('.js-picture[data-lazy]');
+                                    for (var i = 0, max = $jsPictures.length; i < max; i++) {
+                                        (function (index) {
+                                            var $jsPicture = $jsPictures.eq(index);
+                                            if ($jsPicture.attr('data-load') == isUndefined) {
+                                                new LazyPicture($jsPicture);
+                                            }
+                                        })(i);
+                                    }
+                                }
+                            }
+                        });
+                    },
+                    buildScrolling: function () {
+                        var _this = this;
+                        Util.def(this, {
+                            scrolling: {
+                                instance: null,
+                                destroy: function () {
+                                    if (this.instance == null) return;
+                                    this.instance.destroy();
+                                    this.instance = null;
+                                },
+                                stackEmpty: function () {
+                                    if (this.instance == null) return;
+                                    this.instance.stackEmpty();
+                                },
+                                setParam: function (param) {
+                                    if (this.instance == null) return;
+                                    this.instance.setParam(param);
+                                },
+                                setData: function (data) {
+                                    if (this.instance == null) return;
+                                    this.instance.setData(data);
+                                },
+                                build: function () {
+                                    this.instance = new CmScrolling(_this.$resultList, {
+                                        col: 2,
+                                        effect: 'stack',
+                                        renderCustom: function (data) {
+                                            var layouts = [];
+                                            layouts.push('<div>');
+                                            layouts.push('<a href="' + data.doc_url + '"><div class="img-wrap"><div class="img js-picture" data-lazy><img data-srcset="' + data.image_url + '" width="' + data.width + '" height="' + data.height + '"/></div></div><div class="exp">' + data.display_sitename + '</div></a>');
+                                            layouts.push('</div>');
+                                            return layouts.join('');
+                                        },
+                                        on: {
+                                            end: function () {
+                                                _this.currentPage++;
+                                                _this.querySearch();
+                                            }
+                                        }
+                                    });
+                                }
+                            }
+                        });
+                        this.scrolling.build();
+                    },
+                    buildSearchWord: function () {
+                        var _this = this;
+                        Util.def(this, {
+                            searchword: {
+                                name: 'storage:word',
+                                outsidetime: null,
+                                state: false,
+                                remove: function () {
+                                    Util.localStorage.remove(this.name);
+                                    this.deactive();
+                                },
+                                save: function (word) {
+                                    if (word.length) {
+                                        var _word = JSON.parse(Util.localStorage.get(this.name));
+                                        if (_word == null) {
+                                            _word = [];
+                                        }
+                                        _word.unshift(word);
+                                        Util.localStorage.set(this.name, JSON.stringify(_word));
+                                        this.deactive();
+                                    }
+                                },
+                                bindOutsideEvents: function (type) {
+                                    if (type) {
+                                        _this.$searchWrap.on('focusoutside clickoutside', this.focusoutFunc.bind(this));
+                                    } else {
+                                        _this.$searchWrap.off('focusoutside clickoutside');
+                                    }
+                                },
+                                focusoutFunc: function () {
+                                    this.deactive();
+                                },
+                                active: function () {
+                                    if (this.state) return;
+                                    this.state = true;
+                                    var _word = JSON.parse(Util.localStorage.get(this.name));
+                                    if (_word != null) {
+                                        var layouts = [];
+                                        var pushWord = [];
+                                        _word.forEach(function (w) {
+                                            if (pushWord.indexOf(w) == -1) {
+                                                pushWord.push(w);
+                                                layouts.push('<li><a href="#">' + w + '</a></li>');
+                                            }
+                                        });
+                                        _this.$wordList.empty().append(layouts.join(''));
+                                        _this.$wordWrap.addClass('active');
+                                        window.clearTimeout(this.outsidetime);
+                                        this.outsidetime = window.setTimeout(function () {
+                                            this.bindOutsideEvents(true);
+                                        }.bind(this), 10);
+                                    }
+                                },
+                                deactive: function () {
+                                    if (!this.state) return;
+                                    this.state = false;
+                                    _this.$wordWrap.removeClass('active');
+                                    this.bindOutsideEvents(false);
+                                }
+                            }
+                        })
+                    },
+                    queryDataBuild: function (props) {
+                        var queryData = this.searchDatas[props.query];
+                        var queryPage = props.page;
+                        var allData = [];
+                        queryData.page.forEach(function (aPage) {
+                            allData = allData.concat(aPage);
+                        });
+                        this.scrolling.setData(allData);
+                        this.lazyload.run(this.$resultList);
+                    },
+                    querySearch: function () {
+                        var _this = this;
+                        var _val = this.currentValue;
+                        var searchDatas = this.searchDatas;
+                        var currentPage = this.currentPage;
+                        var currentSort = this.currentSort;
+                        if (_val.length) {
+                            if (searchDatas.hasOwnProperty(_val)) {
+                                if (searchDatas[_val].meta['pageable_count'] <= (_this.size * currentPage)) return;
+                            }
+                            this.awaitloader.build();
+                            $.ajax({
+                                url: 'https://dapi.kakao.com/v2/search/image',
+                                data: {
+                                    query: _val,
+                                    page: currentPage,
+                                    sort: currentSort,
+                                    size: _this.size
+                                },
+                                headers: {
+                                    Authorization: 'KakaoAK 7a449bf294c35c51d66983b54128a186'
+                                },
+                                complete: function () {
+                                    _this.awaitloader.destroy();
+                                }
+                            }).done(function (response) {
+                                if (!searchDatas.hasOwnProperty(_val)) {
+                                    searchDatas[_val] = {
+                                        page: [],
+                                        meta: response.meta
+                                    };
+                                }
+                                searchDatas[_val].page[currentPage - 1] = response.documents;
+                                _this.queryDataBuild({
+                                    query: _val,
+                                    page: currentPage
+                                });
+                            }).fail(function () {
+                                console.log('error');
+                            });
+                        }
+                    },
+                    queryStart: function () {
+                        var _val = this.$queryInp.val();
+                        if (this.searchDatas.hasOwnProperty(_val)) {
+                            this.searchDatas[_val].page = [];
+                        }
+                        this.currentValue = _val;
+                        this.currentPage = 1;
+                        $('html, body').scrollTop(0);
+                        this.scrolling.stackEmpty();
+                        this.querySearch();
+                        this.searchword.save(_val);
+                    },
+                    bindEvents: function () {
+                        this.$sortList.on('click', 'a', this.sortBtnClick.bind(this));
+                        this.$colviewList.on('click', 'a', this.colviewBtnClick.bind(this));
+                        this.$queryInp.on('focusin', this.inpFocus.bind(this));
+                        this.$queryInp.on('keydown', this.inpKeyDown.bind(this));
+                        this.$queryBtn.on('click', this.searchBtnClick.bind(this));
+                        this.$wordList.on('click', 'a', this.wordClick.bind(this));
+                        this.$wordRemoveBtn.on('click', this.wordRemoveClick.bind(this));
+                    },
+                    sortBtnClick: function (e) {
+                        e.preventDefault();
+                        var $t = $(e.currentTarget);
+                        var $li = $t.closest('li');
+                        if (!$li.hasClass('active')) {
+                            this.currentSort = $li.attr('data-sort');
+                            $li.addClass('active').siblings().removeClass('active');
+                            this.queryStart();
+                        }
+                    },
+                    colviewBtnClick: function (e) {
+                        e.preventDefault();
+                        var _this = this;
+                        var $t = $(e.currentTarget);
+                        var $li = $t.closest('li');
+                        if (!$li.hasClass('active')) {
+                            var colview = parseFloat($li.attr('data-colview'), 10);
+                            $li.addClass('active').siblings().removeClass('active');
+                            if (colview == 1) {
+                                this.$resultList.removeClass('col2').addClass('col1');
+                            } else {
+                                this.$resultList.removeClass('col1').addClass('col2');
+                            }
+                            this.scrolling.setParam({
+                                col: colview,
+                                size: colview == 1 ? null : _this.size
+                            });
+                        }
+                    },
+                    inpFocus: function (e) {
+                        this.searchword.active();
+                    },
+                    inpKeyDown: function (e) {
+                        var keyCode = e.keyCode || e.which;
+                        if (keyCode == 13) {
+                            this.queryStart();
+                        } else {
+                            this.searchword.active();
+                        }
+                    },
+                    searchBtnClick: function (e) {
+                        e.preventDefault();
+                        this.queryStart();
+                    },
+                    wordClick: function (e) {
+                        e.preventDefault();
+                        var $t = $(e.currentTarget);
+                        var word = $t.text();
+                        this.$queryInp.val(word);
+                        this.queryStart();
+                    },
+                    wordRemoveClick: function (e) {
+                        e.preventDefault();
+                        this.searchword.remove();
+                    }
+                };
+                result.init();
+            });
+        })();
+    </script>
+</body>
+
+</html>
