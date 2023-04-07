@@ -1,19 +1,16 @@
 <template>
     <div class="result">
         <SearchField @searchFieldCreate="searchFieldCreate" @sortBtnClick="sortBtnClick" @colviewBtnClick="colviewBtnClick" @inpFocus="inpFocus" @inpKeyDown="inpKeyDown" @searchBtnClick="searchBtnClick" @wordClick="wordClick" @wordRemoveClick="wordRemoveClick" :childLayerActive="propLayerActive" :childStorageData="wordStorageData" :childSortData="sortData"></SearchField>
-        <div class="result__list" ref="resultList" :class="[colView === 1 ? 'col1' : colView === 2 ? 'col2' : '']">
-            <div data-scroll-inner ref="scrollInner">
-                <div data-scroll-position ref="scrollPosition">
-                    <ImgItem v-for="item in getSearchList" :key="item.id" :childData="item"></ImgItem>
-                </div>
-            </div>
-        </div>
+        <ScrollContainer ref="imgScroll" :colView="colView" @scrollContainerRender="scrollContainerRender" @scrollContainerEnd="scrollContainerEnd">
+            <ImgItem v-for="item in getSearchList" :key="item.id" :childData="item"></ImgItem>
+        </ScrollContainer>
     </div>
 </template>
   
 <script>
 import axios from 'axios';
 import SearchField from '@/components/SearchField.vue';
+import ScrollContainer from '@/components/ScrollContainer.vue';
 import ImgItem from '@/components/ImgItem.vue';
 
 export default {
@@ -46,6 +43,7 @@ export default {
     },
     components: {
         SearchField,
+        ScrollContainer,
         ImgItem
     },
     computed: {
@@ -61,83 +59,10 @@ export default {
     },
     mounted() {
         this.$nextTick(function () {
-            this.buildAwaitLoader();
-            this.buildScrolling();
             this.buildSearchWord();
         });
     },
-    beforeDestroy() {
-        this.awaitloader.destroy();
-        this.scrolling.destroy();
-    },
     methods: {
-        buildAwaitLoader() {
-            const _this = this;
-            window.Util.def(this, {
-                awaitloader: {
-                    instance: null,
-                    destroy: function () {
-                        if (this.instance == null) return;
-                        this.instance.destroy();
-                        this.instance = null;
-                    },
-                    build: function () {
-                        this.instance = new window.AwaitLoader(_this.$refs.resultList);
-                    }
-                }
-            });
-        },
-        buildScrolling() {
-            const _this = this;
-            window.Util.def(this, {
-                scrolling: {
-                    instance: null,
-                    destroy: function () {
-                        if (this.instance == null) return;
-                        this.instance.destroy();
-                        this.instance = null;
-                    },
-                    setParam: function (param) {
-                        if (this.instance == null) return;
-                        this.instance.setParam(param);
-                    },
-                    setData: function (data) {
-                        if (this.instance == null) return;
-                        this.instance.setData(data);
-                    },
-                    build: function () {
-                        this.instance = new window.CmScrolling(_this.$refs.resultList, {
-                            col: 2,
-                            frameworkRender: true,
-                            on: {
-                                end: function () {
-                                    _this.currentPage++;
-                                    _this.querySearch();
-                                },
-                                frameworkHeight: function (param) {
-                                    // console.log('frameworkHeight', param);
-                                    _this.$refs.scrollInner.style.height = param.h + 'px';
-                                },
-                                frameworkTransform: function (param) {
-                                    // console.log('frameworkTransform', param);
-                                    _this.$refs.scrollPosition.style.transform = 'translateY(' + param.y + 'px)';
-                                },
-                                frameworkRender: function (param) {
-                                    // console.log('frameworkRender', param);
-                                    const min = param.min;
-                                    const max = param.max;
-                                    _this.currentDatas = _this.searchDatas.filter(function (v, idx) {
-                                        return (min <= idx) && (idx < max);
-                                    });
-                                    _this.$store.dispatch('setSearchList', _this.currentDatas);
-                                }
-                            }
-                        });
-                    }
-                }
-            });
-            this.scrolling.build();
-        },
         buildSearchWord() {
             const _this = this;
             window.Util.def(this, {
@@ -180,12 +105,12 @@ export default {
                 allData = allData.concat(aPage);
             });
             this.searchDatas = allData;
-            this.scrolling.setData(allData);
+            this.$refs.imgScroll.setData(allData);
         },
         querySearch() {
             const _val = this.currentValue;
             if (_val.length) {
-                this.awaitloader.build();
+                this.$refs.imgScroll.loaderBuild();
                 axios.get('https://dapi.kakao.com/v2/search/image', {
                     params: {
                         query: this.currentValue,
@@ -206,7 +131,7 @@ export default {
                         console.log(error);
                     })
                     .finally(() => {
-                        this.awaitloader.destroy();
+                        this.$refs.imgScroll.loaderDestroy();
                     });
             }
         },
@@ -227,7 +152,7 @@ export default {
         colviewBtnClick(prop) {
             this.currentValue = prop.value;
             this.colView = prop.colView;
-            this.scrolling.setParam({
+            this.$refs.imgScroll.setParam({
                 col: prop.colView,
                 size: prop.colView == 1 ? null : this.size
             });
@@ -261,6 +186,18 @@ export default {
         },
         wordRemoveClick() {
             this.searchword.remove();
+        },
+        scrollContainerRender(prop) {
+            const min = prop.min;
+            const max = prop.max;
+            this.currentDatas = this.searchDatas.filter(function (v, idx) {
+                return (min <= idx) && (idx < max);
+            });
+            this.$store.dispatch('setSearchList', this.currentDatas);
+        },
+        scrollContainerEnd() {
+            this.currentPage++;
+            this.querySearch();
         }
     }
 }
