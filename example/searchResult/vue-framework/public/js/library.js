@@ -1464,9 +1464,7 @@
             scrollEndFunc: function () {
                 if (this.opts.stateAttr.endLoaded) {
                     if (this.opts.stateAttr.end == null) {
-                        var innerCR = this.inner.getBoundingClientRect();
-                        var endPoint = (innerCR.height + innerCR.y - Util.winSize().h) < 0;
-                        if (endPoint) {
+                        if (this.getEndPoint()) {
                             this.opts.stateAttr.end = true;
                             this.outCallback('end');
                         }
@@ -1479,8 +1477,10 @@
                 var scrollTop = this.$scrollWrap.scrollTop();
                 var middleSize = this.opts.middleSize;
                 var startNum = Math.floor(scrollTop / this.opts.height) * this.opts.col;
-                var bufferedStartNum = startNum - middleSize;
-                var bufferedEndNum = startNum + (middleSize * 2);
+                var bufferedStartNum = startNum - this.opts.col;
+                var bufferedEndNum = startNum + middleSize + this.opts.col;
+                // var bufferedStartNum = startNum - middleSize;
+                // var bufferedEndNum = startNum + (middleSize * 2);
                 // console.log({startNum, bufferedStartNum, bufferedEndNum});
                 if (bufferedStartNum < 0) {
                     bufferedStartNum = 0;
@@ -1496,15 +1496,18 @@
             },
             resizeEndFunc: function () {
                 this.resizeAct();
-                var innerCR = this.inner.getBoundingClientRect();
-                var endPoint = (innerCR.height + innerCR.y - Util.winSize().h) < 0;
-                if (endPoint) {
+                if (this.getEndPoint()) {
                     this.scrollFunc();
                 }
             },
             resizeAct: function () {
                 this.setOpts();
                 this.scrollAct();
+            },
+            getEndPoint: function () {
+                var innerCR = this.inner.getBoundingClientRect();
+                var endPoint = (innerCR.height + innerCR.y - Util.winSize().h) < 0;
+                return endPoint;
             },
             buildLayout: function (min, max) {
                 var currentTranslateY = min * this.opts.height / this.opts.col;
@@ -1565,9 +1568,7 @@
                     this.setOpts();
                     this.scrollAct();
                     this.opts.stateAttr.end = null;
-                    var innerCR = this.inner.getBoundingClientRect();
-                    var endPoint = (innerCR.height + innerCR.y - Util.winSize().h) < 0;
-                    if (endPoint) {
+                    if (this.getEndPoint()) {
                         this.scrollFunc();
                     }
                 }.bind(this), 10);
