@@ -16,31 +16,13 @@ export default {
     },
     mounted() {
         this.$nextTick(function () {
-            this.buildAwaitLoader();
             this.buildScrolling();
         });
     },
     beforeDestroy() {
-        this.awaitloader.destroy();
         this.scrolling.destroy();
     },
     methods: {
-        buildAwaitLoader() {
-            const _this = this;
-            window.Util.def(this, {
-                awaitloader: {
-                    instance: null,
-                    destroy: function () {
-                        if (this.instance == null) return;
-                        this.instance.destroy();
-                        this.instance = null;
-                    },
-                    build: function () {
-                        this.instance = new window.AwaitLoader(_this.$refs.resultList);
-                    }
-                }
-            });
-        },
         buildScrolling() {
             const _this = this;
             window.Util.def(this, {
@@ -96,12 +78,6 @@ export default {
         },
         setParam(param) {
             this.scrolling.setParam(param);
-        },
-        loaderBuild() {
-            this.awaitloader.build();
-        },
-        loaderDestroy() {
-            this.awaitloader.destroy();
         }
     }
 }

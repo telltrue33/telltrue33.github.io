@@ -4,6 +4,7 @@
         <ScrollContainer ref="imgScroll" :colView="colView" @scrollContainerRender="scrollContainerRender" @scrollContainerEnd="scrollContainerEnd">
             <ImgItem v-for="item in getSearchList" :key="item.id" :childData="item"></ImgItem>
         </ScrollContainer>
+        <ScrollLoader v-if="loaderActive"></ScrollLoader>
     </div>
 </template>
   
@@ -12,6 +13,7 @@ import axios from 'axios';
 import SearchField from '@/components/SearchField.vue';
 import ScrollContainer from '@/components/ScrollContainer.vue';
 import ImgItem from '@/components/ImgItem.vue';
+import ScrollLoader from '@/components/ScrollLoader.vue';
 
 export default {
     name: 'SearchPage',
@@ -29,6 +31,7 @@ export default {
             wordLayerState: false,
             propLayerActive: false,
             wordStorageData: [],
+            loaderActive: false,
             sortData: [
                 {
                     sort: 'accuracy',
@@ -44,7 +47,8 @@ export default {
     components: {
         SearchField,
         ScrollContainer,
-        ImgItem
+        ImgItem,
+        ScrollLoader
     },
     computed: {
         getSearchList() {
@@ -110,7 +114,7 @@ export default {
         querySearch() {
             const _val = this.currentValue;
             if (_val.length) {
-                this.$refs.imgScroll.loaderBuild();
+                this.loaderActive = true;
                 axios.get('https://dapi.kakao.com/v2/search/image', {
                     params: {
                         query: this.currentValue,
@@ -131,7 +135,7 @@ export default {
                         console.log(error);
                     })
                     .finally(() => {
-                        this.$refs.imgScroll.loaderDestroy();
+                        this.loaderActive = false;
                     });
             }
         },
