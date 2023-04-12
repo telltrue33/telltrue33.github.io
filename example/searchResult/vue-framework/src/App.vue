@@ -2,11 +2,13 @@
     <div id="wrap">
         <div id="header">header</div>
         <div id="container">
-            <!-- <nav>
-                <router-link to="/">Home</router-link> |
-                <router-link to="/about">About</router-link> |
-                <router-link to="/search">Example</router-link>
-            </nav> -->
+            <nav>
+                <!-- <router-link to="/">Home</router-link> | -->
+                <!-- <router-link to="/about">About</router-link> | -->
+                <!-- <router-link to="/search">Example</router-link> -->
+                <router-link to="/">limitShowSize</router-link> |
+                <router-link to="/stackShowLazy">stackShowLazy</router-link>
+            </nav>
             <router-view />
         </div>
         <div id="footer">footer</div>

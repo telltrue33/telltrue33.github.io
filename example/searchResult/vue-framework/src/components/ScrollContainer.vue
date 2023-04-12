@@ -13,6 +13,10 @@ export default {
         colView: {
             type: Number
         },
+        imgLazy: {
+            type: Boolean,
+            default: false
+        }
     },
     mounted() {
         this.$nextTick(function () {
@@ -55,7 +59,9 @@ export default {
                                 },
                                 frameworkTransform: function (param) {
                                     // console.log('frameworkTransform', param);
-                                    _this.$refs.scrollPosition.style.transform = 'translateY(' + param.y + 'px)';
+                                    if (!_this.imgLazy) {
+                                        _this.$refs.scrollPosition.style.transform = 'translateY(' + param.y + 'px)';
+                                    }
                                 },
                                 frameworkRender: function (param) {
                                     // console.log('frameworkRender', param);

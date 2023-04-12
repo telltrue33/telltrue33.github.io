@@ -21,6 +21,11 @@ const routes = [
     name: 'search',
     component: SearchView
     // component: () => import('../views/SearchView.vue')
+  },
+  {
+    path: '/stackShowLazy',
+    name: 'search2',
+    component: () => import('../views/SearchView2.vue')
   }
 ]
 

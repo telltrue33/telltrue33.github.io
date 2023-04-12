@@ -1,8 +1,8 @@
 <template>
     <div class="result">
         <SearchField @searchFieldCreate="searchFieldCreate" @sortBtnClick="sortBtnClick" @colviewBtnClick="colviewBtnClick" @inpFocus="inpFocus" @inpKeyDown="inpKeyDown" @searchBtnClick="searchBtnClick" @wordClick="wordClick" @wordRemoveClick="wordRemoveClick" :childLayerActive="propLayerActive" :childStorageData="wordStorageData" :childSortData="sortData"></SearchField>
-        <ScrollContainer ref="imgScroll" :colView="colView" @scrollContainerRender="scrollContainerRender" @scrollContainerEnd="scrollContainerEnd">
-            <ImgItem v-for="item in getSearchList" :key="item.id" :childData="item"></ImgItem>
+        <ScrollContainer ref="imgScroll" :colView="colView" @scrollContainerRender="scrollContainerRender" @scrollContainerEnd="scrollContainerEnd" :imgLazy="imgLazy">
+            <ImgItem v-for="item in getSearchList" :key="item.id" :childData="item" :imgLazy="imgLazy"></ImgItem>
         </ScrollContainer>
         <ScrollLoader v-if="loaderActive"></ScrollLoader>
     </div>
@@ -16,7 +16,7 @@ import ImgItem from '@/components/ImgItem.vue';
 import ScrollLoader from '@/components/ScrollLoader.vue';
 
 export default {
-    name: 'SearchPage',
+    name: 'SearchPage2',
     data() {
         return {
             pageDatas: [],
@@ -25,6 +25,7 @@ export default {
             currentSort: '',
             currentValue: '',
             currentPage: 1,
+            imgLazy: true,
             colView: 1,
             size: 10,
             wordStorageName: 'storage:word',
@@ -150,6 +151,7 @@ export default {
             this.searchword.save();
         },
         sortBtnClick(prop) {
+            this.$store.dispatch('setSearchList', []);
             this.currentValue = prop.value;
             this.currentSort = prop.sort;
             this.queryStart();
@@ -192,9 +194,9 @@ export default {
         wordRemoveClick() {
             this.searchword.remove();
         },
-        scrollContainerRender(prop) {
-            const min = prop.min;
-            const max = prop.max;
+        scrollContainerRender() {
+            const min = 0;
+            const max = this.searchDatas.length;
             this.currentDatas = this.searchDatas.filter(function (v, idx) {
                 return (min <= idx) && (idx < max);
             });
