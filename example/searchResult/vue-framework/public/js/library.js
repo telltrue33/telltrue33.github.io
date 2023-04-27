@@ -1343,6 +1343,7 @@
             }
             var defParams = {
                 wrapper: 'body',
+                isWrapWin: false,
                 inner: '[data-scroll-inner]',
                 position: '[data-scroll-position]',
                 datas: [],
@@ -1399,8 +1400,10 @@
                 var $wrapper = this.opts.wrapper;
                 if ((this.opts.wrapper != 'body') && !this.opts.wrapper.length) {
                     $wrapper = $(win);
+                    this.opts.isWrapWin = true;
                 } else if (this.opts.wrapper == 'body') {
                     $wrapper = $(win);
+                    this.opts.isWrapWin = true;
                 }
                 this.$scrollWrap = $wrapper;
                 this.scrollWrap = $wrapper[0];
@@ -1475,6 +1478,11 @@
             scrollAct: function () {
                 if (this.opts.effect != 'default') return;
                 var scrollTop = this.$scrollWrap.scrollTop();
+                if (this.opts.isWrapWin) {
+                    var scrollY = win.scrollY;
+                    var innerCR = this.inner.getBoundingClientRect();
+                    scrollTop = scrollTop - (scrollY + innerCR.top);
+                }
                 var middleSize = this.opts.middleSize;
                 var startNum = Math.floor(scrollTop / this.opts.height) * this.opts.col;
                 var bufferedStartNum = startNum - this.opts.col;
@@ -1487,6 +1495,10 @@
                 }
                 if (bufferedEndNum > this.opts.totalLength) {
                     bufferedEndNum = this.opts.totalLength;
+                }
+                if (((Util.winSize().h + scrollTop) < 0) || (bufferedEndNum <= 0)) {
+                    this.prevMin = null;
+                    this.prevMax = null;
                 }
                 this.buildLayout(bufferedStartNum, bufferedEndNum);
             },
@@ -1521,7 +1533,7 @@
                     }
                 }
                 this.prevTranslateY = currentTranslateY;
-                if (this.prevMin != min) {
+                if ((this.prevMin != min) || (this.prevMax != max)) {
                     if (!this.opts.frameworkRender) {
                         var datas = this.opts.datas;
                         var layouts = [];
@@ -1540,6 +1552,7 @@
                     }
                 }
                 this.prevMin = min;
+                this.prevMax = max;
             },
             stackAct: function () {
                 var datas = this.opts.datas;
@@ -1557,6 +1570,7 @@
             setData: function (data) {
                 this.opts.datas = data;
                 this.prevMin = null;
+                this.prevMax = null;
                 this.prevTranslateY = null;
                 this.setOpts();
                 this.scrollAct();
@@ -1576,6 +1590,7 @@
             setParam: function (param) {
                 Util.def(this.opts, param);
                 this.prevMin = null;
+                this.prevMax = null;
                 this.prevTranslateY = null;
                 this.setOpts();
                 this.scrollAct();
