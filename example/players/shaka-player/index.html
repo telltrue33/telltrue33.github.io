@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html class="mo">
+    <head>
+        <title>Common UI</title>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0" />
+        <!-- Shaka Player CSS -->
+        <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.7.5/controls.css" />
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                margin: 20px;
+                background-color: #f0f0f0;
+            }
+
+            .container {
+                max-width: 1200px;
+                margin: 0 auto;
+                background: white;
+                padding: 20px;
+                border-radius: 10px;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            }
+
+            .video-container {
+                position: relative;
+                width: 100%;
+                height: 500px;
+                margin-bottom: 20px;
+                background-color: #000;
+                border-radius: 8px;
+                overflow: hidden;
+            }
+
+            #videoPlayer {
+                width: 100%;
+                height: 100%;
+            }
+
+            .controls {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 10px;
+                margin-bottom: 20px;
+            }
+
+            .control-group {
+                background: #f8f9fa;
+                padding: 15px;
+                border-radius: 6px;
+                border: 1px solid #e9ecef;
+            }
+
+            .control-group h3 {
+                margin: 0 0 10px 0;
+                color: #495057;
+                font-size: 14px;
+            }
+
+            button {
+                background: #007bff;
+                color: white;
+                border: none;
+                padding: 8px 12px;
+                border-radius: 4px;
+                cursor: pointer;
+                margin: 2px;
+                font-size: 12px;
+            }
+
+            button:hover {
+                background: #0056b3;
+            }
+
+            button:disabled {
+                background: #6c757d;
+                cursor: not-allowed;
+            }
+
+            select {
+                width: 100%;
+                padding: 6px;
+                border: 1px solid #ced4da;
+                border-radius: 4px;
+                margin-bottom: 10px;
+            }
+
+            .stats {
+                background: #e9ecef;
+                padding: 15px;
+                border-radius: 6px;
+                font-family: monospace;
+                font-size: 12px;
+                white-space: pre-line;
+                max-height: 200px;
+                overflow-y: auto;
+            }
+
+            .log {
+                background: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: 10px;
+                border-radius: 4px;
+                height: 150px;
+                overflow-y: auto;
+                font-family: monospace;
+                font-size: 11px;
+            }
+
+            .log-entry {
+                margin: 2px 0;
+                padding: 3px 6px;
+                border-radius: 3px;
+                border-left: 3px solid transparent;
+                transition: background-color 0.2s;
+                font-size: 10px;
+            }
+
+            .log-info {
+                color: #17a2b8;
+                border-left-color: #17a2b8;
+                background-color: rgba(23, 162, 184, 0.1);
+            }
+
+            .log-warn {
+                color: #856404;
+                border-left-color: #ffc107;
+                background-color: rgba(255, 193, 7, 0.1);
+            }
+
+            .log-error {
+                color: #721c24;
+                border-left-color: #dc3545;
+                background-color: rgba(220, 53, 69, 0.1);
+            }
+
+            .log-entry:hover {
+                background-color: #f0f0f0 !important;
+            }
+
+            /* 슬라이더 트랙 및 썸 스타일 개선 */
+            input[type="range"] {
+                -webkit-appearance: none;
+                appearance: none;
+                width: 100%;
+                height: 6px;
+                border-radius: 3px;
+                background: #ddd;
+                outline: none;
+                transition: background 0.3s;
+            }
+
+            input[type="range"]:hover {
+                background: #bbb;
+            }
+
+            /* Chrome/Safari 슬라이더 썸 (동그라미) */
+            input[type="range"]::-webkit-slider-thumb {
+                -webkit-appearance: none;
+                appearance: none;
+                width: 20px;
+                height: 20px;
+                border-radius: 50%;
+                background: #007bff;
+                cursor: pointer;
+                border: 2px solid #fff;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+                transition: background 0.3s;
+            }
+
+            input[type="range"]::-webkit-slider-thumb:hover {
+                background: #0056b3;
+            }
+
+            /* Firefox 슬라이더 썸 */
+            input[type="range"]::-moz-range-thumb {
+                width: 20px;
+                height: 20px;
+                border-radius: 50%;
+                background: #007bff;
+                cursor: pointer;
+                border: 2px solid #fff;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+                transition: background 0.3s;
+            }
+
+            input[type="range"]::-moz-range-thumb:hover {
+                background: #0056b3;
+            }
+
+            /* Firefox 슬라이더 트랙 */
+            input[type="range"]::-moz-range-track {
+                width: 100%;
+                height: 6px;
+                cursor: pointer;
+                background: #ddd;
+                border-radius: 3px;
+                border: none;
+            }
+
+            /* IE/Edge 슬라이더 스타일 */
+            input[type="range"]::-ms-track {
+                width: 100%;
+                height: 6px;
+                cursor: pointer;
+                background: transparent;
+                border-color: transparent;
+                color: transparent;
+            }
+
+            input[type="range"]::-ms-fill-lower {
+                background: #007bff;
+                border-radius: 3px;
+            }
+
+            input[type="range"]::-ms-fill-upper {
+                background: #ddd;
+                border-radius: 3px;
+            }
+
+            input[type="range"]::-ms-thumb {
+                width: 20px;
+                height: 20px;
+                border-radius: 50%;
+                background: #007bff;
+                cursor: pointer;
+                border: 2px solid #fff;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            }
+
+            /* 필터 버튼 스타일 */
+            button[onclick^="filterLogs"] {
+                transition: opacity 0.2s;
+            }
+
+            button[onclick^="filterLogs"]:hover {
+                opacity: 1 !important;
+            }
+
+            /* 통계 요약 스타일 */
+            #eventSummary span {
+                font-weight: bold;
+                color: #007bff;
+            }
+
+            .user-guide {
+                background: #fff8e1; /* 연노랑 배경 */
+                border-left: 4px solid #ffc107;
+                padding: 15px 20px;
+                border-radius: 6px;
+                margin-bottom: 20px;
+                font-size: 14px;
+                line-height: 1.5;
+            }
+            .user-guide h2 {
+                margin: 0 0 8px 0;
+                font-size: 16px;
+                color: #ff9800;
+            }
+            .user-guide ol {
+                margin: 0;
+                padding-left: 18px;
+            }
+            .user-guide button {
+                float: right;
+                background: #ffc107;
+                color: #212529;
+                padding: 4px 10px;
+                border: none;
+                border-radius: 4px;
+                font-size: 12px;
+                cursor: pointer;
+            }
+            .user-guide button:hover {
+                background: #ffb300;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div class="container">
+            <h1>🎬 Shaka Player 테스트 페이지</h1>
+
+            <div class="user-guide">
+                <button onclick="this.parentElement.style.display='none'">닫기 ✕</button>
+                <h2>빠른 사용 가이드</h2>
+                <ol>
+                    <li><strong>📹 테스트 영상 선택</strong> 드롭다운에서 보고 싶은 영상을 고릅니다.</li>
+                    <li><strong>영상 로드</strong> 버튼을 눌러 플레이어에 영상을 불러옵니다.</li>
+                    <li>비디오 화면의 <strong>▶︎ 재생</strong> 버튼을 클릭하면 곧바로 재생이 시작됩니다.</li>
+                    <li>화질·버퍼 등 재생 품질은 오른쪽 컨트롤 패널에서 자유롭게 조정해 보세요.</li>
+                    <li>
+                        <strong>🌐 네트워크 상태 시뮬레이션</strong><br />
+                        &nbsp;&nbsp;ㆍ아래 슬라이더로 <em>대역폭 제한</em>을 설정하면 실제 네트워크가 느린 것처럼 테스트할 수 있습니다.<br />
+                        &nbsp;&nbsp;ㆍ<em>네트워크 테스트</em> 버튼을 누르면 4 초 간격으로 대역폭이 자동 변경되어<br />
+                        &nbsp;&nbsp;&nbsp;&nbsp;ABR(적응형 비트레이트) 반응을 한눈에 확인할 수 있습니다.<br />
+                        &nbsp;&nbsp;ㆍ“제한 해제” 버튼을 누르면 언제든 원래 상태로 복원됩니다.
+                    </li>
+                </ol>
+            </div>
+
+            <!-- 비디오 플레이어 -->
+            <div class="video-container">
+                <video id="videoPlayer" controls poster="poster.webp"></video>
+            </div>
+
+            <!-- 컨트롤 패널 -->
+            <div class="controls">
+                <!-- 영상 선택 -->
+                <div class="control-group">
+                    <h3>📹 테스트 영상 선택</h3>
+                    <select id="videoSelect">
+                        <option value="">영상을 선택하세요</option>
+                        <option value="bigBuckBunny">Big Buck Bunny (ITEC)</option>
+                        <option value="heliocentrism">Heliocentrism (Google)</option>
+                        <option value="dashifTest">dashifTest (Multi-Resolution)</option>
+                        <option value="bitmovin">Bitmovin Sample</option>
+                        <option value="widevineTest">🔐 Angel One (Widevine DRM)</option>
+                        <option value="sintelWidevine">🔐 Sintel (Widevine DRM)</option>
+                    </select>
+                    <button onclick="loadSelectedVideo()">영상 로드</button>
+                    <button onclick="player.unload()">언로드</button>
+                </div>
+
+                <!-- ABR 컨트롤 -->
+                <div class="control-group">
+                    <h3>🔄 적응형 비트레이트 (ABR)</h3>
+                    <button onclick="setABREnabled(true)">자동 ABR</button>
+                    <button onclick="setABREnabled(false)">수동 ABR</button>
+                    <select id="qualitySelect" disabled>
+                        <option value="">화질 선택</option>
+                    </select>
+                    <button onclick="selectManualQuality()">화질 적용</button>
+                </div>
+
+                <!-- 버퍼 컨트롤 -->
+                <div class="control-group">
+                    <h3>📊 버퍼 관리</h3>
+                    <button onclick="setBufferSize('small')">작은 버퍼 (5s)</button>
+                    <button onclick="setBufferSize('medium')">중간 버퍼 (15s)</button>
+                    <button onclick="setBufferSize('large')">큰 버퍼 (30s)</button>
+                    <button onclick="clearBuffer()">버퍼 클리어</button>
+                </div>
+
+                <!-- 고급 기능 -->
+                <div class="control-group">
+                    <h3>⚡ 고급 기능</h3>
+                    <button onclick="enableLowLatency()">저지연 모드</button>
+                    <button onclick="testNetworkChanges()">네트워크 테스트</button>
+                    <button onclick="downloadForOffline()">오프라인 다운로드</button>
+                    <button onclick="listOfflineContent()">저장된 콘텐츠 보기</button>
+                    <button onclick="removeOfflineContent()">오프라인 콘텐츠 삭제</button>
+                    <button onclick="clearAllOfflineContent()">모든 오프라인 콘텐츠 삭제</button>
+                </div>
+            </div>
+
+            <!-- 실시간 통계 -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px">
+                <!-- 1열: 기존 실시간 통계 -->
+                <div>
+                    <h3>📈 실시간 통계</h3>
+                    <div id="stats" class="stats">통계 로딩 중...</div>
+                </div>
+
+                <!-- 2열: 기존 버퍼 시각화 -->
+                <div>
+                    <h3>📊 버퍼 시각화</h3>
+                    <div id="bufferChart" style="background: #f8f9fa; padding: 15px; border-radius: 6px; height: 120px">
+                        <div id="bufferBar" style="background: #007bff; height: 20px; width: 0%; transition: width 0.3s; border-radius: 4px; position: relative">
+                            <span id="bufferText" style="position: absolute; right: 10px; top: 2px; color: white; font-size: 12px">0s</span>
+                        </div>
+                        <div style="margin-top: 10px; font-size: 12px">현재 위치: <span id="currentPos">0:00</span> / 전체: <span id="totalDur">0:00</span></div>
+                        <div style="margin-top: 5px">
+                            <canvas id="bandwidthChart" width="300" height="60" style="border: 1px solid #ddd"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3열: 새로운 이벤트 로그 & 분석 -->
+                <div>
+                    <h3>📝 이벤트 로그 & 분석</h3>
+
+                    <!-- 로그 필터 컨트롤 -->
+                    <div style="margin-bottom: 10px; display: flex; gap: 5px; flex-wrap: wrap">
+                        <button onclick="filterLogs('all')" style="font-size: 10px; padding: 4px 8px">전체</button>
+                        <button onclick="filterLogs('info')" style="font-size: 10px; padding: 4px 8px; background: #17a2b8">정보</button>
+                        <button onclick="filterLogs('warn')" style="font-size: 10px; padding: 4px 8px; background: #ffc107">경고</button>
+                        <button onclick="filterLogs('error')" style="font-size: 10px; padding: 4px 8px; background: #dc3545">오류</button>
+                        <button onclick="clearLog()" style="font-size: 10px; padding: 4px 8px">지우기</button>
+                    </div>
+
+                    <!-- 로그 통계 표시 -->
+                    <div id="logStats" style="font-size: 11px; margin-bottom: 5px; color: #666">총 <span id="totalLogs">0</span>개 | 정보: <span id="infoCount">0</span> | 경고: <span id="warnCount">0</span> | 오류: <span id="errorCount">0</span></div>
+
+                    <!-- 기존 로그 영역 (크기 축소) -->
+                    <div id="log" class="log" style="height: 100px; font-size: 10px"></div>
+                </div>
+            </div>
+
+            <!-- 이벤트 분석 차트 섹션 (기존 네트워크 시뮬레이션 위에 추가) -->
+            <div style="margin-top: 20px">
+                <h3>📊 이벤트 분석 대시보드</h3>
+                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px">
+                    <!-- 이벤트 빈도 차트 -->
+                    <div class="control-group">
+                        <h4 style="font-size: 12px; margin: 0 0 10px 0">📈 이벤트 빈도 (최근 60초)</h4>
+                        <canvas id="eventChart" width="400" height="100" style="border: 1px solid #ddd; border-radius: 4px; width: 100%"></canvas>
+                        <div style="font-size: 10px; margin-top: 5px; color: #666">🔵 정보 | 🟡 경고 | 🔴 오류</div>
+                    </div>
+
+                    <!-- 주요 이벤트 요약 -->
+                    <div class="control-group">
+                        <h4 style="font-size: 12px; margin: 0 0 10px 0">📋 주요 지표</h4>
+
+                        <!-- ✅ 카드 형태의 그리드 레이아웃 -->
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px">
+                            <div style="background: #e3f2fd; padding: 8px; border-radius: 6px; text-align: center; border-left: 4px solid #2196f3">
+                                <div style="font-size: 10px; color: #666">총 스톨링</div>
+                                <div style="font-size: 18px; font-weight: bold; color: #d32f2f"><span id="totalStalls">0</span>회</div>
+                            </div>
+                            <div style="background: #f3e5f5; padding: 8px; border-radius: 6px; text-align: center; border-left: 4px solid #9c27b0">
+                                <div style="font-size: 10px; color: #666">평균 로딩</div>
+                                <div style="font-size: 18px; font-weight: bold; color: #f57c00"><span id="avgLoadTime">0ms</span></div>
+                            </div>
+                        </div>
+
+                        <!-- ✅ 현재 화질 (큰 카드로) -->
+                        <div style="background: #e8f5e8; padding: 10px; border-radius: 6px; text-align: center; border-left: 4px solid #4caf50; margin-bottom: 10px">
+                            <div style="font-size: 10px; color: #666">현재 화질</div>
+                            <div style="font-size: 16px; font-weight: bold; color: #2e7d32"><span id="currentQuality">로딩중</span></div>
+                        </div>
+
+                        <!-- ✅ 마지막 화질 변경 (작게) -->
+                        <div style="background: #fff3e0; padding: 6px; border-radius: 4px; text-align: center">
+                            <div style="font-size: 9px; color: #666">마지막 화질 변경</div>
+                            <div style="font-size: 12px; font-weight: bold; color: #ef6c00"><span id="lastAdaptation">없음</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 새로운 네트워크 시뮬레이션 섹션 -->
+            <div style="margin-top: 20px">
+                <h3>🌐 네트워크 상태 시뮬레이션</h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px">
+                    <div class="control-group">
+                        <h4>대역폭 제어</h4>
+                        <div id="bandwidthSlider" style="margin: 20px 0 10px">
+                            <div style="position: relative; margin-bottom: 5px">
+                                <input type="range" id="bwRange" min="100" max="10000" value="10000" step="100" style="width: 100%" oninput="setBandwidthLimit(this.value)" />
+                                <div style="position: absolute; top: -20px; left: 0; width: 100%; display: flex; justify-content: space-between; font-size: 10px; color: #666">
+                                    <span>100</span>
+                                    <span>2500</span>
+                                    <span>5000</span>
+                                    <span>7500</span>
+                                    <span style="color: #28a745; font-weight: bold">무제한</span>
+                                </div>
+                            </div>
+                            <div style="text-align: center; font-weight: bold">현재 제한: <span id="bwValue">제한없음</span> kbps</div>
+                        </div>
+                        <button onclick="resetBandwidth()">제한 해제</button>
+                    </div>
+
+                    <div class="control-group">
+                        <h4>버퍼 목표치</h4>
+                        <div id="bufferSlider" style="margin: 20px 0 10px">
+                            <div style="position: relative; margin-bottom: 5px">
+                                <input type="range" id="bufRange" min="2" max="60" value="15" step="1" style="width: 100%" oninput="setBufferGoal(this.value)" />
+                                <div style="position: absolute; top: -20px; left: 0; width: 100%; display: flex; justify-content: space-between; font-size: 10px; color: #666">
+                                    <span>2s</span>
+                                    <span>15s</span>
+                                    <span>30s</span>
+                                    <span>45s</span>
+                                    <span>60s</span>
+                                </div>
+                            </div>
+                            <div style="text-align: center; font-weight: bold">버퍼 목표: <span id="bufValue">15</span>초</div>
+                        </div>
+                        <div id="bufferIndicator" style="height: 20px; background: #e9ecef; border-radius: 10px; margin-top: 10px">
+                            <div id="actualBuffer" style="height: 100%; background: #28a745; width: 0%; border-radius: 10px; transition: all 0.5s"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Shaka Player JS -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.7.5/shaka-player.ui.min.js"></script>
+        <script src="main.min.js"></script>
+    </body>
+</html>
